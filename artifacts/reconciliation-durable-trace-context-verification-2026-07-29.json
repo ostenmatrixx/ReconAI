@@ -1,0 +1,190 @@
+{
+  "evidenceType": "reconciliation-durable-trace-context-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T02:10:26.664Z",
+  "scope": "Local source, schema, unit, tenant/API, loopback OTLP/HTTP protobuf, and fresh restricted-role PostgreSQL 17.10 evidence for authenticated reconciliation trace-context propagation through immutable outbox authority. No production, staging, external collector, provider, or customer data was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/reconciliation-run-creation-unavailability-observability-verification-2026-07-29.json",
+      "sha256": "ff0642c7168ec52589746331233ec143a5a644b63894dd45faba608c43497ba4",
+      "purpose": "Exact predecessor for run-creation reason telemetry and the provider-neutral OTLP runtime source."
+    },
+    {
+      "path": "artifacts/reconciliation-run-creation-admission-pressure-verification-2026-07-29.json",
+      "purpose": "Earlier fresh maximum-volume proof of immutable run/input/outbox/audit authority, bounded admission, interruption safety, process loss, retry, and contention."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "postgresql": "17.10",
+    "postgresClient": "3.4.9",
+    "opentelemetryApi": "1.9.1",
+    "opentelemetryTraceSdk": "2.10.0",
+    "opentelemetryOtlpProtoExporter": "0.221.0"
+  },
+  "decision": {
+    "adr": "ADR 0036",
+    "securityReviewControl": "OBSERVABILITY-DURABLE-CONTEXT-001",
+    "outerEnvelopeSchemaVersion": 1,
+    "traceContextOptional": true,
+    "traceContextSchemaVersion": 1,
+    "fieldsPersisted": [
+      "schemaVersion",
+      "traceparent"
+    ],
+    "traceparentVersion": "00",
+    "allowedTraceFlags": [
+      "00",
+      "01"
+    ],
+    "nonzeroTraceIdRequired": true,
+    "nonzeroSpanIdRequired": true,
+    "tracestatePersisted": false,
+    "baggagePersisted": false,
+    "rawInboundHeaderPersisted": false,
+    "traceContextIncludedInCanonicalJobHash": true,
+    "workerUsesContextBeforeOutboxAuthority": false,
+    "legacyEnvelopeWithoutContextAccepted": true,
+    "firstProducer": "reconciliation.run.requested",
+    "schemaMigrationRequired": false,
+    "moneyOrRuleBehaviorChanged": false
+  },
+  "apiAndRepositoryContract": {
+    "captureSource": "currently active locally accepted API span context",
+    "callerSamplingDecisionReevaluatedByApi": true,
+    "capturedData": "trace ID, span ID, and locally accepted sampled bit only",
+    "rawInboundHeaderCopiedWhenObservabilityDisabled": false,
+    "traceContextStoredInsideAtomicRunInputOutboxAuditTransaction": true,
+    "exactPostgresqlOutboxPayloadAssertionPassed": true,
+    "idempotentExactRunRetryCreatesNewContextOrOutbox": false,
+    "publicResponseContainsTraceContext": false
+  },
+  "durableAuthorityContract": {
+    "queueSchemaValidatedBeforeAuthorityLoad": true,
+    "queueJobIdValidatedBeforeAuthorityLoad": true,
+    "tenantBoundPostgresqlOutboxLoadedBeforeParentedSpan": true,
+    "returnedAuthoritySchemaValidated": true,
+    "completeCanonicalAuthorityHashCompared": true,
+    "forgedContextWithRecomputedQueueIdRejected": true,
+    "invalidQueueIdentityInvokesAuthorityLoader": false,
+    "authorityReadFailureUsesUnparentedObservation": true,
+    "financialProcessingStartsBeforeAuthority": false,
+    "redisPossessionAloneIsAuthority": false
+  },
+  "schemaVerification": {
+    "validLowercaseVersion00Accepted": true,
+    "zeroTraceIdRejected": true,
+    "zeroSpanIdRejected": true,
+    "uppercaseRejected": true,
+    "unsupportedVersionRejected": true,
+    "unsupportedFlagsRejected": true,
+    "unknownTracestateFieldRejected": true,
+    "secretLikeTraceparentRejected": true,
+    "changingOnlyTraceContextChangesJobId": true
+  },
+  "otlpTraceVerification": {
+    "transport": "OTLP/HTTP protobuf",
+    "captureAddress": "ephemeral loopback HTTP server",
+    "apiContextCapturedWhileSpanActive": true,
+    "durableConsumerStartedAfterApiExecutionContextExited": true,
+    "apiAndDurableConsumerShareTraceId": true,
+    "apiAndDurableConsumerHaveDistinctSpanIds": true,
+    "durableParentTreatedAsTrustedLocalOnlyAfterAuthorityContract": true,
+    "tracePayloadNonEmpty": true,
+    "forbiddenOrganizationCustomerCredentialPaymentSentinelsAbsent": true,
+    "singleProcessContractTest": true
+  },
+  "focusedVerification": {
+    "command": "pnpm typecheck && pnpm exec vitest run --project unit --project tenant packages/connectors/src/connectors.test.ts packages/observability/src/observability.test.ts apps/worker/src/worker.test.ts apps/api/src/app.tenant.test.ts apps/api/src/repository.batch.test.ts",
+    "testFilesPassed": 5,
+    "testsPassed": 77,
+    "testsFailed": 0
+  },
+  "freshPostgresqlVerification": {
+    "command": "DATABASE_ADMIN_URL=[fresh-loopback-admin] DATABASE_MIGRATION_URL=[fresh-loopback-migrator] DATABASE_URL=[fresh-loopback-restricted-app] pnpm exec vitest run --project integration apps/api/src/repository.integration.test.ts",
+    "loopbackPort": 55467,
+    "freshDatabase": true,
+    "dataChecksumsEnabled": true,
+    "migrationsApplied": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "repositoryRole": "reconai_app",
+    "repositoryRoleSuperuser": false,
+    "repositoryRoleBypassesRls": false,
+    "testFilesPassed": 1,
+    "testsPassed": 4,
+    "testsFailed": 0,
+    "exactVersionedContextReadFromImmutableOutbox": true,
+    "runtimeStopped": true,
+    "listenPortClosed": true,
+    "runtimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-trace-propagation-pg.dcK4AO-verified-20260729",
+    "postgresqlLogLines": 51,
+    "postgresqlLogBytes": 5018,
+    "postgresqlLogSha256": "695fedc3b904022ca473d4135864be9b0c0250679c237465aa5e870e0d14a431",
+    "initdbLogLines": 19,
+    "initdbLogBytes": 800,
+    "initdbLogSha256": "ef25e1eb39a8fa34f758667eb4e6775a28a7c0bda3fad627eeded4fd793a280a"
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 69,
+    "testsPassed": 444,
+    "testsFailed": 0,
+    "migrationsValidated": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "secretScan": "passed",
+    "productionDependencyAuditAtHighSeverity": "no known vulnerabilities found"
+  },
+  "sourceSha256": {
+    "packages/connectors/src/index.ts": "f26f1dc549e4055d3bd5d7a437b6ea10d67b56e06bb4e4bcf1ea1c0bc02c3edc",
+    "packages/connectors/src/connectors.test.ts": "3fc11129924b9ecefdd301348f9b031c0b4cd15551d1d81e8bbe5e382c3e9c51",
+    "packages/observability/src/telemetry.ts": "9b735a28f273c28537e0baedbd17c26176b9399cb91cdf3db172f0af13e3ede0",
+    "packages/observability/src/index.ts": "4de0a1b0f9e76486c7913b3e582efeb721e304ddce0c8cfaea7d4650020f4b7c",
+    "packages/observability/src/observability.test.ts": "19e32ceba28a9cab900067acd54baae8fee1c696132ad6d055cff7584fa0fb5b",
+    "apps/api/src/app.ts": "faa64603dc5349817b15d5401dbf9767b53df8e52114a63995e04eac25791a79",
+    "apps/api/src/repository.ts": "d51a02ac9535a79ceb736afc522654fe1e6a1bc40d7a63892f7eb7c3afa8ed0c",
+    "apps/api/src/app.tenant.test.ts": "e9c8bfed541e0ac5dc087b5072c18eea371af849f68b210c99832c819135758c",
+    "apps/api/src/repository.integration.test.ts": "f07f8cc5b786559ede7a3f021e34a9ebb23f177170bcd472b3cc5ef078e618dd",
+    "apps/worker/src/worker.ts": "8e87a38f3124ba2a063de62fd6f2ceef53a08faf8cb9e3c096742325c365766b",
+    "apps/worker/src/worker.test.ts": "df5922212e82d7a5dd7b5f1cbcad920606e16a8e3c1b3178d1c8353d62c059e5",
+    "apps/worker/src/main.ts": "9ff92a975ca4ead49ff712da54036ddf8eeed3469411c2455b25d7cf9f7c867a",
+    "apps/worker/src/queue.integration.test.ts": "2d7449aa2c1267ef58dc1aba473947e9749b9437ba995daac26da2bacf3696cb",
+    "docs/adr/0036-authenticated-durable-trace-context.md": "1a441987b06bc0aceba8a1aee259e748bc66f5f698e52d1c72e275130786eef7",
+    "docs/adr/README.md": "71c85943048fcabc77856419dea507c15a8cbf412f2a91ccdfad47ffb2a7698b",
+    "docs/observability.md": "59d11fb722e1175d77f4f24fb218ef7324db802137f43e002dd6f75145565d81",
+    "docs/architecture.md": "3ae5bf78c349dc105332e98a83ef26280838436c376c63d730d108738254def4",
+    "docs/threat-model.md": "5696524ec4357797c36800215f90000b9df4e113571292a0b1300caf08c4695a",
+    "docs/security-review.md": "7c68ade134d8433208f8b0b911aa45994976c55b39ba344bed32f54834df7db7",
+    "docs/known-limitations.md": "512340ccf03f99137246a6a9a43024d980406a7c757c074cda0471f79abfc880",
+    "docs/goals/goal-1-vertical-slice.md": "92199b15fec7364d67527152356d2169a06f22410450addf059763abf6167dca",
+    "docs/goals/goal-0-foundation.md": "a7d70780819ef5c0ffd8686fbbbef4d37c3df48c725f2ae1c6ea4914badcafaa",
+    "README.md": "308d4a6499ac66f509412d0544b0c545adc1b0887bed1997977497d688f63cb6",
+    "GOALS.md": "2b139102994ebc1a35d87354fded5afb0ad28329f8617b01a99b30140e8485c3",
+    "CHANGELOG.md": "a4f5d28514c80d850f73098f56a6e0f2a8f2967ceebe4450035c44fe226f4f26"
+  },
+  "safety": {
+    "loopbackOnly": true,
+    "productionDataUsed": false,
+    "productionOrStagingAccessed": false,
+    "providerOrExternalCollectorAccessed": false,
+    "databaseFinancialAuthoritySemanticsChanged": false,
+    "environmentFileCreated": false,
+    "repositoryFilesStaged": 0,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "The loopback trace test uses one process-global SDK and directly reconstructs the durable consumer outside the API execution context. It proves context continuity semantics, not a deployed API/outbox/Redis/worker/collector multi-process trace.",
+    "The fresh PostgreSQL test verifies immutable outbox persistence through the restricted application role but does not run Redis, the outbox relay, BullMQ, or an independent worker process.",
+    "The disposable database used loopback host trust for test orchestration. Role capability, tenant transaction, and RLS behavior were still exercised, but this is not production transport/authentication evidence.",
+    "Only newly authorized reconciliation run requests populate the field. Existing envelopes and connector webhook, CSV import, and provider-sync producers remain valid correlation-only roots.",
+    "No protected collector/backend, authentication/egress, retention/access policy, trace search, representative load, collector outage, termination, dashboard, alert, notification, acknowledgement, or on-call response was exercised.",
+    "The trace context intentionally cannot identify a tenant, customer, payment, job, or database backend in metrics. Operators must use separately protected correlation and tenant-authorized evidence.",
+    "Telemetry remains bounded and lossy. Missing context or export failure starts or breaks a trace but cannot alter financial work, durable identity, retries, approval, or source-system state."
+  ]
+}

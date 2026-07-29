@@ -1,0 +1,196 @@
+{
+  "artifactVersion": 2,
+  "recordedAt": "2026-07-28T21:13:36.732Z",
+  "scope": "API composite readiness source, boundary, and two-replica live dependency fault containment",
+  "sourceState": "uncommitted working tree; no repository commit exists",
+  "contract": {
+    "requiredChecks": ["postgresql", "redis", "object_storage"],
+    "publicReady": {
+      "httpStatus": 200,
+      "body": {
+        "status": "ready"
+      }
+    },
+    "publicNotReady": {
+      "httpStatus": 503,
+      "body": {
+        "status": "not_ready"
+      }
+    },
+    "livenessDuringDependencyOutage": {
+      "httpStatus": 200,
+      "body": {
+        "status": "ok"
+      }
+    },
+    "wholeProbeTimeoutMilliseconds": 1000,
+    "cacheMilliseconds": 1000,
+    "singleFlight": true,
+    "livenessDependencyIndependent": true
+  },
+  "automatedEvidence": {
+    "command": "pnpm exec vitest run apps/api/src/readiness.test.ts packages/config/src/config.test.ts",
+    "result": {
+      "testFilesPassed": 2,
+      "testsPassed": 30,
+      "testsFailed": 0
+    },
+    "coveredReadinessCases": [
+      "required-check false",
+      "thrown dependency error containment",
+      "whole-probe timeout and abort",
+      "failure cache",
+      "recovery after cache expiry",
+      "concurrent single-flight",
+      "invalid and unbounded definitions",
+      "non-test startup rejects a missing composite probe"
+    ],
+    "apiBoundaryCommand": "pnpm exec vitest run apps/api/src/app.tenant.test.ts -t \"keeps readiness failure opaque and liveness independent\"",
+    "apiBoundaryResult": {
+      "testsPassed": 1,
+      "testsFailed": 0,
+      "publicFailureBody": {
+        "status": "not_ready"
+      },
+      "livenessBody": {
+        "status": "ok"
+      }
+    }
+  },
+  "liveMultiReplicaEvidence": {
+    "command": "pnpm verify:live-readiness",
+    "runtime": {
+      "node": "24.15.0",
+      "pnpm": "11.9.0",
+      "platform": "arm64 macOS",
+      "apiReplicas": 2,
+      "postgresql": {
+        "version": "17.10",
+        "binarySha256": "8c5eec2f2da34b18a119b29b4d59ac18d7ec73ec5ff8264b8f872d5b1c050c77"
+      },
+      "redis": {
+        "version": "8.2.8",
+        "source": "https://download.redis.io/releases/redis-8.2.8.tar.gz",
+        "sourceArchiveSha256": "01354ee4449e758e6e45d056fe5802abd9ccde4d669b79c9d5e9f6d730a80759",
+        "binarySha256": "2cd4255e2dc5bb04b15bc72bfbef27b93698e401f6f7a78a2b5cae2777a970a0",
+        "build": "BUILD_TLS=no MALLOC=libc"
+      },
+      "objectStorage": {
+        "implementation": "MinIO RELEASE.2025-07-23T15-54-02Z",
+        "source": "https://dl.min.io/server/minio/release/darwin-arm64/archive/minio.RELEASE.2025-07-23T15-54-02Z",
+        "binarySha256": "0939ce5553ce9e6451b69e049fbf399794368276b61da8166f84cbd8c7f2d641",
+        "privateEphemeralBucketVerified": true
+      }
+    },
+    "faultInjection": {
+      "mechanism": "one loopback TCP proxy per dependency",
+      "failure": "reject new connections and destroy active sockets",
+      "recovery": "re-enable the exact transport path",
+      "otherDependencyPathsRemainEnabled": true
+    },
+    "observations": [
+      {
+        "dependency": "postgresql",
+        "replicasReturningOpaque503": 2,
+        "replicasRemainingLive200": 2,
+        "replicasRecoveringReady200": 2,
+        "maximumObservedOutageProbeMilliseconds": 13.209
+      },
+      {
+        "dependency": "redis",
+        "replicasReturningOpaque503": 2,
+        "replicasRemainingLive200": 2,
+        "replicasRecoveringReady200": 2,
+        "maximumObservedOutageProbeMilliseconds": 7.402
+      },
+      {
+        "dependency": "object_storage",
+        "replicasReturningOpaque503": 2,
+        "replicasRemainingLive200": 2,
+        "replicasRecoveringReady200": 2,
+        "maximumObservedOutageProbeMilliseconds": 240.411
+      }
+    ],
+    "replicaTransitionSequence": [
+      {
+        "ready": true,
+        "failedChecks": [],
+        "timedOut": false
+      },
+      {
+        "ready": false,
+        "failedChecks": ["postgresql"],
+        "timedOut": false
+      },
+      {
+        "ready": true,
+        "failedChecks": [],
+        "timedOut": false
+      },
+      {
+        "ready": false,
+        "failedChecks": ["redis"],
+        "timedOut": false
+      },
+      {
+        "ready": true,
+        "failedChecks": [],
+        "timedOut": false
+      },
+      {
+        "ready": false,
+        "failedChecks": ["object_storage"],
+        "timedOut": false
+      },
+      {
+        "ready": true,
+        "failedChecks": [],
+        "timedOut": false
+      }
+    ],
+    "assertions": {
+      "bothReplicasMatchedTransitionSequence": true,
+      "everyOutageObservedByEveryReplica": true,
+      "everyReplicaRecoveredAfterEveryOutage": true,
+      "livenessRemainedDependencyIndependent": true,
+      "publicFailureResponsesWereOpaque": true,
+      "internalTransitionsNamedOnlyTheUnavailableDependency": true,
+      "credentialsEndpointsAndRawErrorsAbsentFromReadinessTransitions": true,
+      "allFaultProxiesRecovered": true,
+      "apiAndProxyListenersClosedAfterVerification": true,
+      "ephemeralObjectBucketDeletedAfterVerification": true
+    }
+  },
+  "fullRepositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "exitCode": 0,
+    "testFilesPassed": 68,
+    "testsPassed": 402,
+    "migrationsValidated": 44,
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "checks": [
+      "format",
+      "lint",
+      "typecheck",
+      "unit",
+      "tenant",
+      "reconciliation",
+      "migration",
+      "schema",
+      "config",
+      "edge",
+      "oidc",
+      "container",
+      "dependency policy",
+      "license",
+      "build"
+    ]
+  },
+  "claimsExcluded": [
+    "Fault injection removes a dependency transport path on one host; it does not crash service processes or prove multi-host scheduler behavior.",
+    "No TLS, ingress, external load balancer, readiness alert delivery, production IAM, or capacity claim is made.",
+    "No customer payload, provider sandbox, production credential, staging deployment, hosted CI run, or production-readiness claim is included."
+  ],
+  "credentialsRecorded": false
+}

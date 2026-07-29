@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "reconai-evidence-v1",
+  "evidenceType": "browser-api-error-boundary-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T11:29:01Z",
+  "status": "local_pass_protected_runtime_gate_open",
+  "scope": "Local source, unit/route tests, strict static checks, policy validators, and production-build evidence for the browser-facing internal API error boundary used by invitation acceptance, exception CSV export, and Shopify privacy-package preparation/receipt. Synthetic identifiers, tokens, errors, and payloads only. No customer data, provider system, protected ingress, staging deployment, compliance, or production-readiness claim is included.",
+  "decisions": {
+    "threatModelEntry": "TM-41",
+    "securityReviewControl": "BFF-UPSTREAM-ERROR-001",
+    "apiRouteInventoryChanged": false,
+    "databaseMigrationAdded": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyNormalizationOrToleranceChanged": false,
+    "tenantOrFinancialAuthorityAdded": false,
+    "sourceSystemWriteOrProviderScopeAdded": false,
+    "aiAuthorityOrEnablementChanged": false
+  },
+  "boundary": {
+    "maximumInternalApiErrorBytes": 65536,
+    "requiredEnvelope": {
+      "code": "1-100 uppercase ASCII letters, digits, and underscores",
+      "message": "1-2000 characters; validated and discarded",
+      "correlationId": "UUID"
+    },
+    "browserOutput": [
+      "route-approved error code",
+      "fixed browser-safe message",
+      "validated correlation UUID"
+    ],
+    "rejectedConditions": [
+      "unknown error code",
+      "code/status mismatch",
+      "additional root field",
+      "malformed correlation identifier",
+      "malformed JSON",
+      "invalid UTF-8",
+      "non-JSON content type",
+      "declared or streamed body above 64 KiB"
+    ],
+    "rejectedOutcome": {
+      "status": 502,
+      "privateNoStore": true,
+      "upstreamStatusPreserved": false,
+      "upstreamBodyPreserved": false
+    },
+    "upstreamFetchContainment": {
+      "configuredFixedOrigin": true,
+      "fixedRoutePath": true,
+      "ambientCredentials": "omit",
+      "redirect": "error",
+      "timeoutsRetained": true
+    },
+    "routes": [
+      "/api/recon/invitations/accept",
+      "/api/recon/exports/exceptions",
+      "/api/recon/exports/privacy-data-package"
+    ]
+  },
+  "source": {
+    "sharedParser": {
+      "path": "apps/web/src/upstream-api-error.ts",
+      "sha256": "9bb186a4fdb2775780f2a363547c55d7244f33dd40e4aeea799f602a7ffb4dee"
+    },
+    "sharedParserTests": {
+      "path": "apps/web/src/upstream-api-error.test.ts",
+      "sha256": "af3326b08d1281b59c265f9024e1cbbde9b827dadd092a15fec6308b0e1836e7"
+    },
+    "routeAndTestSha256": {
+      "apps/web/src/app/api/recon/exports/exceptions/route.ts": "6f3d9662477b3c4b741e2d3d16b28f7173369c29d645e230620241feab9352a9",
+      "apps/web/src/app/api/recon/exports/exceptions/route.test.ts": "e84ed733549ffa09d08947ae50ab101d72cf37f6eb1e59cb945e9782e25ccace",
+      "apps/web/src/app/api/recon/exports/privacy-data-package/route.ts": "fb2cd8f129c67bfecef1e3d7c83eadf5ec41df8dffe732bb11da09b84bc0d135",
+      "apps/web/src/app/api/recon/exports/privacy-data-package/route.test.ts": "223572c30a34e246104e283978c09a5835da4f8df703cc2f727271486cb7833b",
+      "apps/web/src/app/api/recon/invitations/accept/route.ts": "3326ee8eef2d07b19e0d8752b7ba883a22963ee354110b5663c65ad606257e64",
+      "apps/web/src/app/api/recon/invitations/accept/route.test.ts": "24e0d4f85eb74c843adefbf70a62390c57409de0b572891d00950354f709c0b4"
+    }
+  },
+  "verification": {
+    "focusedGate": {
+      "command": "pnpm exec vitest run apps/web/src/upstream-api-error.test.ts apps/web/src/app/api/recon/exports/exceptions/route.test.ts apps/web/src/app/api/recon/exports/privacy-data-package/route.test.ts apps/web/src/app/api/recon/invitations/accept/route.test.ts",
+      "status": "passed",
+      "testFilesPassed": 4,
+      "testsPassed": 18,
+      "testsFailed": 0
+    },
+    "repositoryGate": {
+      "command": "RECONAI_PENDING_EVIDENCE_PATH=artifacts/browser-api-error-boundary-verification-2026-07-29.json CI=true pnpm verify",
+      "status": "passed",
+      "testFilesPassed": 82,
+      "testsPassed": 536,
+      "migrationsValidated": 55,
+      "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+      "contractEntrypointsValidated": 4,
+      "sourceFilesValidated": 526,
+      "sourceRootsValidated": 7,
+      "dockerfilesValidated": 3,
+      "composeImagesValidated": 5,
+      "workflowImagesValidated": 3,
+      "actionPinsValidated": 25,
+      "operationalAlertRulesValidated": 13,
+      "metricContractsValidated": 9,
+      "packageManifestsPolicyValidated": 20,
+      "productionLicensesValidated": 224,
+      "productionLockSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+      "productionBuildPassed": true,
+      "productionRoutesObserved": [
+        "/api/recon/invitations/accept",
+        "/api/recon/exports/exceptions",
+        "/api/recon/exports/privacy-data-package"
+      ]
+    },
+    "nodeVersion": "24.15.0",
+    "pnpmVersion": "11.9.0",
+    "gitVersion": "2.50.1"
+  },
+  "verificationCorrections": [
+    {
+      "problemObserved": "The first documentation-inclusive repository gate stopped because the new Goal 1 audit and security-review entry were not in canonical Prettier form.",
+      "correction": "Apply the pinned formatter to only the two reported documentation files and restart the complete repository gate from the beginning.",
+      "controlWeakened": false,
+      "postCorrectionResult": "Formatting, lint, typecheck, 536 tests, every validator, and the production build pass."
+    }
+  ],
+  "knownLimitations": [
+    "This local proof does not exercise a compromised web process, protected ingress, network fault, deployment proxy, or production internal API.",
+    "A validated correlation UUID remains browser-visible by design for support correlation; it grants no tenant, financial, provider, or source-system authority.",
+    "The route policies must be updated deliberately when a new browser-actionable internal API error is introduced; unknown contract drift fails closed to a generic 502.",
+    "This increment does not migrate the openid-client dependency path, close provider sandbox or release-integrity findings, or satisfy protected-staging evidence.",
+    "One local workstation run is not CI, staging, reliability, capacity, compliance, or production-readiness evidence."
+  ],
+  "sourceControlState": {
+    "repositoryHasNoInitialCommit": true,
+    "filesStaged": false,
+    "commitCreated": false,
+    "pushOrPublishPerformed": false,
+    "deploymentPerformed": false,
+    "repositoryEnvironmentFilesPresent": false,
+    "jsonEvidenceArtifactsIncludingThisOne": 91
+  },
+  "conclusion": "All three previously verbatim browser-facing internal API error relays now pass one bounded, strict, route-allowlisted boundary with fixed browser-safe messages and fail-closed negative coverage. This closes BFF-UPSTREAM-ERROR-001 locally without expanding tenant, financial, provider, source-system, or AI authority. Goal 1 remains active and its provider, owner, distributed-runtime, and protected-staging gates remain open."
+}

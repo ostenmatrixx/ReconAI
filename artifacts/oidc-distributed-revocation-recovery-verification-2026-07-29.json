@@ -1,0 +1,270 @@
+{
+  "schemaVersion": "reconai-evidence-v1",
+  "evidenceType": "oidc-distributed-revocation-recovery-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T15:34:29Z",
+  "status": "local_pass_real_keycloak_two_nextjs_replicas_shared_redis_failure_and_recovery",
+  "scope": "One isolated, synthetic, single-host Keycloak 26.7.0 OIDC lifecycle against two production-built Next.js 16.2.12 processes using one authenticated persistent Redis 8.2.8 revocation authority. The exercise proves distinct same-subject sessions, signed session-scoped provider logout into one replica, targeted old-cookie denial through both replicas, unaffected-session admission, cross-replica replay, fail-closed Redis loss, process liveness, durable Redis restart, cutoff/replay recovery, and later-login admission. It is not protected staging, multi-host, external identity-provider, managed Redis, production ingress, alert-delivery, compliance, penetration-test, reliability-SLO, or production-readiness evidence.",
+  "productionReadinessClaim": false,
+  "runtimeInputs": {
+    "identityProvider": {
+      "name": "Keycloak",
+      "version": "26.7.0",
+      "officialArchive": "https://github.com/keycloak/keycloak/releases/download/26.7.0/keycloak-26.7.0.tar.gz",
+      "archiveSha256Expected": "f771df0aa1e4820f57d56f7d6d015beb6415487b43f8de7e5a6d48f8a7fe118a",
+      "archiveSha256Observed": "f771df0aa1e4820f57d56f7d6d015beb6415487b43f8de7e5a6d48f8a7fe118a",
+      "archiveSha256Matched": true,
+      "mode": "isolated host-process development identity provider with HTTPS enabled"
+    },
+    "java": {
+      "distribution": "Eclipse Temurin",
+      "version": "21.0.11+10 LTS",
+      "architecture": "aarch64",
+      "officialArchive": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.11%2B10/OpenJDK21U-jdk_aarch64_mac_hotspot_21.0.11_10.tar.gz",
+      "archiveSha256Expected": "6ebcf221c9b41507b14c098e93c6ead6440b8d9bd154f8ec666c4c73abbdb201",
+      "archiveSha256Observed": "6ebcf221c9b41507b14c098e93c6ead6440b8d9bd154f8ec666c4c73abbdb201",
+      "archiveSha256Matched": true
+    },
+    "redis": {
+      "version": "8.2.8",
+      "officialArchive": "https://download.redis.io/releases/redis-8.2.8.tar.gz",
+      "archiveSha256Expected": "01354ee4449e758e6e45d056fe5802abd9ccde4d669b79c9d5e9f6d730a80759",
+      "archiveSha256Observed": "01354ee4449e758e6e45d056fe5802abd9ccde4d669b79c9d5e9f6d730a80759",
+      "archiveSha256Matched": true,
+      "buildCommand": "make -j2 BUILD_TLS=no MALLOC=libc redis-server redis-cli",
+      "serverBinarySha256": "a3d77724c3a6504e1b498dfebfde395d58192fbf4a4e11d827fca8dfb3ae9070",
+      "cliBinarySha256": "fbf074d4eb28cb1a91834167be5fa38146e13676c777e8e98bb9f8a8d05e0e98",
+      "mode": "authenticated loopback standalone server with append-only persistence, appendfsync always, and a forced pre-failure snapshot"
+    },
+    "application": {
+      "framework": "Next.js 16.2.12",
+      "authenticationParent": "next-auth@4.24.15",
+      "patchedDependency": "openid-client@5.7.1",
+      "patchSha256": "745ab8539e7a2495fdc1fb0270bac930a2736bde0c7d15bfa48b1627ab241b7b",
+      "webReplicaCount": 2,
+      "build": "fresh optimized Next.js production build",
+      "runtime": "two next start processes with NODE_ENV=production and NODE_OPTIONS=--throw-deprecation",
+      "sharedSessionSecret": true,
+      "sharedRedisAuthority": true,
+      "productionLocalStoreRejectionBypassed": false
+    },
+    "host": {
+      "operatingSystem": "macOS 26.5.2",
+      "architecture": "arm64",
+      "node": "v24.15.0",
+      "pnpm": "11.9.0"
+    }
+  },
+  "isolatedTopology": {
+    "data": "synthetic repository identity fixture copied and modified only inside the temporary runtime",
+    "externalProviderAccountUsed": false,
+    "customerDataUsed": false,
+    "repositoryEnvironmentFileCreated": false,
+    "canonicalTlsProxyCount": 1,
+    "directReplicaTlsProbeProxyCount": 2,
+    "tls": "ephemeral self-signed loopback certificate trusted only by the verifier, browser, and child web processes",
+    "keycloakBackchannelTransport": "bounded loopback HTTP relay retaining the signed Logout Token only in process memory",
+    "backchannelReceiverReplica": 1,
+    "redisPersistence": "append-only plus explicit pre-failure snapshot in the isolated runtime directory",
+    "childProcessOutputCaptured": false
+  },
+  "lifecycleAssertions": {
+    "distinctProviderSessionsForOneSubject": true,
+    "bothSessionsInitiallyAcceptedByBothReplicas": true,
+    "signedKeycloakBackchannelDeliveries": 1,
+    "firstBackchannelDeliveryStatus": 200,
+    "providerLogoutRequestObserved": true,
+    "providerLogoutRequestContractMatched": true,
+    "targetedOldCookieRejectedByBothReplicas": true,
+    "differentSidForSameSubjectAcceptedByBothReplicas": true,
+    "crossReplicaReplayStatusBeforeOutage": 200,
+    "redisKeysBeforeOutage": {
+      "count": 2,
+      "types": [
+        "replay",
+        "sid"
+      ],
+      "allIndexesAre64Hex": true,
+      "rawIdentifierPresent": false,
+      "allTtlsPositive": true,
+      "minimumTtlSecondsObserved": 420
+    },
+    "redisAbruptStopSignal": "SIGKILL",
+    "unaffectedCookieFailedClosedOnBothReplicasDuringOutage": true,
+    "anonymousWebLivenessStatusesDuringOutage": [
+      200,
+      200
+    ],
+    "logoutStatusDuringRedisOutage": 400,
+    "persistentRedisRestartCompleted": true,
+    "targetedOldCookieStillRejectedByBothReplicasAfterRecovery": true,
+    "unaffectedCookieAcceptedByBothReplicasAfterRecovery": true,
+    "crossReplicaReplayStatusAfterRecovery": 200,
+    "redisKeysAfterRecovery": {
+      "count": 2,
+      "types": [
+        "replay",
+        "sid"
+      ],
+      "allIndexesAre64Hex": true,
+      "rawIdentifierPresent": false,
+      "allTtlsPositive": true,
+      "minimumTtlSecondsObserved": 420
+    },
+    "laterLoginAcceptedByBothReplicas": true,
+    "laterLoginReceivedDifferentSid": true,
+    "canonicalTlsProxyRequestsByUpstream": [
+      73,
+      73
+    ],
+    "directTlsProbeRequestsByUpstream": [
+      11,
+      14
+    ],
+    "bothCanonicalUpstreamsExercised": true,
+    "processesResponsiveAfterExercise": true,
+    "allLoopbackListenersClosedAfterCleanup": true
+  },
+  "credentialAndEvidenceHandling": {
+    "providerTokensDecodedOnlyInVerifierMemory": true,
+    "capturedLogoutTokenRetainedOnlyInVerifierMemory": true,
+    "rawCookieRecorded": false,
+    "rawLogoutTokenRecorded": false,
+    "rawAuthorizationCodeRecorded": false,
+    "rawStateOrPkceValueRecorded": false,
+    "rawSubjectOrSidRecorded": false,
+    "rawRedisKeyRecorded": false,
+    "redisPasswordRecorded": false,
+    "oidcClientSecretRecorded": false,
+    "syntheticPasswordRecorded": false,
+    "temporaryRealmCredentialRecorded": false,
+    "childProcessOutputRecorded": false,
+    "customerOrProductionCredentialUsed": false
+  },
+  "sourceSha256": {
+    "scripts/verify-live-oidc-distributed.mjs": "2a87bfaeaba2e83015fb554c90dd54e892a1c84eca745fcafa890f2f7dd9ab00",
+    "package.json": "f4941a89a5baddf5c09583a98ce68f9c3b59880b0deaadd5dead92860f27d800",
+    "apps/web/src/auth.ts": "069a0c056a917a926083fda19057732f6ca67dc2452cc202177db71d0801a3fb",
+    "apps/web/src/oidc-backchannel-logout.ts": "7fadffd6579cba243d9767c047649d9beb511f56e294b382d5043c5ced84713d",
+    "apps/web/src/session-revocation.ts": "de3d269ce1bf06c2aa7e2e6a67b14c0a234f00c03d85ad7bf0fe28cdb2e72af1",
+    "apps/web/src/server-session.ts": "6365aa30525bec3ca4bc51f9c179bcc552192fa6916f8a16ac48687345479426",
+    "pnpm-lock.yaml": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0",
+    "patches/openid-client@5.7.1.patch": "745ab8539e7a2495fdc1fb0270bac930a2736bde0c7d15bfa48b1627ab241b7b"
+  },
+  "verification": {
+    "liveDistributedLifecycle": {
+      "command": "pnpm verify:live-oidc-distributed with checksum-verified runtime paths supplied through the process environment",
+      "status": "passed",
+      "completedAt": "2026-07-29T15:34:29Z",
+      "assertionsFailed": 0
+    },
+    "verifierSyntaxAndLint": {
+      "commands": [
+        "node --check scripts/verify-live-oidc-distributed.mjs",
+        "pnpm exec eslint scripts/verify-live-oidc-distributed.mjs --max-warnings=0"
+      ],
+      "status": "passed"
+    },
+    "freshWebProductionBuild": {
+      "command": "pnpm --filter @workspace/web build",
+      "status": "passed",
+      "dynamicAuthenticationRoutes": [
+        "/api/auth/[...nextauth]",
+        "/api/auth/backchannel-logout",
+        "/api/auth/federated-logout"
+      ]
+    },
+    "focusedAuthenticationTests": {
+      "command": "pnpm exec vitest run --project unit apps/web/src/federated-logout.test.ts apps/web/src/oidc-backchannel-logout.test.ts apps/web/src/oidc-environment.test.ts apps/web/src/oidc-session.test.ts apps/web/src/server-session.test.ts apps/web/src/session-revocation.test.ts",
+      "status": "passed",
+      "testFilesPassed": 6,
+      "testsPassed": 31
+    },
+    "finalRepositoryGate": {
+      "command": "CI=true pnpm verify",
+      "status": "passed",
+      "observedAt": "2026-07-29T15:42:39Z",
+      "testFilesPassed": 85,
+      "testsPassed": 561,
+      "migrationsValidated": 55,
+      "migrationSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+      "contractEntrypointsValidated": 4,
+      "sourceBoundaryFilesValidated": 549,
+      "evidenceFilesValidated": 102,
+      "evidenceBytesValidated": 1158901,
+      "packageManifestsValidated": 20,
+      "productionPackageLicensesValidated": 224,
+      "build": "passed"
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed",
+      "findings": 0
+    },
+    "productionDependencyAudit": {
+      "command": "pnpm audit --prod --audit-level=high",
+      "status": "passed",
+      "result": "No known vulnerabilities found"
+    }
+  },
+  "exploratoryAttemptDisposition": [
+    {
+      "attempt": 1,
+      "result": "provider_startup_rejected_temporary_realm_filename",
+      "browserAuthenticationReached": false,
+      "cause": "Keycloak requires an import filename matching the contained realm name.",
+      "correction": "The verifier now writes reconai-development-realm.json in the isolated import directory."
+    },
+    {
+      "attempt": 2,
+      "result": "first_session_passed_second_fixture_password_transition_failed",
+      "cause": "The repository fixture's temporary-password lifecycle was an unrelated dependency for a two-session topology test.",
+      "correction": "The copied runtime-only realm now receives a random non-temporary synthetic password; the repository fixture remains unchanged."
+    },
+    {
+      "attempt": 3,
+      "result": "both_sessions_and_replica_checks_passed_ui_logout_page_refreshed_before_click",
+      "cause": "The long-lived first dashboard page's client session gate refreshed before the logout click.",
+      "correction": "The verifier reconstructs the already-validated first application and provider browser state in a fresh context immediately before RP logout."
+    },
+    {
+      "attempt": 4,
+      "result": "passed",
+      "interpretation": "The final source was rerun from a fresh Keycloak home and fresh Redis state after adding mandatory RP-logout and both-upstream assertions."
+    }
+  ],
+  "securityDisposition": {
+    "finding": "SEC-L-002",
+    "priorState": "single-process Keycloak delivery passed; Redis multi-replica verification open",
+    "currentLocalState": "real signed Keycloak delivery, two production-built Redis-backed Next.js replicas, targeted sid isolation, cross-replica replay, abrupt Redis loss, fail-closed admission, persistent restart, and later-login recovery passed locally",
+    "findingClosed": false,
+    "remainingBeforeClosure": [
+      "authorized protected-staging account-console and administrator-console provider logout",
+      "multi-host scheduling and partition behavior",
+      "managed Redis failover and transport/network policy",
+      "accepted and rejected clock boundaries with synchronized protected-runtime clocks",
+      "coordinated SESSION_SECRET and provider signing-key rotation",
+      "external HTTPS back-channel ingress and alert delivery"
+    ]
+  },
+  "decisionBoundaries": {
+    "authenticationOrSessionImplementationChanged": false,
+    "sessionCookieOrEncryptionContractChanged": false,
+    "productionRevocationConfigurationChanged": false,
+    "databaseMigrationAdded": false,
+    "tenantAuthorityChanged": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyNormalizationOrToleranceChanged": false,
+    "sourceSystemWriteOrProviderScopeAdded": false,
+    "aiAuthorityOrEnablementChanged": false
+  },
+  "limitations": [
+    "This is an isolated single-host synthetic loopback exercise, not protected staging, multi-host, external IdP, managed Redis, production ingress, compliance, penetration-test, or production-readiness evidence.",
+    "Ephemeral self-signed loopback TLS terminates in verifier-owned Node proxies; it does not prove the deployable Nginx policy or an external load balancer, CDN, certificate, collector, or network policy.",
+    "Keycloak delivered the signed Logout Token through a loopback HTTP relay that retained it only in process memory for bounded replay and outage assertions; production back-channel transport must use the exact approved HTTPS route.",
+    "The exercise covers one abrupt Redis process loss and persistent restart. It does not prove managed failover, cross-host partitions, Sentinel/Cluster behavior, alert delivery, clock boundaries, or coordinated SESSION_SECRET/provider-signing-key rotation.",
+    "No raw provider credential, browser cookie, logout token, authorization code, state, PKCE value, Redis credential/key, password, subject, or session identifier is emitted.",
+    "No database, tenant, financial, connector, source-system, or reconciliation behavior changed, and no new database or provider-sandbox result is claimed.",
+    "No file was staged, committed, pushed, published, or deployed, and no runtime .env file was created."
+  ]
+}

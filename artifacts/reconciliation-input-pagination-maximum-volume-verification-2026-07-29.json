@@ -1,0 +1,219 @@
+{
+  "evidenceType": "reconciliation-input-pagination-maximum-volume-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-28T23:32:35Z",
+  "scope": "Fresh loopback PostgreSQL 17.10 synthetic maximum-volume and concurrent-reader evidence for the immutable pinned-input reference read path. No production or staging system was used. The measurements are not an SLO, capacity guarantee, or production projection.",
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "postgresql": "17.10",
+    "postgresClient": "3.4.9"
+  },
+  "verifier": {
+    "command": "RECONAI_ALLOW_LOCAL_VERIFICATION_WRITES=1 RECONAI_INPUT_PAGINATION_RECORDS=100000 DATABASE_ADMIN_URL=[fresh-loopback] DATABASE_URL=[restricted-loopback] pnpm verify:reconciliation-input-pagination",
+    "maximumVolumeRunRecordedAt": "2026-07-28T23:27:52.898Z",
+    "loopbackOnlyEnforced": true,
+    "productionEnvironmentRejected": true,
+    "explicitSyntheticWriteOptInRequired": true,
+    "disposableDatabaseNameRequired": true,
+    "applicationRoleRequired": "reconai_app",
+    "applicationRoleSuperuser": false,
+    "applicationRoleBypassesRls": false,
+    "independentReadersReceiveAdministratorUrl": false,
+    "independentReadersReceiveWriteOptIn": false,
+    "maximumConfiguredRecords": 100000,
+    "routineVerifyGateIncludesHeavyVerifier": false
+  },
+  "postgresqlSource": {
+    "archive": "postgresql-17.10.tar.bz2",
+    "officialDirectory": "https://www.postgresql.org/ftp/source/v17.10/",
+    "sha256": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+    "checksumVerifiedBeforeBuild": true,
+    "cluster": "fresh empty loopback-only disposable data-checksummed cluster using local test authentication",
+    "locale": "C",
+    "encoding": "UTF8",
+    "listenPort": 55464
+  },
+  "database": {
+    "freshDatabase": true,
+    "migrationsApplied": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "databaseBytesAfterVerification": 218093235,
+    "sourceEvents": 100000,
+    "canonicalRecords": 100000,
+    "runInputs": 100000,
+    "declaredInputCount": 100000,
+    "minimumOrdinal": 0,
+    "maximumOrdinal": 99999,
+    "uniqueOrdinals": 100000,
+    "forcedRowLevelSecurity": {
+      "reconciliation_runs": true,
+      "reconciliation_run_inputs": true
+    },
+    "supportingIndexUsed": "reconciliation_run_inputs_org_run_ordinal_uidx",
+    "seedDurationMilliseconds": 4813.54,
+    "optimizedStructuralCanonicalRows": true
+  },
+  "concurrentReaders": [
+    {
+      "pageSize": 100,
+      "pages": 1000,
+      "records": 100000,
+      "firstOrdinal": 0,
+      "lastOrdinal": 99999,
+      "identitySha256": "1b2849b86b9f93214a0e007ed5d6a9ae718ad67b5434c0e71dc9d15f6430cae3",
+      "durationMilliseconds": 431.68
+    },
+    {
+      "pageSize": 97,
+      "pages": 1031,
+      "records": 100000,
+      "firstOrdinal": 0,
+      "lastOrdinal": 99999,
+      "identitySha256": "1b2849b86b9f93214a0e007ed5d6a9ae718ad67b5434c0e71dc9d15f6430cae3",
+      "durationMilliseconds": 442.47
+    }
+  ],
+  "concurrentProcessReaders": [
+    {
+      "processId": 41167,
+      "pageSize": 100,
+      "pages": 1000,
+      "records": 100000,
+      "firstOrdinal": 0,
+      "lastOrdinal": 99999,
+      "identitySha256": "1b2849b86b9f93214a0e007ed5d6a9ae718ad67b5434c0e71dc9d15f6430cae3",
+      "durationMilliseconds": 330.44,
+      "residentSetGrowthBytes": 7028736
+    },
+    {
+      "processId": 41168,
+      "pageSize": 97,
+      "pages": 1031,
+      "records": 100000,
+      "firstOrdinal": 0,
+      "lastOrdinal": 99999,
+      "identitySha256": "1b2849b86b9f93214a0e007ed5d6a9ae718ad67b5434c0e71dc9d15f6430cae3",
+      "durationMilliseconds": 338.38,
+      "residentSetGrowthBytes": 7159808
+    }
+  ],
+  "readerAssertions": {
+    "concurrentReadersIdentical": true,
+    "concurrentProcessReadersDistinct": true,
+    "allFourReaderDigestsIdentical": true,
+    "strictContinuousOrdinals": true,
+    "validUuidVersionsAndVariants": true,
+    "positiveRecordVersions": true,
+    "validContentSha256": true,
+    "nonFinalPagesFull": true,
+    "emptyPageWithCursorObserved": false,
+    "sameProcessResidentSetGrowthBytes": 7258112
+  },
+  "tenantIsolation": {
+    "foreignRepositoryResult": "undefined",
+    "foreignVisibleRows": 0,
+    "crossRunCursorRejected": true,
+    "cursorIsAuthority": false
+  },
+  "integrity": {
+    "offlineDataChecksums": {
+      "filesScanned": 1470,
+      "blocksScanned": 29362,
+      "badChecksums": 0,
+      "dataChecksumVersion": 1
+    },
+    "amcheck": "not run because the locally compiled PostgreSQL distribution did not install the amcheck extension"
+  },
+  "repositoryVerification": {
+    "fullVerify": {
+      "command": "CI=true pnpm verify",
+      "passed": true,
+      "testFilesPassed": 68,
+      "testsPassed": 428,
+      "format": "passed",
+      "lint": "passed",
+      "typecheck": "passed",
+      "build": "passed",
+      "migrationsValidated": 44,
+      "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+      "contractEntrypointsValidated": 4,
+      "containerChecks": "3 Dockerfiles, 5 Compose images, 3 workflow images, 25 action pins, and non-publishing candidate controls passed",
+      "dependencyManifestsValidated": 20,
+      "productionLicensesValidated": 224,
+      "lockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94"
+    },
+    "verifierLint": {
+      "command": "pnpm exec eslint scripts/verify-reconciliation-input-pagination.mjs scripts/verify-reconciliation-input-pagination-reader.mjs --max-warnings=0",
+      "passed": true
+    },
+    "writeOptInNegative": {
+      "passed": true,
+      "connectionAttempted": false,
+      "result": "rejected before connection because RECONAI_ALLOW_LOCAL_VERIFICATION_WRITES=1 was absent"
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "passed": true
+    },
+    "productionDependencyAudit": {
+      "command": "pnpm audit --prod --audit-level=high",
+      "passed": true,
+      "result": "No known vulnerabilities found"
+    }
+  },
+  "supersededAttempts": [
+    {
+      "evidenceRetained": false,
+      "reason": "The verifier rejected deterministic MD5-cast fixture identifiers because they lacked RFC UUID version and variant nibbles.",
+      "correction": "Fixture mappings now use PostgreSQL gen_random_uuid() values and the full exercise was rerun from a new clean cluster.",
+      "clusterStopped": true,
+      "runtimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-input-pagination-max-pg.DHVFVH-failed-fixture-20260729"
+    },
+    {
+      "evidenceRetained": false,
+      "reason": "The valid same-process maximum-volume run was superseded after adding two independent reader processes.",
+      "correction": "The final evidence reran the same-process and independent-process traversals together from a new clean cluster.",
+      "clusterStopped": true,
+      "runtimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-input-pagination-max-pg.4pAFMa-verified-20260729"
+    }
+  ],
+  "cleanup": {
+    "postgresqlStopped": true,
+    "listenPortClosed": true,
+    "successfulRuntimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-input-pagination-multiprocess-pg.CUlaiQ-verified-20260729",
+    "applicationAndDatabasePortsClosed": [
+      3000, 4000, 55462, 55463, 55464, 56380, 59010, 59011, 8180
+    ]
+  },
+  "sourceSha256": {
+    "scripts/verify-reconciliation-input-pagination.mjs": "787b7933f4142f737e1de9d27a914cb130f86c5da46be12434ce36b8ca61ee5e",
+    "scripts/verify-reconciliation-input-pagination-reader.mjs": "01198a9beb1233e4fffd980aa76139dc6504645309c0607df116971de4d2222e",
+    "package.json": "a52ecac600a8b72b22fb6c517fdb086cd22f4751457d48b5a1f70635cc17b3be",
+    "apps/api/src/repository.ts": "e125053c02152a196d7ecd91766cbafbb7cf0037c04b0160c24e1a79bbc506ec",
+    "apps/api/src/repository.cursor.test.ts": "a81928812cb007faa65e36808a24cc07250d4950e0f7bf626d688c4224a1395f",
+    "docs/adr/0031-tenant-bound-run-input-pagination.md": "cfa47174934156ac44256599fcb5e1baf836783282ed0d36ed337c88a80d61d0",
+    "docs/reconciliation-engine.md": "790e2d49a6a4984bd1c0f3e821f824f743a6dd42a971bd62941df8f99ae4bc52",
+    "pnpm-lock.yaml": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94"
+  },
+  "safety": {
+    "moneyUsesBinaryFloatingPoint": false,
+    "currencyConversionAdded": false,
+    "reconciliationRuleBehaviorChanged": false,
+    "sourceSystemWritesAdded": false,
+    "financialApprovalAuthorityAdded": false,
+    "aiAuthorityChanged": false,
+    "productionDataUsed": false,
+    "credentialsRecorded": false,
+    "externalMessagesSent": false,
+    "deploymentPerformed": false,
+    "gitStageCommitPushPerformed": false
+  },
+  "limitations": [
+    "The fixture uses optimized structural canonical rows because this verifier measures the already-pinned input-reference read path, not normalization or reconciliation.",
+    "Timing is one local workstation observation and is not an SLO, capacity guarantee, or production projection.",
+    "All four readers use one PostgreSQL host; multi-host, network-partition, active-run, TLS, ingress, and operator behavior are not exercised.",
+    "The browser/BFF journey remains separately mocked and did not consume this 100,000-row PostgreSQL fixture.",
+    "No protected staging or production deployment was performed."
+  ]
+}

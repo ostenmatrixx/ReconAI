@@ -1,0 +1,281 @@
+{
+  "schemaVersion": 2,
+  "recordedAt": "2026-07-29T16:35:39.471Z",
+  "component": "oidc-multi-organization-membership-and-selection-lifecycle",
+  "outcome": "local_isolated_real_oidc_two_organization_browser_journey_passed",
+  "productionReadinessClaim": false,
+  "sourceState": "uncommitted working tree; no repository commit exists",
+  "checkedInVerifier": "pnpm verify:live-oidc-bootstrap",
+  "scope": {
+    "boundaries": [
+      "Keycloak authorization-code flow with S256 PKCE for two distinct provider-verified synthetic identities",
+      "empty-membership first-owner bootstrap raced by two same-session browser tabs",
+      "independent first-organization bootstrap by the second identity",
+      "digest-only verified-email invitation creation, authenticated relay delivery, acceptance, revocation, and replay denial",
+      "one identity with active memberships in two organizations and tenant-specific owner and auditor roles",
+      "browser organization switching through the same-origin BFF and subject-bound HttpOnly selection context",
+      "permission and membership re-resolution on every request after promotion, tenant-scoped deactivation, and reactivation",
+      "restricted PostgreSQL application-role authority and append-only canonical audit evidence"
+    ],
+    "customerDataUsed": false,
+    "providerSystemsContacted": [
+      "isolated local Keycloak only",
+      "isolated local HTTP invitation relay only"
+    ],
+    "externalIdentityFederationExercised": false,
+    "thirdPartyEmailDeliveryExercised": false,
+    "objectStorageExercised": false
+  },
+  "runtime": {
+    "topology": "isolated host processes over loopback",
+    "host": {
+      "operatingSystemKernel": "Darwin 25.5.0",
+      "architecture": "arm64",
+      "node": "v24.15.0",
+      "pnpm": "11.9.0"
+    },
+    "web": {
+      "origin": "http://localhost:3000",
+      "server": "Next.js 16.2.12 development server using webpack",
+      "productionTlsClaim": false
+    },
+    "api": {
+      "origin": "http://127.0.0.1:4000",
+      "applicationRole": "reconai_app"
+    },
+    "identityProvider": {
+      "product": "Keycloak",
+      "version": "26.7.0",
+      "issuer": "http://127.0.0.1:58080/realms/reconai-development",
+      "java": "Eclipse Temurin 21.0.11+10 LTS",
+      "realmFixture": "infra/keycloak/reconai-development-realm.json",
+      "syntheticVerifiedIdentities": 2
+    },
+    "emailRelay": {
+      "origin": "http://127.0.0.1:58100",
+      "transport": "loopback HTTP",
+      "authentication": "runtime-generated bearer credential compared in constant time",
+      "requestBodyLimitBytes": 65536,
+      "requestTimeoutMilliseconds": 2000
+    },
+    "postgresql": {
+      "version": "17.10",
+      "listenAddress": "127.0.0.1",
+      "port": 55463,
+      "dataChecksums": "on",
+      "authentication": "isolated loopback trust at the server boundary; migrator and application URLs used separate non-superuser roles"
+    }
+  },
+  "runtimeSourceVerification": {
+    "keycloak": {
+      "officialArchive": "https://github.com/keycloak/keycloak/releases/download/26.7.0/keycloak-26.7.0.tar.gz",
+      "archiveSha256Observed": "f771df0aa1e4820f57d56f7d6d015beb6415487b43f8de7e5a6d48f8a7fe118a",
+      "runtimeVersionCommand": "Keycloak 26.7.0"
+    },
+    "java": {
+      "distribution": "Eclipse Temurin",
+      "archiveSha256Observed": "6ebcf221c9b41507b14c098e93c6ead6440b8d9bd154f8ec666c4c73abbdb201",
+      "runtimeVersion": "21.0.11+10 LTS"
+    },
+    "postgresql": {
+      "officialSourceVersion": "17.10",
+      "sourceArchiveSha256Observed": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+      "serverBinarySha256Observed": "232bc48cf24de7c346715fe4c2e2a9fd2ed3f856597f5e1703959be5dfd1fecf",
+      "initdbBinarySha256Observed": "301a003c63600360b3685a86ffc1e693010235ad0f7f4c0b5157f1b3240bc5f6"
+    },
+    "realmFixtureSha256": "4fbfc8a1ed62288b56f4719275ac25a3e342eeeb865d407940fcc3b31c3f6c8b",
+    "verifierSha256": "d6d63b3e0fe5a8d46c09af1e9cb3dd41fc6569ae2ae1fae02826e4401ccc044d",
+    "invitationAcceptanceRouteSha256": "b8dceeeff7e7821eb86826ec288741e8d1520d8888a60fa95838b5b4de2cab95",
+    "organizationSelectionRouteSha256": "210befaaadcec4eb94df0a6953b8654b487f8226349d3daca6b18dd3af7d4bb4",
+    "lockfileSha256": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0"
+  },
+  "browserJourney": {
+    "authorizationCodePkceLoginsCompleted": 2,
+    "temporaryPasswordRequiredActionsCompleted": 2,
+    "providerVerifiedEmailsPersisted": 2,
+    "emptyMembershipStateRenderedInBothBootstrapTabs": true,
+    "concurrentFirstBootstrapStatuses": [
+      201,
+      409
+    ],
+    "secondIdentityCreatedIndependentFirstOrganization": true,
+    "secondIdentityAcceptedInvitationToFirstOrganization": true,
+    "invitationAcceptanceSelectedInvitingOrganization": true,
+    "invitedIdentityOrganizationDirectoryCount": 2,
+    "invitedIdentityRolesAcrossOrganizations": [
+      "auditor",
+      "owner"
+    ],
+    "browserOrganizationOptionCount": 2,
+    "browserSwitchedToIndependentOrganizationAndBack": true,
+    "auditorMemberDirectoryStatus": 404,
+    "administratorMemberDirectoryStatus": 200,
+    "deactivatedInvitedOrganizationSummaryStatus": 404,
+    "deactivatedInvitedOrganizationAbsentFromDirectory": true,
+    "unaffectedIndependentOrganizationSummaryStatus": 200,
+    "unaffectedIndependentOrganizationMemberDirectoryStatus": 200,
+    "reactivatedReviewerSummaryStatus": 200,
+    "reviewerMemberDirectoryStatus": 404,
+    "acceptedInvitationReplayStatus": 404,
+    "revokedInvitationAcceptanceStatus": 404,
+    "expectedConflictResponses": 1,
+    "expectedMembershipAbsenceResponses": 4,
+    "unexpectedBrowserErrors": 0
+  },
+  "emailDelivery": {
+    "acceptedRelayRequests": 1,
+    "rejectedRelayRequests": 1,
+    "relayValidationErrors": 0,
+    "providerRejectionExposedOneTimeManualFallback": true,
+    "tokenDeliveredInFragmentLinkInsideRequestBody": true,
+    "tokenEnteredRelayRequestTarget": false,
+    "correlationMetadataBoundToRequest": true,
+    "deliveryOutcomeAuditContainsToken": false
+  },
+  "persistence": {
+    "appliedMigrations": 55,
+    "initialCustomerOwnedCounts": {
+      "users": 0,
+      "organizations": 0,
+      "memberships": 0,
+      "organizationBootstrapRequests": 0,
+      "organizationInvitations": 0,
+      "auditEvents": 0
+    },
+    "firstOwnerCheckpoint": {
+      "users": 1,
+      "organizations": 1,
+      "memberships": 1,
+      "organizationBootstrapRequests": 1,
+      "auditEvents": 1,
+      "ownerRole": "owner",
+      "ownerStatus": "active",
+      "organizationAiEnabled": false
+    },
+    "terminalCounts": {
+      "users": 2,
+      "organizations": 2,
+      "memberships": 3,
+      "organizationBootstrapRequests": 2,
+      "organizationInvitations": 2,
+      "auditEvents": 11
+    },
+    "terminalInvitedOrganizationMemberships": [
+      {
+        "syntheticIdentity": "owner",
+        "role": "owner",
+        "status": "active"
+      },
+      {
+        "syntheticIdentity": "reviewer",
+        "role": "reviewer",
+        "status": "active"
+      }
+    ],
+    "terminalIndependentOrganizationMembership": {
+      "syntheticIdentity": "reviewer",
+      "role": "owner",
+      "status": "active"
+    },
+    "invitedOrganizationCanonicalAuditIntegrity": {
+      "hashVersion": 2,
+      "events": 10,
+      "genesisEvents": 1,
+      "distinctHashes": 10,
+      "missingPredecessors": 0
+    },
+    "independentOrganizationGenesisAuditVerified": true,
+    "invitationTokensStoredAsDigestsOnly": true,
+    "rawInvitationTokensInAuditEvidence": false
+  },
+  "browserSecurity": {
+    "ownerBrowserReadableProviderCredentialDisclosure": false,
+    "inviteeBrowserReadableProviderCredentialDisclosure": false,
+    "ownerSessionCookieChunks": 2,
+    "inviteeSessionCookieChunks": 2,
+    "allSessionCookieChunksHttpOnly": true,
+    "ownerOrganizationContextCookieHttpOnly": true,
+    "ownerOrganizationContextCookieSameSite": "Lax",
+    "inviteeOrganizationContextCookieHttpOnly": true,
+    "inviteeOrganizationContextCookieSameSite": "Lax",
+    "authorizationCodeRecorded": false,
+    "oidcStateRecorded": false,
+    "sessionCookieValueRecorded": false,
+    "invitationTokenRecorded": false,
+    "passwordRecorded": false,
+    "clientSecretRecorded": false,
+    "emailRelayCredentialRecorded": false
+  },
+  "verificationImprovements": [
+    {
+      "boundary": "client-hydrated sign-in initiation",
+      "observed": "An immediate click could occur before the server-rendered sign-in button had an active client handler.",
+      "resolution": "The verifier now observes the exact same-origin Keycloak sign-in POST and retries within a three-attempt, bounded window before accepting provider navigation."
+    },
+    {
+      "boundary": "intentional authorization-denial diagnostics",
+      "observed": "Chromium's generic failed-resource console text did not distinguish expected 404/409 security responses from an unrelated missing asset.",
+      "resolution": "The verifier now records only method, path, view selector, and status for same-origin API failures, bounds the expected denial set, and keeps all other console, page, and API errors fatal."
+    }
+  ],
+  "repositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFiles": 85,
+    "tests": 561,
+    "focusedAuthorizationTestFiles": 6,
+    "focusedAuthorizationTests": 79,
+    "focusedBrowserTests": 6,
+    "focusedBrowserAccessibilityTests": 2,
+    "migrationFiles": 55,
+    "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+    "contractEntrypoints": 4,
+    "sourceBoundaryFiles": 552,
+    "evidenceFiles": 104,
+    "evidenceBytesAtFullGateBeforeResultAnnotation": 1182132,
+    "productionPackageLicenses": 224,
+    "format": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "schemaConfigEdgeOidcContainerAlertSourceEvidenceDependencyLicenseChecks": "passed",
+    "secretScan": "passed",
+    "productionDependencyAudit": "no known vulnerabilities"
+  },
+  "cleanup": {
+    "apiStoppedByVerifier": true,
+    "webStoppedByVerifier": true,
+    "emailRelayStoppedByVerifier": true,
+    "browserClosedByVerifier": true,
+    "keycloakStoppedAfterEvidenceCapture": true,
+    "redisStoppedAfterEvidenceCapture": true,
+    "postgresqlStoppedAfterEvidenceCapture": true,
+    "objectStorageStarted": false,
+    "runtimeEnvironmentFileCreated": false,
+    "postgresqlOfflineChecksum": {
+      "filesScanned": 2597,
+      "blocksScanned": 6778,
+      "badChecksums": 0,
+      "dataChecksumVersion": 1
+    },
+    "portsClosed": [
+      3000,
+      4000,
+      55463,
+      56381,
+      58080,
+      58100,
+      59000
+    ],
+    "temporaryStateMovedToTrash": "<local-home>/.Trash/reconai-oidc-multi-20260730",
+    "temporaryStateRecoverableUntilTrashIsEmptied": true
+  },
+  "claimsExcluded": [
+    "No staging, production, ingress, reverse-proxy, TLS, multi-host, or multi-replica behavior is claimed.",
+    "No external identity federation, production client registration, MFA, account recovery, or production identity-provider availability is claimed.",
+    "No third-party email provider, recipient inbox, asynchronous bounce, complaint, or provider-availability behavior is claimed.",
+    "No more-than-100-membership traversal, concurrent administrative mutation, representative abuse or query timing, or prior/new-image rolling deployment was exercised.",
+    "No object-storage, provider, financial-record ingestion, reconciliation, or source-system write path was exercised."
+  ],
+  "credentialsOrCustomerDataRecorded": false
+}

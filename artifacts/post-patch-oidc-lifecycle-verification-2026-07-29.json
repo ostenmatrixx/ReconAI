@@ -1,0 +1,254 @@
+{
+  "schemaVersion": "reconai-evidence-v1",
+  "evidenceType": "post-patch-oidc-lifecycle-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T14:42:42Z",
+  "status": "local_pass_real_post_patch_keycloak_single_process_backchannel_distributed_gates_open",
+  "scope": "One fresh, isolated, synthetic, loopback-only Keycloak 26.7.0 browser exercise against the exact patched web dependency under fatal Node deprecation handling. It covers authorization-code/S256 PKCE, access and zero-reuse refresh-token rotation, encrypted-cookie properties, provider-credential nondisclosure, RP-initiated logout, signed Back-Channel Logout into one actual Next.js process, replayed old-cookie denial, and repeat-login behavior. It is not external IdP, multi-replica Redis, TLS/ingress, protected-staging, production, compliance, reliability, penetration-test, or production-readiness evidence.",
+  "runtimeInputs": {
+    "identityProvider": {
+      "name": "Keycloak",
+      "version": "26.7.0",
+      "archive": "keycloak-26.7.0.tar.gz",
+      "archiveSha256": "f771df0aa1e4820f57d56f7d6d015beb6415487b43f8de7e5a6d48f8a7fe118a",
+      "archiveSha256MatchedPinnedValue": true,
+      "mode": "host-process development mode",
+      "data": "synthetic repository fixture copied into an isolated temporary runtime"
+    },
+    "java": {
+      "distribution": "Eclipse Temurin",
+      "version": "21.0.11+10",
+      "architecture": "aarch64",
+      "archive": "OpenJDK21U-jdk_aarch64_mac_hotspot_21.0.11_10.tar.gz",
+      "archiveSha256": "6ebcf221c9b41507b14c098e93c6ead6440b8d9bd154f8ec666c4c73abbdb201",
+      "archiveSha256MatchedPinnedValue": true
+    },
+    "application": {
+      "framework": "Next.js 16.2.12",
+      "authenticationParent": "next-auth@4.24.15",
+      "patchedDependency": "openid-client@5.7.1",
+      "patchSha256": "745ab8539e7a2495fdc1fb0270bac930a2736bde0c7d15bfa48b1627ab241b7b",
+      "nodeOptions": "--throw-deprecation",
+      "webProcessSurvivedLifecycle": true,
+      "webOriginRespondedAfterLifecycle": 200
+    },
+    "isolation": {
+      "applicationOrigin": "http://localhost:3000",
+      "providerOrigin": "http://127.0.0.1:58080",
+      "transport": "loopback development HTTP",
+      "dockerUsed": false,
+      "externalProviderAccountUsed": false,
+      "customerDataUsed": false,
+      "repositoryEnvironmentFileCreated": false,
+      "runtimeDirectoryDisposition": "moved to the workstation Trash after graceful process shutdown and closed-port verification",
+      "runtimeDirectoryRecoverableUntilTrashEmptied": true
+    }
+  },
+  "temporaryRealmContract": {
+    "sourceFixture": "infra/keycloak/reconai-development-realm.json",
+    "sourceFixtureModified": false,
+    "sourceFixtureSha256": "4fbfc8a1ed62288b56f4719275ac25a3e342eeeb865d407940fcc3b31c3f6c8b",
+    "syntheticIdentitiesOnly": true,
+    "runtimeOnlyOverrides": {
+      "accessTokenLifespanSeconds": 65,
+      "revokeRefreshToken": true,
+      "refreshTokenMaxReuse": 0,
+      "backchannelLogoutUrl": "http://127.0.0.1:3000/api/auth/backchannel-logout"
+    },
+    "fixedClientId": "reconai-web-development",
+    "fixedCallback": "http://localhost:3000/api/auth/callback/keycloak",
+    "fixedPostLogoutRedirect": "http://localhost:3000/"
+  },
+  "lifecycleAssertions": {
+    "providerAuthorizationRequestObserved": true,
+    "providerAuthorizationClientIdMatched": true,
+    "providerAuthorizationRedirectMatched": true,
+    "providerAuthorizationResponseTypeCode": true,
+    "providerAuthorizationStatePresent": true,
+    "providerAuthorizationPkceChallengePresent": true,
+    "providerAuthorizationPkceS256": true,
+    "authorizationCodePkceLoginCompleted": true,
+    "browserSessionStatus": 200,
+    "browserReauthenticationRequiredBeforeLogout": false,
+    "browserCredentialDisclosureBeforeLogout": false,
+    "accessTokenRotated": true,
+    "refreshTokenRotated": true,
+    "accessTokenExpiryAdvancedSeconds": 6,
+    "sessionCookieChunkCountBeforeRefresh": 2,
+    "sessionCookieChunkCountAfterRefresh": 2,
+    "sessionCookieHttpOnlyAfterRefresh": true,
+    "sessionCookieSameSiteAfterRefresh": "Lax",
+    "providerLogoutRequestObserved": true,
+    "providerLogoutIdTokenHintPresent": true,
+    "providerLogoutClientIdMatched": true,
+    "providerLogoutRedirectMatched": true,
+    "sessionCookieCountAfterLogout": 0,
+    "localSessionCleared": true,
+    "backchannelReplayedSessionStatus": 200,
+    "backchannelReplayedSessionRequiresReauthentication": true,
+    "backchannelReplayedSessionCredentialDisclosure": false,
+    "providerLoginFormShownAfterLogout": true,
+    "providerOriginRespondedAfterLifecycle": 200,
+    "loopbackPortsClosedAfterShutdown": true
+  },
+  "backchannelProof": {
+    "provider": "Keycloak 26.7.0",
+    "receiver": "one actual Next.js web process",
+    "signedLogoutTokenValidationPath": "fixed issuer, audience, RS256 algorithm, bounded Keycloak JWKS endpoint, age/event/jti/sid-or-sub/nonce controls",
+    "revocationStore": "single-process in-memory store permitted only outside production",
+    "proofMethod": "After provider logout, a distinct browser context replayed the pre-logout encrypted HttpOnly session cookie. The session endpoint required reauthentication and disclosed no provider credential.",
+    "multiReplicaRedisClaim": false,
+    "protectedTlsIngressClaim": false
+  },
+  "credentialHandling": {
+    "providerTokensDecodedOnlyInVerifierMemory": true,
+    "rawIdTokenRecorded": false,
+    "rawAccessTokenRecorded": false,
+    "rawRefreshTokenRecorded": false,
+    "rawSessionCookieRecorded": false,
+    "rawAuthorizationCodeRecorded": false,
+    "rawStateOrPkceValueRecorded": false,
+    "rawPasswordRecorded": false,
+    "rawClientSecretRecorded": false,
+    "rawTokenDigestRecorded": false
+  },
+  "sourceSha256": {
+    "scripts/verify-live-oidc-lifecycle.mjs": "bc6cd822cabab095465fa0ea3b253d766732d1f231b2c521270028beb2f3f660",
+    "package.json": "2a69bf603dbbdb5d367274d9f1fab88cf6758e1aee503a3e8a4d47a303e5a58f",
+    "pnpm-lock.yaml": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0",
+    "patches/openid-client@5.7.1.patch": "745ab8539e7a2495fdc1fb0270bac930a2736bde0c7d15bfa48b1627ab241b7b",
+    "infra/keycloak/reconai-development-realm.json": "4fbfc8a1ed62288b56f4719275ac25a3e342eeeb865d407940fcc3b31c3f6c8b",
+    "apps/web/src/auth.ts": "069a0c056a917a926083fda19057732f6ca67dc2452cc202177db71d0801a3fb",
+    "apps/web/src/oidc-session.ts": "0779bf4d7807fcd12672f40fb25368a6eb86d689a36420629b5340527824c7c1",
+    "apps/web/src/oidc-backchannel-logout.ts": "7fadffd6579cba243d9767c047649d9beb511f56e294b382d5043c5ced84713d",
+    "apps/web/src/session-revocation.ts": "de3d269ce1bf06c2aa7e2e6a67b14c0a234f00c03d85ad7bf0fe28cdb2e72af1",
+    "apps/web/src/federated-logout.ts": "08a60efaf35849cb24c762d4be8231b92414bef11dd1f2678433fe8270a6af4f"
+  },
+  "verification": {
+    "liveLifecycle": {
+      "command": "pnpm verify:live-oidc-lifecycle",
+      "status": "passed",
+      "completedAt": "2026-07-29T14:42:42Z",
+      "assertionsFailed": 0
+    },
+    "oidcDeprecationGate": {
+      "command": "NODE_OPTIONS=--throw-deprecation pnpm oidc:check",
+      "status": "passed",
+      "patchSha256PrefixReported": "745ab8539e7a"
+    },
+    "focusedAuthenticationSuite": {
+      "command": "pnpm exec vitest run --project unit apps/web/src/federated-logout.test.ts apps/web/src/oidc-backchannel-logout.test.ts apps/web/src/oidc-environment.test.ts apps/web/src/oidc-session.test.ts apps/web/src/server-session.test.ts apps/web/src/session-revocation.test.ts",
+      "status": "passed",
+      "testFilesPassed": 6,
+      "testsPassed": 31,
+      "testsFailed": 0,
+      "durationSeconds": 0.231
+    },
+    "completeDeterministicSuite": {
+      "command": "CI=true pnpm test",
+      "status": "passed",
+      "testFilesPassed": 85,
+      "testsPassed": 561,
+      "testsFailed": 0,
+      "durationSeconds": 4.49
+    },
+    "completeChromiumSuite": {
+      "command": "CI=true pnpm test:e2e",
+      "status": "passed",
+      "testsPassed": 45,
+      "testsFailed": 0,
+      "durationSeconds": 18.2
+    },
+    "accessibilityOnlyChromiumSuite": {
+      "command": "CI=true pnpm test:accessibility",
+      "status": "passed",
+      "testsPassed": 11,
+      "testsFailed": 0,
+      "automaticallyDetectedViolations": 0,
+      "durationSeconds": 6.7
+    },
+    "productionDependencyAudit": {
+      "command": "pnpm audit --prod --audit-level=high",
+      "status": "passed",
+      "knownVulnerabilitiesReported": 0
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed",
+      "secretsReported": 0
+    },
+    "finalRepositoryGate": {
+      "command": "CI=true pnpm verify",
+      "status": "passed",
+      "testFilesPassed": 85,
+      "testsPassed": 561,
+      "migrationsValidated": 55,
+      "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+      "contractEntrypointsValidated": 4,
+      "sourceFilesValidated": 545,
+      "sourceRootsValidated": 7,
+      "dockerfilesValidated": 3,
+      "composeImagesValidated": 5,
+      "workflowImagesValidated": 3,
+      "actionPinsValidated": 25,
+      "operationalAlertRulesValidated": 13,
+      "metricContractsValidated": 9,
+      "evidenceFilesValidated": 100,
+      "packageManifestsPolicyValidated": 20,
+      "productionLicensesValidated": 224,
+      "productionLockSha256": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0",
+      "productionBuildPassed": true,
+      "authenticationRoutesObserved": [
+        "/api/auth/[...nextauth]",
+        "/api/auth/backchannel-logout",
+        "/api/auth/federated-logout"
+      ]
+    }
+  },
+  "verificationNotes": {
+    "firstExploratoryRun": "The repository fixture's container-only host.docker.internal back-channel address was intentionally not counted as delivery evidence when a host-process Keycloak could not resolve it. The temporary realm was recreated from the unchanged source fixture with the exact loopback receiver, and the final run added an old-cookie replay assertion.",
+    "finalRunRecorded": true,
+    "parallelSuitePreparationWarning": "The independently launched deterministic and Chromium commands briefly shared workspace package preparation and emitted transient missing-bin warnings; both commands passed. The later exact CI=true pnpm verify command ran serially from formatting through production build and passed without relying on those warnings.",
+    "controlWeakened": false,
+    "databaseRerun": false,
+    "databaseRerunReason": "No database source or migration changed; the prior fresh 55-migration PostgreSQL 17.10 result remains separately recorded.",
+    "reconciliationRuleVersionChanged": false
+  },
+  "securityDisposition": {
+    "secL003State": "remediated on the checked-in local source/runtime acceptance surface",
+    "secL002State": "open Low; exact single-process Keycloak delivery passed, Redis multi-replica topology verification open",
+    "openCriticalChanged": false,
+    "openHighChanged": false,
+    "productionPenetrationTestClaim": false
+  },
+  "decisionBoundaries": {
+    "authenticationFrameworkMigrated": false,
+    "sessionCookieOrEncryptionContractChanged": false,
+    "providerTokenStorageOrRefreshAuthorityChanged": false,
+    "distributedProductionRevocationConfigurationChanged": false,
+    "apiTokenVerificationChanged": false,
+    "databaseMigrationAdded": false,
+    "tenantAuthorityChanged": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyNormalizationOrToleranceChanged": false,
+    "financialOrApprovalAuthorityAdded": false,
+    "sourceSystemWriteOrProviderScopeAdded": false,
+    "aiAuthorityOrEnablementChanged": false
+  },
+  "limitations": [
+    "This is one isolated local host-process exercise with synthetic identities and loopback HTTP, not external IdP, protected-staging, production, TLS/ingress, compliance, reliability, penetration-test, or production-readiness evidence.",
+    "Single-process in-memory revocation proves exact signed Keycloak delivery and fail-closed replay behavior only. At least two actual web replicas sharing Redis, plus failure/recovery, clock, secret-rotation, replay, and alert exercises remain required.",
+    "The reusable verifier does not launch or inspect the web process. This run separately started the web application under NODE_OPTIONS=--throw-deprecation and confirmed that it remained responsive after the lifecycle.",
+    "No authorized Shopify/Stripe provider credential, request, webhook, staging target, deployment credential, alert destination, or production secret was used.",
+    "No database or reconciliation behavior changed, and no new fresh database result is claimed.",
+    "No file was staged, committed, pushed, published, or deployed, and no runtime .env file was created."
+  ],
+  "sourceControlState": {
+    "repositoryHasNoInitialCommit": true,
+    "filesStaged": false,
+    "commitCreated": false,
+    "pushOrPublishPerformed": false,
+    "deploymentPerformed": false,
+    "repositoryEnvironmentFilesPresent": false
+  }
+}

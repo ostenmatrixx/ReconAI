@@ -1,0 +1,267 @@
+{
+  "evidenceType": "reconciliation-run-creation-interruption-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T00:19:04.665Z",
+  "scope": "Fresh loopback PostgreSQL 17.10 synthetic deadline, direct-client cancellation, complete rollback, and maximum-volume recovery evidence through the actual restricted-role reconciliation repository. No rule execution, production, or staging system was used.",
+  "priorEvidence": [
+    "artifacts/reconciliation-run-creation-maximum-volume-verification-2026-07-29.json",
+    "artifacts/reconciliation-run-creation-atomic-rollback-verification-2026-07-29.json"
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "postgresql": "17.10",
+    "postgresClient": "3.4.9",
+    "vitest": "4.1.10"
+  },
+  "design": {
+    "decision": "ADR 0033",
+    "threat": "TM-34",
+    "configuredMinimumMilliseconds": 5000,
+    "configuredDefaultMilliseconds": 30000,
+    "configuredMaximumMilliseconds": 120000,
+    "deadlineStartsBeforePoolAdmission": true,
+    "expiredPoolWaitCannotLaterCreateAuthority": true,
+    "poolAcquisitionPromiseCancellable": false,
+    "endToEndApiLatencyBound": false,
+    "transactionLocalStatementTimeoutBackstop": true,
+    "postgresqlTransactionTimeoutUsed": false,
+    "requestAbortSignalPropagated": true,
+    "fixedPublicError": {
+      "status": 503,
+      "code": "RECONCILIATION_RUN_CREATION_UNAVAILABLE",
+      "databaseDetailsExposed": false
+    },
+    "atomicAuthorityRows": [
+      "reconciliation run",
+      "all pinned inputs",
+      "first dispatch outbox event",
+      "request audit event"
+    ],
+    "schemaMigrationRequired": false,
+    "moneyOrRuleBehaviorChanged": false
+  },
+  "rejectedMechanismDiagnostic": {
+    "mechanism": "PostgreSQL 17 transaction_timeout",
+    "result": "Database rollback succeeded, but FATAL session termination exposed a postgres.js 3.4.9 write-after-disconnect TypeError during a large prepared write.",
+    "productionControlAccepted": false,
+    "countedAsPassingEvidence": false,
+    "diagnosticRuntimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-run-creation-interruption-pg.0yQedz-driver-fatal-diagnostic-20260729",
+    "replacement": "Application authority deadline with active-query cancellation plus transaction-local statement_timeout"
+  },
+  "verifier": {
+    "command": "RECONAI_ALLOW_LOCAL_VERIFICATION_WRITES=1 RECONAI_RUN_CREATION_RECORDS=100000 DATABASE_ADMIN_URL=[fresh-loopback] DATABASE_URL=[restricted-loopback] pnpm verify:reconciliation-run-creation",
+    "recordedAt": "2026-07-29T00:19:04.665Z",
+    "loopbackOnlyEnforced": true,
+    "productionEnvironmentRejected": true,
+    "explicitSyntheticWriteOptInRequired": true,
+    "disposableDatabaseNameRequired": true,
+    "applicationRoleRequired": "reconai_app",
+    "applicationRoleSuperuser": false,
+    "applicationRoleBypassesRls": false,
+    "routineVerifyGateIncludesHeavyVerifier": false,
+    "postRunVerifierEdit": "One limitation sentence was corrected to state that the authority deadline starts before pool admission; lint-only globalThis qualification was also added for AbortController and setTimeout. Executable behavior was unchanged."
+  },
+  "postgresqlSource": {
+    "archive": "postgresql-17.10.tar.bz2",
+    "officialDirectory": "https://www.postgresql.org/ftp/source/v17.10/",
+    "sha256": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+    "checksumVerifiedBeforeBuild": true,
+    "cluster": "fresh empty loopback-only disposable data-checksummed cluster using SCRAM host authentication",
+    "locale": "C",
+    "encoding": "UTF8",
+    "listenPort": 55465
+  },
+  "fixture": {
+    "schemaValidSyntheticCanonicalOrders": 100000,
+    "contentHashesMatchCanonicalJson": true,
+    "customerReferencesIncluded": false,
+    "fieldProvenanceRowsInserted": false,
+    "seedBatchSize": 1000,
+    "seedDurationMilliseconds": 5915.43
+  },
+  "deterministicFailureControl": {
+    "mechanism": "Verifier-only BEFORE INSERT trigger on reconciliation_run_inputs",
+    "rejectedOrdinal": 1000,
+    "sqlState": "23514",
+    "postgresqlInputExecuteBlocksBeforeError": 2,
+    "runRowsAfterRollback": 0,
+    "inputRowsAfterRollback": 0,
+    "outboxEventsAfterRollback": 0,
+    "auditEventsAfterRollback": 0
+  },
+  "authorityDeadlineRollback": {
+    "configuredDeadlineMilliseconds": 5000,
+    "verifierDelaySeconds": 7,
+    "interruptedOrdinal": 1000,
+    "firstBatchStatementExecutedBeforeInterruption": true,
+    "repositoryErrorName": "RepositoryRunCreationUnavailableError",
+    "durationMilliseconds": 5006.2,
+    "postgresqlInputExecuteBlocksBeforeCancellation": 2,
+    "postgresqlLogLine": 8870,
+    "postgresqlMessageClassification": "canceling statement due to user request",
+    "runRowsAfterRollback": 0,
+    "inputRowsAfterRollback": 0,
+    "outboxEventsAfterRollback": 0,
+    "auditEventsAfterRollback": 0,
+    "partialAuthorityObserved": false
+  },
+  "directClientCancellationRollback": {
+    "verifierDelaySeconds": 30,
+    "interruptedOrdinal": 1000,
+    "firstBatchStatementExecutedBeforeInterruption": true,
+    "postgresqlActivityObservedAtDelayedSecondBatch": true,
+    "repositoryErrorName": "RepositoryRunCreationUnavailableError",
+    "durationMilliseconds": 1380.03,
+    "postgresqlInputExecuteBlocksBeforeCancellation": 2,
+    "postgresqlLogLine": 8930,
+    "postgresqlMessageClassification": "canceling statement due to user request",
+    "runRowsAfterRollback": 0,
+    "inputRowsAfterRollback": 0,
+    "outboxEventsAfterRollback": 0,
+    "auditEventsAfterRollback": 0,
+    "partialAuthorityObserved": false
+  },
+  "recovery": {
+    "verifierTriggerRowsAfterRemoval": 0,
+    "verifierFunctionRowsAfterRemoval": 0,
+    "sameDeterministicSnapshotUsed": true,
+    "syntheticRunId": "5357f40c-6f6d-4ca2-8107-6e3f9108fdae",
+    "status": "queued",
+    "declaredInputCount": 100000,
+    "persistedInputCount": 100000,
+    "uniqueOrdinals": 100000,
+    "minimumOrdinal": 0,
+    "maximumOrdinal": 99999,
+    "dispatchCount": 1,
+    "outboxEvents": 1,
+    "auditEvents": 1,
+    "postgresqlSuccessfulInputExecuteBlocks": 100,
+    "expectedSuccessfulInputStatements": 100,
+    "creationDurationMilliseconds": 3014.55,
+    "residentSetGrowthBytes": 17154048,
+    "idempotentRepeat": {
+      "sameRunAuthority": true,
+      "durationMilliseconds": 974.65,
+      "runRowsAfterRepeat": 1,
+      "outboxEventsAfterRepeat": 1,
+      "auditEventsAfterRepeat": 1
+    }
+  },
+  "paginationBoundary": {
+    "firstPageOrdinals": [
+      0,
+      99
+    ],
+    "lastPageOrdinals": [
+      99900,
+      99999
+    ],
+    "lastPageHasNextCursor": false
+  },
+  "tenantIsolation": {
+    "foreignRunRepositoryResult": "undefined",
+    "foreignInputRepositoryResult": "undefined",
+    "forcedRowLevelSecurity": {
+      "reconciliation_runs": true,
+      "reconciliation_run_inputs": true
+    }
+  },
+  "database": {
+    "freshDatabase": true,
+    "migrationsApplied": 44,
+    "databaseBytesAfterVerification": 245790387,
+    "sourceEvents": 100000,
+    "canonicalRecords": 100000,
+    "reconciliationRuns": 1,
+    "reconciliationRunInputs": 100000,
+    "outboxEvents": 1,
+    "auditEvents": 1,
+    "postgresqlInputExecuteBlocks": {
+      "deterministicFailure": 2,
+      "authorityDeadline": 2,
+      "directClientCancellation": 2,
+      "successfulRecovery": 100
+    },
+    "postgresqlCancellationErrors": 2,
+    "postgresqlFatalEvents": 0,
+    "applicationConnectionsAfterVerifier": 0,
+    "delayedBackendsAfterVerifier": 0,
+    "postgresqlLogSha256AfterShutdown": "89e8b09fb9714c55133ce586df5c1faac1ae7f1be3f1faf7f0077b1f4f0de3cc"
+  },
+  "integrity": {
+    "offlineDataChecksums": {
+      "filesScanned": 1473,
+      "blocksScanned": 32771,
+      "badChecksums": 0,
+      "dataChecksumVersion": 1
+    }
+  },
+  "repositoryVerification": {
+    "typecheck": "passed",
+    "focusedTestFiles": 3,
+    "focusedTestsPassed": 79,
+    "focusedTestsFailed": 0,
+    "fullVerify": {
+      "command": "CI=true pnpm verify",
+      "status": "passed",
+      "testFilesPassed": 69,
+      "testsPassed": 434,
+      "testsFailed": 0,
+      "migrationsValidated": 44,
+      "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+      "schemasValidated": 4,
+      "productionLicensesValidated": 224,
+      "formatLintTypecheckBuildAndPolicyGates": "passed"
+    }
+  },
+  "cleanup": {
+    "postgresqlStopped": true,
+    "listenPortClosed": true,
+    "runtimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-run-creation-interruption-pg.QDysSo-verified-20260729",
+    "applicationAndDatabasePortsClosed": [
+      3000,
+      4000,
+      55462,
+      55463,
+      55464,
+      55465,
+      56380,
+      58080,
+      58100,
+      59010,
+      59011,
+      8180
+    ]
+  },
+  "sourceSha256": {
+    "apps/api/src/repository.ts": "f40683e7a8d9f360b5e0d78d3a67bf46793b745848935745d46b251d00fba28e",
+    "apps/api/src/app.ts": "26d48bb47e3ce956873607c767e5bd2b8b8e7d5d6bda1320beb9550c14ba863f",
+    "apps/api/src/main.ts": "69e313b5d0c9f145beeaaef9055fadab3fafd39d22d413a70532a0a0c59ff09d",
+    "apps/api/src/repository.batch.test.ts": "18b81f1a624fa070a859c84a8eb9ba8f85967d04b7a43039fa7c736ff5201a1a",
+    "apps/api/src/app.tenant.test.ts": "70f4b2b21140ba7a3c4d0a25475f2a16788432795b61cba7756448f6629abb45",
+    "packages/config/src/index.ts": "0f73ca5cffe2021c79f633a499d7997352e9e624ecbe2c948aa05c5d34e0aa8b",
+    "packages/config/src/config.test.ts": "707f5fad55079f5d07cf4f6a11be209209ebbaff0e0ba71cac7a41f2360b9c5c",
+    "scripts/verify-reconciliation-run-creation.mjs": "03a72a6ad97c54e516631e874e17707e92ad05fbd3c3adf94251c8d730b2bff9",
+    ".env.example": "5a1453ab390a0874d9f3d2237eec330e9ecd204363d37b7130b67c788ac76c75"
+  },
+  "safety": {
+    "loopbackOnly": true,
+    "explicitSyntheticWriteOptIn": true,
+    "moneyOrRuleBehaviorChanged": false,
+    "workerOrRuleExecutionPerformed": false,
+    "productionDataUsed": false,
+    "productionOrStagingAccessed": false,
+    "repositoryFilesStaged": 0,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "The synthetic fixture contains valid canonical order JSON and matching content hashes but omits field-provenance rows because this verifier isolates run authority creation.",
+    "Timing is a single local workstation observation and is not an API SLO, capacity guarantee, or production projection.",
+    "The application authority deadline prevents a request that expires during pool wait from later creating authority, but postgres.js pool acquisition and response completion are not themselves cancellable.",
+    "The client-cancellation exercise drives the repository AbortSignal directly after PostgreSQL reports the verifier-only second-batch delay; it does not emulate a real proxy or socket disconnect.",
+    "Process termination, multi-host contention, protected staging, representative load, end-to-end API latency, and external alert delivery remain unverified.",
+    "The run remains queued; this artifact does not execute the worker or reconciliation rules."
+  ]
+}

@@ -1,0 +1,274 @@
+{
+  "schemaVersion": "reconai-evidence-v1",
+  "evidenceType": "typed-investigation-evidence-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T13:58:17Z",
+  "status": "local_pass_protected_runtime_gate_open",
+  "scope": "Local deterministic evidence-contract, tenant-isolation, API/BFF minimization, operator rendering, accessibility, and fresh isolated PostgreSQL verification. Synthetic organizations, memberships, canonical records, provenance, financial values, exceptions, and reconciliation evidence only. No customer data, provider system, protected staging, compliance, reliability, accuracy, or production-readiness claim is included.",
+  "requirement": {
+    "prdInvestigationContract": [
+      "side-by-side source and normalized values",
+      "provenance",
+      "applied deterministic rule",
+      "tolerance",
+      "confidence",
+      "conflict",
+      "explicit unavailable state"
+    ],
+    "priorGap": "The API and BFF allowed named deterministic evidence, record references, and normalized records through generic JSON contracts, and the operator views lacked one strict semantic projection.",
+    "implementedMeaning": "strict bounded stored evidence plus a tenant-verified versioned browser view with semantic rendering and fail-closed unavailable fallback",
+    "decision": "ADR 0058",
+    "threatModelEntry": "TM-48",
+    "securityReviewControl": "REVIEW-EVIDENCE-BOUNDARY-003"
+  },
+  "decisions": {
+    "databaseMigrationAdded": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyNormalizationOrToleranceChanged": false,
+    "confidenceClassificationChanged": false,
+    "automaticFinancialAuthorityAdded": false,
+    "sourceSystemWriteOrProviderScopeAdded": false,
+    "aiAuthorityOrEnablementChanged": false,
+    "authenticationSessionAuthorityChanged": false,
+    "legacyEvidenceBackfilledOrReinterpreted": false
+  },
+  "storedRuleEvidenceContract": {
+    "runtimeSchema": "RuleEvidenceSchema",
+    "unknownFieldsRejected": true,
+    "engineOutputValidatedBeforeReturn": true,
+    "limits": {
+      "maximumReconciliationRecordCount": 100000,
+      "maximumEvidenceRecords": 500,
+      "maximumComparisonFieldsPerRecord": 20,
+      "maximumComparisonFieldNameCharacters": 100,
+      "maximumComparisonValueCharacters": 4096,
+      "maximumReasonOrRuleCodeCharacters": 200,
+      "maximumUnsignedToleranceDigits": 19,
+      "ambiguousCandidateEvaluationLimit": 500,
+      "accountingCandidateEvaluationLimit": 500,
+      "accountingSplitEntryEvaluationLimit": 50
+    },
+    "relationalChecks": [
+      "source and normalized comparison arrays have equal cardinality",
+      "record IDs and record-version IDs match in order",
+      "untruncated evidence count equals the exact record-version count",
+      "candidate evaluated and emitted counts do not exceed eligible/evaluated counts",
+      "complete candidate search evaluates every eligible candidate",
+      "incomplete candidate search emits no partial shortlist",
+      "each accounting overflow lower bound exceeds its selected 500-entry or 50-entry mode"
+    ]
+  },
+  "browserEvidenceContract": {
+    "schemaVersion": "deterministic-evidence-view-v1",
+    "availableFields": [
+      "ruleId",
+      "ruleVersion",
+      "ruleSetVersion",
+      "sourceRecordCount",
+      "evidenceTruncated",
+      "paired source and normalized comparisons",
+      "optional integer toleranceMinor",
+      "optional bounded candidate search",
+      "optional bounded accounting candidate search",
+      "result",
+      "reasonCode",
+      "evaluatedAt"
+    ],
+    "unavailable": {
+      "status": "unavailable",
+      "reasonCode": "EVIDENCE_UNSUPPORTED_OR_MALFORMED",
+      "rawFallback": false,
+      "partialFallback": false
+    },
+    "genericEvidenceJsonRendered": false,
+    "apiProjectionValidated": true,
+    "bffProjectionRevalidatedAndReconstructed": true
+  },
+  "canonicalRecordAndLineageContract": {
+    "supportedKinds": [
+      "order",
+      "payment",
+      "refund",
+      "processing_fee",
+      "accounting_entry"
+    ],
+    "normalizedProjectionClosedByKind": true,
+    "fieldProvenanceAllOrNothingPerRecord": true,
+    "lineageValidates": [
+      "organization",
+      "provider",
+      "record kind",
+      "source version",
+      "content SHA-256",
+      "normalized metadata",
+      "field name",
+      "bounded source location"
+    ],
+    "explicitlyOmitted": [
+      "organizationId",
+      "sourceEventId",
+      "raw object provenance",
+      "raw object key",
+      "sourceValueReference",
+      "credential references",
+      "tokens",
+      "unknown fields"
+    ]
+  },
+  "recordReferenceContract": {
+    "maximumReferences": 500,
+    "uuidRequired": true,
+    "uniqueSetRequired": true,
+    "exactEqualityWithTenantResolvedSourceRecordsRequired": true,
+    "malformedDuplicateOversizedOrUnresolvedResult": "empty references with unavailable status",
+    "foreignTenantStoredReferenceVisibleToBrowser": false,
+    "recordIdentifiersGrantAuthority": false
+  },
+  "tenantSecurityContract": {
+    "tenantContextResolvedFromAuthenticatedMembership": true,
+    "canonicalQueryHasExplicitOrganizationPredicate": true,
+    "provenanceQueryHasExplicitOrganizationPredicate": true,
+    "rowLevelSecurityForced": true,
+    "crossTenantResourceUsesUniformConcealment": true,
+    "craftedPrimaryTenantExceptionWithForeignCanonicalUuid": {
+      "recordReferences": [],
+      "recordReferencesStatus": "unavailable",
+      "sourceRecords": []
+    }
+  },
+  "operatorExperience": {
+    "investigation": [
+      "rule, rule-set, result, confidence, reason, tolerance, time, and record-count summary",
+      "candidate and accounting search summary",
+      "semantic side-by-side source and normalized comparison table",
+      "safe kind-specific canonical values",
+      "field-lineage table",
+      "explicit evidence/reference/lineage unavailable warnings"
+    ],
+    "runArtifacts": [
+      "structured rule/result/tolerance/source-count/time summary",
+      "semantic side-by-side comparisons",
+      "fixed unavailable state"
+    ],
+    "unsafeHtmlOrDynamicCodeAdded": false
+  },
+  "verification": {
+    "focusedReconciliation": {
+      "command": "pnpm test:reconciliation",
+      "status": "passed",
+      "testFilesPassed": 2,
+      "testsPassed": 64,
+      "testsFailed": 0
+    },
+    "completeDeterministicSuite": {
+      "command": "CI=true pnpm test",
+      "status": "passed",
+      "testFilesPassed": 85,
+      "testsPassed": 560,
+      "testsFailed": 0,
+      "durationSeconds": 3.08
+    },
+    "completeChromiumSuite": {
+      "command": "CI=true pnpm test:e2e",
+      "status": "passed",
+      "testsPassed": 45,
+      "testsFailed": 0,
+      "durationSeconds": 17.1,
+      "covered": [
+        "typed exception comparisons and field lineage",
+        "fixed malformed-evidence fallback",
+        "internal reference sentinel omission",
+        "typed run-artifact evidence",
+        "complete workflow regression",
+        "mobile containment"
+      ]
+    },
+    "accessibilityOnlyChromiumSuite": {
+      "command": "CI=true pnpm test:accessibility",
+      "status": "passed",
+      "testsPassed": 11,
+      "testsFailed": 0,
+      "automaticallyDetectedViolations": 0,
+      "durationSeconds": 6.6
+    },
+    "freshPostgresqlRepositoryIntegration": {
+      "distribution": "PostgreSQL 17.10",
+      "officialSourceArchive": "https://ftp.postgresql.org/pub/source/v17.10/postgresql-17.10.tar.bz2",
+      "officialSourceArchiveSha256": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+      "officialChecksumMatched": true,
+      "sourceBuiltLocally": true,
+      "freshCluster": true,
+      "encoding": "UTF8",
+      "locale": "C",
+      "dataPageChecksumsEnabled": true,
+      "networkBinding": "127.0.0.1 only",
+      "stoppedAfterVerification": true,
+      "repositoryEnvironmentFileWritten": false,
+      "migrationsApplied": 55,
+      "testFilesPassed": 1,
+      "testsPassed": 5,
+      "testsFailed": 0,
+      "rolesExercised": [
+        "administrator",
+        "reconai_migrator",
+        "reconai_app",
+        "reconai_worker",
+        "reconai_maintenance"
+      ],
+      "newAssertions": [
+        "valid deterministic evidence is projected into paired safe comparisons",
+        "canonical normalized records omit API-only tenant and source-event fields",
+        "field lineage validates without exposing sourceValueReference",
+        "foreign tenant cannot resolve the primary exception",
+        "a primary-tenant exception storing a foreign canonical UUID emits no reference or source record"
+      ]
+    },
+    "finalRepositoryGate": {
+      "command": "CI=true pnpm verify",
+      "status": "passed",
+      "includes": [
+        "format:check",
+        "lint",
+        "typecheck",
+        "test",
+        "migrations:check",
+        "schemas:check",
+        "config:check",
+        "edge:check",
+        "oidc:check",
+        "container:check",
+        "alerts:check",
+        "source:check",
+        "evidence:check",
+        "dependency:policy",
+        "license:check",
+        "build"
+      ]
+    }
+  },
+  "findingAndCorrection": {
+    "initialCompleteSuiteStatus": "failed",
+    "testsPassedBeforeCorrection": 557,
+    "testsFailedBeforeCorrection": 2,
+    "finding": "The first strict accountingCandidateSearch schema recognized only the 500-entry amount-window overflow, while the existing engine also emits a distinct 50-entry strong-reference split overflow.",
+    "correction": "The evaluationLimit is now a strict discriminator: a 500 limit requires a lower bound of at least 501, while a 50 limit requires at least 51.",
+    "newRegressionTest": "accepts both valid accounting overflow modes and rejects a lower bound paired with the wrong limit",
+    "preliminaryFinalGateCorrection": "The first final-gate attempt stopped at lint on an unnecessarily explicit boolean-literal comparison in the candidate-overflow UI guard. The expression was changed to direct boolean evaluation without changing behavior, then the complete gate was restarted.",
+    "controlWeakened": false
+  },
+  "supplyChainAndSchemaIdentity": {
+    "migrationCount": 55,
+    "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+    "productionLockSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "productionPackageLicensesValidated": 224
+  },
+  "limitations": [
+    "This is local synthetic control evidence, not a provider acceptance, accuracy, capacity, SLO, compliance, or production-readiness result.",
+    "Representative populated historical evidence has not been audited or migrated; unsupported rows intentionally display unavailable.",
+    "Protected-runtime response timing, fault injection, multi-replica behavior, and representative query/load behavior remain unverified.",
+    "No authorized Shopify or Stripe sandbox credential, request, webhook, or source payload was used.",
+    "No owner-approved protected staging target, deployment credential, alert destination, SLO, retention policy, or legal disposition was available.",
+    "SEC-L-003 remains open; this increment did not silently migrate or replace authentication/session authority.",
+    "No file was staged, committed, pushed, published, or deployed, and no runtime .env file was created."
+  ]
+}

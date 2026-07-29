@@ -1,0 +1,333 @@
+{
+  "evidenceType": "provider-request-circuit-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T05:06:22.265Z",
+  "scope": "Local source, unit, configuration, worker, loopback OTLP/HTTP protobuf, and authenticated two-client Redis evidence for a required distributed circuit around read-only Shopify and Stripe recovery page requests. No customer data, database migration, PostgreSQL write, provider credential/request, source-system write, protected collector, staging, or production environment was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/provider-active-sync-age-observability-verification-2026-07-29.json",
+      "sha256": "518d6a6fb52ce9edadd1adfc90889e3ca3f43caf93beed085561af386f2c8079",
+      "purpose": "The immediately preceding 48-migration, 468-test provider active-sync observability baseline."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "redisServer": "8.8.0",
+    "redisServerReportedBuild": "aaf183f714629510",
+    "redisServerBinarySha256": "c17a1537c7ee1215e8868a9f5ad1daffc14d9054baf44d88ab109e927e89fc14",
+    "redisServerBinaryProvenance": "Existing local redis-memory-server development cache under <local-home>/Documents/OpenFlow; exact local SHA-256 recorded, but no official-download checksum or provider provenance claim is made."
+  },
+  "decision": {
+    "governingAdr": "ADR 0045",
+    "securityReviewControl": "PROVIDER-CIRCUIT-001",
+    "threatModelEntry": "TM-35",
+    "databaseMigrationRequired": false,
+    "configurationChangeRequired": true,
+    "providerSyncServiceRequiresCircuit": true,
+    "circuitDisableOrNoOpPathAdded": false,
+    "newTenantScopedOperationalStoreStateAdded": true,
+    "rawTenantIdentifierStoredInCircuitKey": false,
+    "publicApiResponseChanged": false,
+    "providerReadRequestAdmissionChanged": true,
+    "providerWriteScopeOrSourceWriteAdded": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyAuditReviewOrAiBehaviorChanged": false,
+    "telemetryAuthoritativeForProviderSyncOrFinancialBehavior": false
+  },
+  "circuitAuthority": {
+    "providerRequestWrapped": "Each Shopify or Stripe provider recovery fetchPage call after exact tenant-bound outbox and provider_sync_runs authority validation.",
+    "scopeDimensions": [
+      "deployment environment",
+      "fixed provider",
+      "organization",
+      "connection"
+    ],
+    "globalProviderCircuit": false,
+    "externalAccountFamilyCircuit": false,
+    "workCreationAuthority": false,
+    "windowOrCursorMutationAuthority": false,
+    "syncSuccessAuthority": false,
+    "financialOrReviewAuthority": false,
+    "sourceSystemWriteAuthority": false,
+    "redisFailureBeforeProviderRequest": "fail closed with retryable provider-sync failure",
+    "providerRequestCanBypassCircuit": false
+  },
+  "redisKeyContract": {
+    "format": "reconai:<environment>:provider-circuit:v1:<provider>:<sha256-digest>",
+    "digestInput": "provider-request-circuit-v1 NUL organization_id NUL connection_id",
+    "digestAlgorithm": "SHA-256",
+    "digestIsPseudonymousNotSecret": true,
+    "rawOrganizationConnectionAccountRunCursorCredentialOrPayloadPresent": false,
+    "environmentValidation": "lowercase alphanumeric/hyphen, 2-32 characters",
+    "fixedProviders": [
+      "shopify",
+      "stripe"
+    ],
+    "minimumInactiveStateTtlMs": 86400000
+  },
+  "stateAndConcurrencyContract": {
+    "atomicMechanism": "Redis Lua scripts",
+    "stateFields": [
+      "consecutive failure count",
+      "opened-at milliseconds",
+      "open interval milliseconds",
+      "latest random permit token",
+      "half-open probe expiry milliseconds"
+    ],
+    "defaultFailureThreshold": 3,
+    "failureThresholdBoundsInclusive": [
+      1,
+      20
+    ],
+    "defaultOpenMs": 60000,
+    "openMsBoundsInclusive": [
+      1000,
+      900000
+    ],
+    "defaultProbeLeaseMs": 15000,
+    "probeLeaseMsBoundsInclusive": [
+      1000,
+      60000
+    ],
+    "probeLeaseMustNotExceedOpenInterval": true,
+    "probeLeaseMustCoverCircuitCommandTimeout": true,
+    "permitEntropyBits": 192,
+    "permitEncoding": "32-character base64url",
+    "maximumHalfOpenProbesPerCircuit": 1,
+    "lateMutationWithoutCurrentPermitApplied": false,
+    "successfulValidatedPageDeletesState": true,
+    "successfulResponsiveTerminalErrorReleasesProbe": true
+  },
+  "failureClassificationContract": {
+    "countedTransientKinds": [
+      "rate_limited",
+      "timeout",
+      "provider_unavailable"
+    ],
+    "forceOpenKinds": [
+      "rate_limited"
+    ],
+    "responsiveNonCircuitKinds": [
+      "authentication",
+      "authorization",
+      "invalid_payload",
+      "terminal",
+      "local validation failure"
+    ],
+    "maximumProviderRetryAfterMs": 900000,
+    "invalidNegativeNonIntegerNonFiniteRetryAfterIgnored": true,
+    "transientProbeFailureReopensFromCurrentTime": true,
+    "openOrProbeBusyDenialContactsProvider": false,
+    "storeCommandFailureContactsProvider": false
+  },
+  "workerRetryContract": {
+    "strategy": "maximum of deterministic bounded exponential delay and validated retryAfterMs",
+    "maximumDelayMs": 900000,
+    "connectorCircuitOpenPreservesRetryAfterMs": true,
+    "arbitraryObjectPropertyAcceptedWithoutRuntimeValidation": false,
+    "nonPositiveUnsafeIntegerStringNaNOrInfiniteValueIgnored": true,
+    "circuitDenialConsumesBoundedDurableAttempt": true,
+    "existingDurableAttemptAndTerminalBoundsRetained": true
+  },
+  "redisClientContract": {
+    "connection": "one dedicated circuit Redis client per worker process",
+    "offlineQueueEnabled": false,
+    "maximumRetriesPerRequest": 1,
+    "readyCheckEnabled": true,
+    "connectTimeoutBoundsMsInclusive": [
+      100,
+      5000
+    ],
+    "commandTimeoutBoundsMsInclusive": [
+      50,
+      5000
+    ],
+    "sharesBullMqProcessingConnection": false,
+    "participatesInApiReadiness": false,
+    "failureMode": "deny provider admission and retry durable job"
+  },
+  "metricContract": {
+    "providerSyncRuns": {
+      "name": "reconai.provider.sync.runs",
+      "kind": "counter",
+      "attributes": [
+        "reconai.provider",
+        "reconai.provider.sync.trigger",
+        "reconai.outcome"
+      ],
+      "triggers": [
+        "scheduled",
+        "user_requested",
+        "invalid"
+      ],
+      "outcomes": [
+        "succeeded",
+        "partial",
+        "already_processed",
+        "failed_retryable",
+        "failed_terminal"
+      ]
+    },
+    "providerSyncDuration": {
+      "name": "reconai.provider.sync.duration",
+      "kind": "histogram",
+      "unit": "ms",
+      "sameAttributesAsRunCounter": true
+    },
+    "circuitDecisions": {
+      "name": "reconai.provider.circuit.decisions",
+      "kind": "counter",
+      "attributes": [
+        "reconai.provider",
+        "reconai.outcome"
+      ],
+      "outcomes": [
+        "closed",
+        "half_open",
+        "open",
+        "probe_busy",
+        "failed",
+        "invalid"
+      ]
+    },
+    "circuitTransitions": {
+      "name": "reconai.provider.circuit.transitions",
+      "kind": "counter",
+      "attributes": [
+        "reconai.provider",
+        "reconai.outcome"
+      ],
+      "outcomes": [
+        "failure_counted",
+        "opened",
+        "reopened",
+        "closed",
+        "stale",
+        "failed",
+        "invalid"
+      ]
+    },
+    "providerValues": [
+      "shopify",
+      "stripe",
+      "invalid"
+    ],
+    "organizationConnectionRunAccountRequesterCursorCredentialErrorRetryAfterPermitKeyPayloadTimestampMoneyOrCurrencyAttributeAdded": false,
+    "dynamicValuesCollapseToInvalidOrAreSuppressed": true,
+    "metricsAreAtMostOnceAndNonAuthoritative": true
+  },
+  "focusedVerification": [
+    {
+      "command": "affected config, ingestion, observability, and worker typechecks plus focused ESLint",
+      "packagesPassed": 4,
+      "lintStatus": "passed"
+    },
+    {
+      "command": "pnpm exec vitest run packages/config/src/config.test.ts packages/ingestion/src/provider-sync.test.ts apps/worker/src/provider-circuit-breaker.test.ts apps/worker/src/worker.test.ts packages/observability/src/observability.test.ts",
+      "testFilesPassed": 5,
+      "testsPassed": 49,
+      "testsFailed": 0,
+      "circuitRequiredBeforeProviderRequestCovered": true,
+      "openCircuitSuppressesProviderRequestCovered": true,
+      "storeOutageSuppressesProviderRequestCovered": true,
+      "transientOnlyClassificationCovered": true,
+      "rateLimitForceOpenInputCovered": true,
+      "terminalErrorProbeReleaseCovered": true,
+      "retryAfterBoundsCovered": true,
+      "strictConfigurationCovered": true,
+      "pseudonymousKeyShapeCovered": true,
+      "tokenBoundMutationCovered": true,
+      "fixedTelemetryAndDynamicSuppressionCovered": true
+    }
+  ],
+  "liveRedisVerification": {
+    "command": "REDIS_URL=<authenticated ephemeral loopback URL> pnpm exec vitest run apps/worker/src/provider-circuit-breaker.integration.test.ts",
+    "testFilesPassed": 1,
+    "testsPassed": 2,
+    "testsFailed": 0,
+    "addressScope": "loopback only",
+    "authenticationEnabled": true,
+    "persistenceEnabled": false,
+    "protectedMode": true,
+    "independentClients": 2,
+    "threeFailuresOpenCircuit": true,
+    "crossClientOpenDenial": true,
+    "differentTenantConnectionRemainsIndependent": true,
+    "oneHalfOpenProbe": true,
+    "concurrentProbeBusyDenial": true,
+    "transientProbeReopens": true,
+    "successfulProbeCloses": true,
+    "rateLimitImmediatelyOpensFor120Seconds": true,
+    "stateHasPositiveTtl": true,
+    "keysContainRawAuthorityIdentifiers": false,
+    "testKeysCleaned": true,
+    "managedRedisOrProviderTrafficClaimed": false
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 73,
+    "testsPassed": 477,
+    "testsFailed": 0,
+    "migrationsValidated": 48,
+    "migrationChainSha256": "3644ff0abda7ca82a7b758283834581ba620b70a5c8c75291f3fa0a65481e536",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "productionDependencyAuditAtHighSeverity": {
+      "command": "pnpm audit --prod --audit-level high",
+      "status": "no known vulnerabilities found"
+    }
+  },
+  "sourceSha256": {
+    ".env.example": "b25062dc32dcaa64db97aa10b7c29035e2409caa7f16fb082f6c3a9460cd8bfb",
+    "packages/config/src/index.ts": "09df4785b642d189e1d34f134116c5e0f18a882efaf8428fb37dd32caa5b2c78",
+    "packages/config/src/config.test.ts": "3039b6754429a7890728c06c7b4938bf680079accb23e85d8ef8a1b6d9f9ffae",
+    "packages/ingestion/src/provider-sync.ts": "f0fa318b9f4d4cab15d946737031953859bbefcc28535f04840a518d44edc2f8",
+    "packages/ingestion/src/provider-sync.test.ts": "237851281f39c6e8384c00f32d35cc9156b89e26eec5812ca16954c1d0538b83",
+    "packages/observability/src/telemetry.ts": "f7d0eb1e58a9222688f7a47128f1703711c9b1f17a870a34171b35f712c983ec",
+    "packages/observability/src/index.ts": "70ca4465159ed918f833da6f88cd7ead270fb29e475036c4501098550cacbd5a",
+    "packages/observability/src/observability.test.ts": "250e04dca26b3609b46be70e310feec8da07b3a846e473019e91d13983de1acf",
+    "apps/worker/src/provider-circuit-breaker.ts": "f85a7e2451280c7205036781ee5e95476dd1b664c2873dac0e88e8e414f036af",
+    "apps/worker/src/provider-circuit-breaker.test.ts": "0bd4d1d4ec67e4e4842e3813808e2e73c83f0cb851cfbb1d22f8adcbc5392eee",
+    "apps/worker/src/provider-circuit-breaker.integration.test.ts": "8efdc6a4bc196f777b203d55182e16287315e4cf8b35cc66b492c574e709904c",
+    "apps/worker/src/main.ts": "e0649977f62f18f0a469240394e2522209a348f8f59092ab435b97a43d185cc4",
+    "apps/worker/src/worker.ts": "1c874e824ac2e312cc037483e10154dd417e565970e952b9a141d0c2ba243efb",
+    "apps/worker/src/worker.test.ts": "3008f34ff5104175db4b80c444e1a5c8a9aad22343b07d5077989b28d69b83ba",
+    "docs/adr/0045-distributed-provider-request-circuit.md": "16d4438e90dfbdebfc32d1c660f5f860c68061a30031b60a6a868d9ba174c353",
+    "docs/adr/README.md": "0e4126fa715fa1d704118904f02b7f1a40ffb6f23fb59b0bcab8db169b5ad440",
+    "docs/architecture.md": "67e989691eb9e029bc47bdacc680c7fc8a66fb6c91a558f9a14ef3fa56140f38",
+    "docs/connectors.md": "cf407da4a908ab79961506b1fe8444ea94bf5e87484d3e08c988d6ed6408b9b7",
+    "docs/environment.md": "5ca1730a49ed8a31c13c543a5bd7b62332e76a5743425f70a7d4e2d4e3e0d07e",
+    "docs/operations-runbook.md": "4c444cda99672b838e2a0fc0b79cf7372057cf483e4d4a0e44e97dae500916f1",
+    "docs/observability.md": "52c75f99f0506760cdd6276af9ce1b33d1d691e88d136b4327629b6caf854118",
+    "docs/known-limitations.md": "e7b4f45edb609f46da6450cb1d4d90c2ea7ce269b4e47907812cf7580f0aa58b",
+    "docs/security-review.md": "c1e186860afdbacff507beb26021551492e9fc9f8a5ca3cfd83fa79349423693",
+    "docs/threat-model.md": "6e872efb27127ec678544ebcb0ab2568cfa0df5439f5124e9abbd82ccce71a38",
+    "docs/goals/goal-1-vertical-slice.md": "e55637972156c43c8f4fe8058b3982063459c725aeb924ead3bfb2c433bb17d0",
+    "GOALS.md": "f9bcd19636c18a03151b6e05b73fc1be61cb8a7c45f2c1af3c3a45548e30502d",
+    "CHANGELOG.md": "250303ffe6e6dc7adbcc8c5b4f3647cf83d65ee106c2a526178e0b3e5a8178b8"
+  },
+  "repositoryState": {
+    "stagedFileCount": 0,
+    "environmentFilePresent": false,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "The live circuit test used one authenticated loopback Redis 8.8.0 process from an existing local development cache; it does not prove official binary provenance, managed Redis authentication/TLS/ACL behavior, clustering, failover, partitions, latency, or multi-host worker coordination.",
+    "No provider credential, Shopify/Stripe sandbox request, real provider outage, provider rate-limit contract, ambiguous provider-success/local-commit case, or source-system write was exercised.",
+    "Circuit thresholds and retry timing have not been selected from protected-staging capacity evidence; dashboards, silence handling, external alert delivery, and operator response remain unverified.",
+    "The circuit is scoped to one tenant connection rather than a provider-global or external-account-family capacity budget. Separate connections for the same external account do not share state.",
+    "Prior worker images do not participate in the circuit. Provider-sync work must be drained or old workers removed before the control can be relied on during rollout; mixed-image behavior is not live-verified.",
+    "Circuit decisions and provider-sync outcomes are at-most-once operational telemetry. They do not locate a tenant, prove provider availability, per-object freshness/completeness, recovery success, reconciliation correctness, or financial authority.",
+    "No database migration was required or added. The pre-existing 0046/0047 live PostgreSQL evidence gap remains unchanged."
+  ]
+}

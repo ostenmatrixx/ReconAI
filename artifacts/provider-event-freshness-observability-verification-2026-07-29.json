@@ -1,0 +1,226 @@
+{
+  "evidenceType": "provider-event-freshness-observability-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T03:19:16.268Z",
+  "scope": "Local source, provider-ingestion unit, worker composition, and loopback OTLP/HTTP protobuf evidence for bounded, at-most-once provider receipt source-to-normalization lag samples. No production, staging, provider sandbox, external collector, customer data, cross-tenant scan, or source-system write was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/provider-ingestion-observability-verification-2026-07-29.json",
+      "sha256": "14d42d595c1bf703da850394c3123ec948f3c691817c057ea87f16900d153050",
+      "purpose": "The immediately preceding 44-migration, 454-test provider-ingress and normalization observability baseline."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "opentelemetryApi": "1.9.1",
+    "opentelemetryMetricsSdk": "2.10.0",
+    "opentelemetryOtlpProtoExporter": "0.221.0"
+  },
+  "decision": {
+    "governingAdr": "ADR 0039",
+    "securityReviewControl": "OBSERVABILITY-PROVIDER-EVENT-FRESHNESS-001",
+    "databaseMigrationRequired": false,
+    "configurationChangeRequired": false,
+    "crossTenantRepositoryOrOperationalRoleAdded": false,
+    "providerScopeChanged": false,
+    "durableEnvelopeChanged": false,
+    "normalizationOrReplayStatusBehaviorChanged": false,
+    "moneyRulePermissionAuditOrAiBehaviorChanged": false,
+    "telemetryAuthoritativeForProviderFinancialOrRetryBehavior": false,
+    "metricTemporality": "worker delta through the existing ADR 0037 pipeline"
+  },
+  "processingMetadataContract": {
+    "method": "ProviderWebhookService.processWebhookWithMetadata",
+    "returnedFields": [
+      "status",
+      "sourceTimestamp"
+    ],
+    "statusValues": [
+      "processed",
+      "already_processed"
+    ],
+    "sourceTimestampAuthority": "The normalized timestamp on the immutable tenant-bound provider receipt after exact envelope/receipt authority.",
+    "statusOnlyCompatibilityMethodPreserved": true,
+    "rawPayloadOrAdditionalReceiptMetadataReturned": false,
+    "freshnessRecordedForProcessed": true,
+    "freshnessRecordedForAlreadyProcessed": false,
+    "raceOrReplayDoubleCountsFreshness": false
+  },
+  "freshnessMetricContract": {
+    "maximumLagSeconds": 2592000,
+    "maximumLagDays": 30,
+    "maximumIsInclusive": true,
+    "maximumReason": "Matches the bounded provider-recovery window and prevents authenticated provider timestamps from creating unbounded histogram values.",
+    "sampleCounter": {
+      "name": "reconai.provider.event.freshness.samples",
+      "kind": "counter",
+      "unit": "{sample}",
+      "attributes": [
+        "reconai.provider",
+        "reconai.provider.event.source",
+        "reconai.outcome"
+      ],
+      "outcomes": [
+        "observed",
+        "future_timestamp",
+        "outside_window",
+        "invalid_timestamp"
+      ],
+      "maximumDefensiveSeries": 36
+    },
+    "sourceLagHistogram": {
+      "name": "reconai.provider.event.source_lag",
+      "kind": "histogram",
+      "unit": "s",
+      "attributes": [
+        "reconai.provider",
+        "reconai.provider.event.source"
+      ],
+      "acceptedOutcome": "observed",
+      "minimumSeconds": 0,
+      "maximumSecondsInclusive": 2592000,
+      "maximumDefensiveSeries": 9
+    },
+    "providers": [
+      "shopify",
+      "stripe",
+      "invalid"
+    ],
+    "sources": [
+      "webhook",
+      "sync",
+      "invalid"
+    ],
+    "classification": {
+      "observed": "Both timestamps are valid and source lag is between zero and 30 days inclusive; the numeric lag enters the histogram.",
+      "future_timestamp": "Source timestamp is later than observation time; no histogram value is recorded.",
+      "outside_window": "Source lag is greater than 30 days; no histogram value is recorded.",
+      "invalid_timestamp": "Source or explicit observation timestamp fails the bounded ISO parser; no histogram value is recorded."
+    },
+    "timestampParser": {
+      "maximumStringLength": 64,
+      "requiresDateTimeSeconds": true,
+      "fractionalSecondsOptional": true,
+      "requiresZuluOrExplicitOffset": true,
+      "finiteParsedInstantRequired": true
+    },
+    "timestampStringExported": false,
+    "overWindowValueClampedIntoHistogram": false,
+    "futureValueClampedIntoHistogram": false
+  },
+  "authorityAndDeliverySemantics": {
+    "commonOutboxAuthorityPrecedesReceiptLoad": true,
+    "receiptEnvelopeAuthorityPrecedesSourceTimestampReturn": true,
+    "normalizationAndDatabaseCompletionPrecedeSample": true,
+    "sampleDelivery": "at-most-once and lossy",
+    "databaseCompletionFollowedByProcessOrExporterLossCanOmitSample": true,
+    "telemetryDeliveryStatePersisted": false,
+    "telemetryFailureCanRetryOrReplayFinancialWork": false,
+    "globalConnectionOrEventTableScan": false,
+    "silentConnectorAgeMeasured": false,
+    "currentProviderWatermarkOrCompletenessProven": false
+  },
+  "cardinalityAndDataMinimization": {
+    "metricSeriesLimitPerInstrument": 256,
+    "eventTypeExported": false,
+    "organizationUserConnectionShopAccountExported": false,
+    "receiptObjectJobCorrelationRequestedByExported": false,
+    "credentialSecretProviderErrorExported": false,
+    "amountCurrencyPaymentPayloadOrCustomerDataExported": false,
+    "dynamicSecretLikeProviderSourceAndTimestampObservedInCapturedOtlp": false,
+    "sourceTimestampUsedOnlyAsNumericInput": true
+  },
+  "focusedVerification": [
+    {
+      "command": "pnpm --filter @workspace/ingestion typecheck; pnpm --filter @workspace/observability typecheck; pnpm --filter @workspace/worker typecheck; focused ESLint",
+      "packagesPassed": 3,
+      "lintStatus": "passed"
+    },
+    {
+      "command": "pnpm exec vitest run packages/ingestion/src/provider-webhooks.test.ts packages/observability/src/observability.test.ts --maxWorkers=1",
+      "testFilesPassed": 2,
+      "testsPassed": 8,
+      "testsFailed": 0,
+      "processingMetadataAndReplayCovered": true,
+      "inclusiveThirtyDayBoundaryCovered": true,
+      "allFourTimestampOutcomesCovered": true,
+      "dynamicValueSuppressionCovered": true
+    }
+  ],
+  "otlpVerification": {
+    "transport": "HTTP protobuf",
+    "captureAddress": "ephemeral loopback HTTP server",
+    "standardMetricsPath": "/v1/metrics",
+    "contentType": "application/x-protobuf",
+    "freshnessSampleInstrumentPresent": true,
+    "sourceLagInstrumentPresent": true,
+    "allFourFixedOutcomesPresent": true,
+    "secretLikeDynamicValuesAbsent": true,
+    "externalCollectorAccessed": false
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 70,
+    "testsPassed": 454,
+    "testsFailed": 0,
+    "migrationsValidated": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "productionDependencyAuditAtHighSeverity": {
+      "command": "pnpm audit --prod --audit-level high",
+      "status": "no known vulnerabilities found"
+    }
+  },
+  "sourceSha256": {
+    "packages/ingestion/src/provider-webhooks.ts": "537b1096f4794e8d7ef4536d47f2a3b0a8a65136b19f30dec0e1da941d6434fe",
+    "packages/ingestion/src/provider-webhooks.test.ts": "62142ab56133a2784d2cd71e340587ba9752c879df0818b5bf5d57c6116031e3",
+    "apps/worker/src/main.ts": "a510a797055576f40de600a03d9023cdd9b523d86968c62feb588bb2922f208c",
+    "packages/observability/src/telemetry.ts": "4baa6bd34f082d701a97dd8e8b0466b17e4b029e713f5df4494067656eeb7e06",
+    "packages/observability/src/index.ts": "5624029bbd044236a0cce4aa5bdd90ce18704845605fa52c1e40a0b68a337922",
+    "packages/observability/src/observability.test.ts": "610a5a2360aa61ecbb96b9cbd9b163c3aa2b3978b3c56a8fdd2393bf88bd9121",
+    "docs/observability.md": "0bb21ef9d04e2cc0338f7ac01ff070f397e1ff21bbc38b25245eb5ce7e8c7274",
+    "docs/operations-runbook.md": "ced7bdeb7d894b6a56e49f7ce0d2a7543fc061ceb5e7ec8f7f713fa00f7a7f86",
+    "docs/known-limitations.md": "92aba534ae94e79b31dcf7d2050e6de34e138e04263e49e43d2dc0e577616808",
+    "docs/goals/goal-1-audit-2026-07-29.md": "161f86c1b6757345433143646ebf7fb5f567b7525405f1c235d7f1aa14a015b3",
+    "docs/adr/README.md": "4792ca160e4cf7a12c0b2bbb24ff259474ef781ecae2d158eacbdf7c6620fbd1",
+    "docs/adr/0039-bounded-provider-event-freshness-samples.md": "97949a9a4f3f5b70039435779002d7468f5dff2dc37bff878e5035351c47f782"
+  },
+  "sealedPredecessorVerification": {
+    "docs/adr/0038-bounded-provider-ingestion-observability.md": "0e5eae410c2bae4225e018fe59db68e9faf6f041a1ebcf5485ddc0f839b30137",
+    "artifacts/provider-ingestion-observability-verification-2026-07-29.json": "14d42d595c1bf703da850394c3123ec948f3c691817c057ea87f16900d153050"
+  },
+  "safety": {
+    "loopbackOnly": true,
+    "syntheticDataOnly": true,
+    "productionDataUsed": false,
+    "productionOrStagingAccessed": false,
+    "providerSandboxAccessed": false,
+    "crossTenantReadAdded": false,
+    "sourceSystemWriteScopeChanged": false,
+    "financialOrApprovalAuthorityChanged": false,
+    "environmentFileCreated": false,
+    "repositoryFilesStaged": 0,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "A freshness sample proves only that one immutable event completed normalization. It does not prove the connection is current, all provider events were delivered, the current provider watermark was reached, or a silent low-activity connector is healthy.",
+    "The receipt source timestamp is normalized evidence. Supported adapters derive it from authenticated provider content where available, but an adapter can fall back to receipt time when no usable provider timestamp exists.",
+    "Samples are intentionally at-most-once and lossy. A process crash or exporter failure after database completion can omit a sample, and replays do not emit another one.",
+    "Lag greater than 30 days, future timestamps, and invalid timestamps are classified but excluded from the histogram. Their magnitude is not measured.",
+    "The API/worker composition and OTLP receiver were exercised locally with synthetic data. No authorized Shopify or Stripe sandbox event, provider clock skew, provider outage, sustained backlog, or real gap-repair distribution was exercised.",
+    "No protected collector/backend, TLS/authentication, egress allowlist, retention/access policy, dashboard, threshold, silence rule, alert delivery, acknowledgement, on-call response, sustained load, staging, or production behavior was exercised.",
+    "Silent-connector/current-watermark freshness, review age, AI, representative business/SLO signals, and alert thresholds remain separate work."
+  ],
+  "claim": "ReconAI now has locally verified, at-most-once provider receipt source-to-normalization lag telemetry with an inclusive 30-day numeric bound, fixed timestamp classifications, replay suppression, no cross-tenant scan, and no customer dimensions. This is local processed-event evidence, not silent-connector, provider-completeness, staging, production, SLO, dashboard, or exercised alert evidence."
+}

@@ -1,0 +1,320 @@
+{
+  "artifactVersion": 1,
+  "recordedAt": "2026-07-29T16:08:38.555Z",
+  "status": "local_pass_real_two_production_api_replicas_shared_redis_loss_recovery_and_coordinated_rotation",
+  "scope": "Two compiled production API replicas sharing authenticated persistent Redis for distributed request admission, abrupt loss/recovery, and coordinated HMAC-key rotation",
+  "sourceState": "uncommitted working tree; no repository commit exists",
+  "runtime": {
+    "node": "v24.15.0",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "redis": {
+      "version": "8.2.8",
+      "sourceArchive": "https://download.redis.io/releases/redis-8.2.8.tar.gz",
+      "sourceArchiveSha256": "01354ee4449e758e6e45d056fe5802abd9ccde4d669b79c9d5e9f6d730a80759",
+      "buildCommand": "make -j2 BUILD_TLS=no MALLOC=libc redis-server",
+      "serverSha256": "e6bd1ea3259b2c3312da1cbe19b01d734545b512bcc06b02cc7eb2f4ab646056",
+      "authenticated": true,
+      "persistence": "appendonly yes; appendfsync always; explicit SAVE before SIGKILL"
+    },
+    "api": {
+      "replicas": 2,
+      "entrypoint": "node apps/api/dist/main.js",
+      "nodeEnvironment": "production",
+      "nodeOptions": "--throw-deprecation",
+      "dependencyAwareBuild": "pnpm --filter '@workspace/api...' build",
+      "processLocalLimiterRejectedBeforeListen": true,
+      "unavailableRedisRejectedBeforeListen": true
+    },
+    "proxy": {
+      "implementation": "bounded verifier-owned HTTP reverse proxy",
+      "overwritesForwardingHeaders": true,
+      "removesForwarded": true,
+      "trustedApiPeer": "IPv6 loopback CIDR"
+    }
+  },
+  "contract": {
+    "maximumRequests": 120,
+    "windowMilliseconds": 60000,
+    "sharedEnvironmentNamespace": true,
+    "clientAddressIndex": "HMAC-SHA-256 rendered as 64 lowercase hexadecimal characters",
+    "limiterStoreErrorPolicy": "fail closed before authentication or route execution",
+    "livenessPolicy": "independent from the request limiter",
+    "rotationPolicy": "drain every old replica, then start every replica with one new shared key"
+  },
+  "observations": {
+    "initial": {
+      "liveness": [
+        {
+          "httpStatus": 200,
+          "bodyClass": "ok"
+        },
+        {
+          "httpStatus": 200,
+          "bodyClass": "ok"
+        }
+      ],
+      "admitted": 120,
+      "exceeded": 1,
+      "proxyUpstreamCounts": [
+        61,
+        60
+      ],
+      "limiterKeyCount": 1,
+      "limiterKeyShape": "environment namespace plus 64 lowercase hexadecimal characters",
+      "minimumTtlMilliseconds": 59977
+    },
+    "redisLoss": {
+      "signal": "SIGKILL",
+      "requestAdmission": [
+        {
+          "httpStatus": 500,
+          "bodyClass": "internal_error"
+        },
+        {
+          "httpStatus": 500,
+          "bodyClass": "internal_error"
+        }
+      ],
+      "liveness": [
+        {
+          "httpStatus": 200,
+          "bodyClass": "ok"
+        },
+        {
+          "httpStatus": 200,
+          "bodyClass": "ok"
+        }
+      ]
+    },
+    "redisRecovery": {
+      "persistentRestart": true,
+      "exhaustedPrimaryBudget": [
+        {
+          "httpStatus": 429,
+          "bodyClass": "rate_limited"
+        },
+        {
+          "httpStatus": 429,
+          "bodyClass": "rate_limited"
+        }
+      ],
+      "unaffectedSecondaryBudget": [
+        {
+          "httpStatus": 401,
+          "bodyClass": "authentication_required"
+        },
+        {
+          "httpStatus": 401,
+          "bodyClass": "authentication_required"
+        }
+      ],
+      "limiterKeyCount": 2,
+      "minimumRecoveredTtlMilliseconds": 59854,
+      "minimumPostRecoveryTtlMilliseconds": 59837
+    },
+    "coordinatedKeyRotation": {
+      "oldReplicasDrainedBeforeRestart": true,
+      "newReplicaCount": 2,
+      "initialResponses": [
+        {
+          "httpStatus": 401,
+          "bodyClass": "authentication_required"
+        },
+        {
+          "httpStatus": 401,
+          "bodyClass": "authentication_required"
+        }
+      ],
+      "additionalAdmitted": 118,
+      "exceeded": 1,
+      "upstreamRequestDelta": [
+        59,
+        60
+      ],
+      "oldKeysLeftOnlyForBoundedExpiry": 2,
+      "newKeyCount": 1,
+      "minimumTtlMilliseconds": 59374,
+      "liveness": [
+        {
+          "httpStatus": 200,
+          "bodyClass": "ok"
+        },
+        {
+          "httpStatus": 200,
+          "bodyClass": "ok"
+        }
+      ]
+    }
+  },
+  "assertions": {
+    "productionRejectedProcessLocalLimiterBeforeListen": true,
+    "productionRejectedUnavailableLimiterAuthorityBeforeListen": true,
+    "bothActualApiProcessesReceivedLoad": true,
+    "exactlyOneSharedInitialBudgetEnforced": true,
+    "forgedForwardingChainsDidNotCreateParallelKeys": true,
+    "rawAddressesAbsentFromRedisKeys": true,
+    "limiterKeysContainedNoAuthorizationTenantOrCustomerData": true,
+    "redisSigkillMadeBothReplicasFailAdmissionClosed": true,
+    "livenessRemainedAvailableDuringRedisLoss": true,
+    "persistentRestartPreservedTheExhaustedBudget": true,
+    "unaffectedAddressRecoveredThroughBothReplicas": true,
+    "coordinatedRotationUsedOneNewSharedBudgetAcrossBothReplicas": true,
+    "securityHeadersCoveredAdmissionResponses": true,
+    "childProcessOutputDiscarded": true,
+    "customerOrProductionDataUsed": false
+  },
+  "evidenceMinimization": {
+    "rawClientAddressRecorded": false,
+    "rawForwardingHeaderRecorded": false,
+    "rawRedisKeyRecorded": false,
+    "redisCredentialRecorded": false,
+    "rateLimitHmacKeyRecorded": false,
+    "connectorKeyRecorded": false,
+    "sessionSecretRecorded": false,
+    "objectStorageCredentialRecorded": false,
+    "oidcClientSecretRecorded": false,
+    "authorizationHeaderRecorded": false,
+    "correlationIdRecorded": false,
+    "childProcessOutputRecorded": false,
+    "runtimeDirectoryRecorded": false,
+    "runtimeEnvFileCreated": false
+  },
+  "sourceSha256": {
+    "scripts/verify-live-api-rate-limit.mjs": "c51b8b6ac1c60feff2ff9405defb23e62837edf9f70afd2a8832315b92c4d842",
+    "apps/api/src/main.ts": "40d22a7b7ceea8f8c433ad61be195c022aa9be613bf0b2bf47de1d3db8c388d9",
+    "apps/api/src/app.ts": "dccf02d37f3f15cbd4fb9e0afc671095a5ec963ab843851938ed156727009be9",
+    "apps/api/src/rate-limit.ts": "68e8f444c19977198b15081e6ec46862687a36b668cc3d923a2044f500bda68f",
+    "packages/config/src/index.ts": "eb992dab7ee6244b81d89fe89d6e676152c058e31315894f45a2323793deb940",
+    "package.json": "acb8a407dcd100d1766eae99e1530ae7df99996790869a02d325dd4fde5c37d5",
+    "pnpm-lock.yaml": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0"
+  },
+  "verification": {
+    "liveReplicaLifecycle": {
+      "command": "pnpm verify:live-api-rate-limit with checksum-bound absolute Redis runtime paths supplied through the process environment",
+      "status": "passed",
+      "completedAt": "2026-07-29T16:08:38.555Z",
+      "assertionsFailed": 0
+    },
+    "verifierSyntaxLintAndFormat": {
+      "commands": [
+        "node --check scripts/verify-live-api-rate-limit.mjs",
+        "pnpm exec eslint scripts/verify-live-api-rate-limit.mjs --max-warnings=0",
+        "pnpm exec prettier --check scripts/verify-live-api-rate-limit.mjs package.json"
+      ],
+      "status": "passed"
+    },
+    "dependencyAwareApiBuild": {
+      "command": "pnpm --filter '@workspace/api...' build",
+      "status": "passed",
+      "workspaceProjectsBuilt": 14
+    },
+    "focusedRateLimitTests": {
+      "command": "pnpm exec vitest run --project unit apps/api/src/rate-limit.test.ts",
+      "status": "passed",
+      "testFilesPassed": 1,
+      "testsPassed": 4
+    },
+    "finalRepositoryGate": {
+      "command": "CI=true pnpm verify",
+      "status": "passed",
+      "completedAt": "2026-07-29T16:10:11Z",
+      "testFilesPassed": 85,
+      "testsPassed": 561,
+      "migrationsValidated": 55,
+      "contractEntrypointsValidated": 4,
+      "sourceFilesValidated": 551,
+      "evidenceFilesValidated": 103,
+      "packageManifestsValidated": 20,
+      "productionPackageLicensesValidated": 224,
+      "buildStatus": "passed"
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed",
+      "findings": 0
+    },
+    "productionDependencyAudit": {
+      "command": "pnpm audit --prod --audit-level=high",
+      "status": "passed",
+      "result": "No known vulnerabilities found"
+    },
+    "evidenceValidation": {
+      "command": "pnpm evidence:check",
+      "status": "passed",
+      "filesValidated": 103,
+      "linksResolved": true
+    }
+  },
+  "exploratoryAttemptDisposition": [
+    {
+      "attempt": 1,
+      "result": "passed",
+      "disposition": "The successful proof was not sealed because the verifier labels and unused per-replica provider/storage configuration were tightened before final evidence."
+    },
+    {
+      "attempt": 2,
+      "result": "passed",
+      "disposition": "The final source reran from fresh ephemeral Redis state with shared per-environment configuration and zero failed assertions."
+    }
+  ],
+  "securityDisposition": {
+    "finding": "SEC-M-003",
+    "priorState": "source mitigation, two raw Redis clients, live reference Nginx, and separate two-API dependency-readiness evidence passed locally",
+    "currentLocalState": "two compiled production API replicas, one authenticated persistent Redis limiter, forwarding overwrite, exact shared 120/121 admission, abrupt Redis loss, fail-closed admission, independent liveness, durable restart, unaffected-key recovery, and coordinated HMAC-key rotation passed locally",
+    "findingClosed": false,
+    "remainingBeforeClosure": [
+      "authorized protected-staging multi-host scheduler and load-balancer topology",
+      "exact external TLS ingress and hosting forwarding chain",
+      "approved production direct-peer CIDRs and network policy",
+      "managed Redis failover, eviction, replica-lag, and cross-host partition behavior",
+      "representative sustained burst/load and sensitive-route behavior",
+      "external collector policy, readiness polling, and alert delivery"
+    ]
+  },
+  "decisionBoundaries": {
+    "applicationRateLimitImplementationChanged": false,
+    "rateLimitMaximumOrWindowChanged": false,
+    "trustedProxyOrProductionConfigurationChanged": false,
+    "databaseMigrationAdded": false,
+    "tenantAuthorityChanged": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyNormalizationOrToleranceChanged": false,
+    "sourceSystemWriteOrProviderScopeAdded": false,
+    "sessionOrAuthenticationAuthorityChanged": false,
+    "aiAuthorityOrEnablementChanged": false
+  },
+  "cleanup": {
+    "ephemeralRedisStateRemoved": true,
+    "listenersClosed": [
+      {
+        "port": 56380,
+        "closed": true
+      },
+      {
+        "port": 4310,
+        "closed": true
+      },
+      {
+        "port": 4311,
+        "closed": true
+      },
+      {
+        "port": 4312,
+        "closed": true
+      },
+      {
+        "port": 4313,
+        "closed": true
+      }
+    ]
+  },
+  "limitations": [
+    "This is a bounded single-host loopback exercise, not protected staging, multi-host scheduling, managed Redis, capacity, availability, penetration-test, compliance, or production-readiness evidence.",
+    "The verifier-owned HTTP proxy proves overwrite composition with actual API processes but does not replace the separate exact Nginx proof or establish external TLS, CDN, hosting, network, or collector policy.",
+    "One abrupt Redis process loss and persistent restart is exercised. Sentinel/Cluster behavior, managed failover, cross-host partitions, replica lag, eviction policy, and alert delivery remain unverified.",
+    "The HMAC-key exercise intentionally drains all old processes before starting the new set. A mixed-key rolling deployment would create parallel budgets and remains prohibited.",
+    "Synthetic documentation-range addresses are used only in memory. No customer request, credential, token, tenant, organization, provider payload, or production system is used.",
+    "No database, source-system, financial, reconciliation-rule, provider-scope, tenant-authority, session, or AI behavior changes."
+  ]
+}

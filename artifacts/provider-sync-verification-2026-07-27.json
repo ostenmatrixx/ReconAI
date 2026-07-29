@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-27T15:00:40Z",
+  "component": "bounded-stripe-event-sync",
+  "outcome": "passed",
+  "providerContract": {
+    "provider": "stripe",
+    "endpoint": "https://api.stripe.com/v1/events",
+    "readOnly": true,
+    "maximumWindowDays": 30,
+    "maximumItemsPerPage": 100,
+    "maximumPagesPerRun": 100,
+    "maximumItemsPerRun": 10000,
+    "maximumResponseBytes": 2097152,
+    "requestTimeoutMilliseconds": 10000,
+    "maximumRecordedFailures": 6,
+    "supportedEventFamilies": [
+      "payment_intent",
+      "refund"
+    ],
+    "cursor": "starting_after event ID",
+    "apiVersionAuthority": "per-event creation-time api_version",
+    "readCredentialSeparateFromWebhookSigningSecret": true
+  },
+  "migration": {
+    "file": "packages/database/migrations/0030_provider_sync_runs.sql",
+    "fileSha256": "4d632865dd0305a5082a3475757b28498da22609d9231113b71fb67b51a355d0",
+    "migrationCount": 31,
+    "migrationChainSha256": "23ef90147abf01a7f768b0ec756ef892afec860e0d7b35a469196a82178731b2",
+    "drizzleSchemaDrift": false,
+    "upgradeLeavesSyncDisabled": true
+  },
+  "adapterVerification": {
+    "testFile": "packages/connector-stripe/src/stripe.test.ts",
+    "testsPassed": 3,
+    "verified": [
+      "fixed HTTPS Stripe Events origin",
+      "credential sent only in the Authorization header",
+      "bounded created window and supported event-type filters",
+      "account and configured API-version headers",
+      "forward cursor propagation and event API-version preservation",
+      "30-day window rejection",
+      "2 MiB response rejection",
+      "rate-limit classification"
+    ]
+  },
+  "serviceVerification": {
+    "testFile": "packages/ingestion/src/provider-sync.test.ts",
+    "testsPassed": 4,
+    "verified": [
+      "cursor advancement across pages",
+      "immutable event staging and duplicate accounting",
+      "explicit page ceiling produces partial",
+      "cursor stall is terminal",
+      "rate-limit failures remain retryable before the ceiling"
+    ]
+  },
+  "ingressIntegrityVerification": {
+    "testFile": "packages/ingestion/src/provider-webhooks.test.ts",
+    "testsPassed": 3,
+    "verified": [
+      "identical synchronized provider events deduplicate before object or outbox work",
+      "a reused provider event ID with different immutable identity or payload bytes fails closed",
+      "uniqueness races recheck the same immutable event identity"
+    ]
+  },
+  "databaseVerification": {
+    "serverVersion": "PostgreSQL 17.10",
+    "package": "@embedded-postgres/darwin-arm64@17.10.0-beta.17",
+    "binarySha256": "8776e8dfcc8fd7eaaf02db978d00f225a1905b6cbe9ecdd3cf5e86cf3a00e33f",
+    "testFile": "packages/database/src/provider-sync.integration.test.ts",
+    "testsPassed": 2,
+    "fullPostgresqlFilesPassed": 9,
+    "fullPostgresqlTestsPassed": 21,
+    "verified": [
+      "same-request idempotency and one transactional outbox authority",
+      "cross-tenant list and worker-load denial",
+      "distinct read credential reference",
+      "queued-to-running lifecycle and cursor lock",
+      "monotonic page, item, and duplicate counts",
+      "immutable terminal authority and append-only deletion rejection",
+      "six-attempt failure ceiling and degraded connection state",
+      "populated 30-to-31 additive upgrade"
+    ]
+  },
+  "applicationVerification": {
+    "repositoryDeterministicFilesPassed": 32,
+    "repositoryDeterministicTestsPassed": 168,
+    "chromiumTestsPassed": 27,
+    "dedicatedAccessibilityTestsPassed": 10,
+    "verified": [
+      "connectors:manage permission is required",
+      "API window, page, reason, and exact-organization bounds",
+      "BFF injects signed organization authority and strips browser authority",
+      "browser requires explicit read-only scope confirmation",
+      "connection health exposes only sync capability, never a credential reference",
+      "operator run history reports partial, success, failure, progress, and stable error codes"
+    ]
+  },
+  "securityVerification": {
+    "productionDependencyAudit": "no known vulnerabilities",
+    "licenseAllowlist": "passed",
+    "secretScan": "passed",
+    "credentialsRecorded": false,
+    "providerNetworkRequestExecuted": false
+  },
+  "cleanup": {
+    "freshVerificationDatabaseDropped": true,
+    "postgresStopped": true,
+    "verificationPortsListeningAfterRun": false
+  },
+  "limitations": [
+    "No real Stripe credential, account, network request, or sandbox contract was used.",
+    "Stripe event listing cannot retrieve events older than the provider's 30-day Events API history.",
+    "OAuth installation, secret-manager/KMS storage, credential rotation/revocation, and disconnect are incomplete.",
+    "Shopify page retrieval, scheduled gap repair, and distributed provider rate coordination are not implemented.",
+    "No protected staging deployment or provider rate-limit/load exercise was available."
+  ]
+}

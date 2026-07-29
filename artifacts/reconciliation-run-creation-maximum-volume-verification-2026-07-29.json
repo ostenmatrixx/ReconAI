@@ -1,0 +1,252 @@
+{
+  "evidenceType": "reconciliation-run-creation-maximum-volume-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-28T23:50:36Z",
+  "scope": "Fresh loopback PostgreSQL 17.10 synthetic maximum-volume evidence for atomic reconciliation run authority creation through the actual restricted-role repository. No rule execution, production, or staging system was used. The measurements are not an API SLO, capacity guarantee, or production projection.",
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "postgresql": "17.10",
+    "postgresClient": "3.4.9",
+    "vitest": "4.1.10"
+  },
+  "design": {
+    "decision": "ADR 0032",
+    "maximumInputsPerRun": 100000,
+    "inputInsertBatchSize": 1000,
+    "boundParametersPerRow": 6,
+    "maximumBoundParametersPerInputStatement": 6000,
+    "postgresqlParameterCeiling": 65535,
+    "expectedMaximumInputInsertStatements": 100,
+    "previousMaximumInputInsertExecutions": 100000,
+    "globalOrdinalsPreservedAcrossBatches": true,
+    "oneTransactionContains": [
+      "reconciliation run",
+      "all pinned inputs",
+      "first dispatch outbox event",
+      "request audit event"
+    ],
+    "schemaMigrationRequired": false,
+    "moneyOrRuleBehaviorChanged": false
+  },
+  "verifier": {
+    "command": "RECONAI_ALLOW_LOCAL_VERIFICATION_WRITES=1 RECONAI_RUN_CREATION_RECORDS=100000 DATABASE_ADMIN_URL=[fresh-loopback] DATABASE_URL=[restricted-loopback] pnpm verify:reconciliation-run-creation",
+    "maximumVolumeRunRecordedAt": "2026-07-28T23:44:26.553Z",
+    "loopbackOnlyEnforced": true,
+    "productionEnvironmentRejected": true,
+    "explicitSyntheticWriteOptInRequired": true,
+    "disposableDatabaseNameRequired": true,
+    "applicationRoleRequired": "reconai_app",
+    "applicationRoleSuperuser": false,
+    "applicationRoleBypassesRls": false,
+    "maximumConfiguredRecords": 100000,
+    "routineVerifyGateIncludesHeavyVerifier": false
+  },
+  "postgresqlSource": {
+    "archive": "postgresql-17.10.tar.bz2",
+    "officialDirectory": "https://www.postgresql.org/ftp/source/v17.10/",
+    "sha256": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+    "checksumVerifiedBeforeBuild": true,
+    "cluster": "fresh empty loopback-only disposable data-checksummed cluster using local test authentication",
+    "locale": "C",
+    "encoding": "UTF8",
+    "listenPort": 55465
+  },
+  "fixture": {
+    "schemaValidSyntheticCanonicalOrders": 100000,
+    "contentHashesMatchCanonicalJson": true,
+    "customerReferencesIncluded": false,
+    "fieldProvenanceRowsInserted": false,
+    "sourceEventSeedBatchSize": 1000,
+    "canonicalRecordSeedBatchSize": 1000,
+    "sourceEventInsertStatementsLogged": 100,
+    "canonicalRecordInsertStatementsLogged": 100,
+    "seedDurationMilliseconds": 5661.03
+  },
+  "database": {
+    "freshDatabase": true,
+    "migrationsApplied": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "databaseBytesAfterVerification": 233952947,
+    "sourceEvents": 100000,
+    "canonicalRecords": 100000,
+    "reconciliationRuns": 1,
+    "reconciliationRunInputs": 100000,
+    "outboxEvents": 1,
+    "auditEvents": 1,
+    "forcedRowLevelSecurity": {
+      "reconciliation_runs": true,
+      "reconciliation_run_inputs": true
+    },
+    "supportingIndexes": [
+      "reconciliation_run_inputs_org_record_idx",
+      "reconciliation_run_inputs_org_run_ordinal_uidx",
+      "reconciliation_run_inputs_organization_id_run_id_record_id_reco"
+    ]
+  },
+  "runCreation": {
+    "syntheticRunId": "90de0d73-c70b-4afb-8359-4d4418a411c8",
+    "status": "queued",
+    "declaredInputCount": 100000,
+    "persistedInputCount": 100000,
+    "uniqueOrdinals": 100000,
+    "minimumOrdinal": 0,
+    "maximumOrdinal": 99999,
+    "inputSnapshotHashLength": 64,
+    "dispatchCount": 1,
+    "outboxEvents": 1,
+    "auditEvents": 1,
+    "loggedRunInsertStatements": 1,
+    "loggedRunInputInsertStatements": 100,
+    "expectedRunInputInsertStatements": 100,
+    "creationDurationMilliseconds": 2694.99,
+    "residentSetGrowthBytes": 105627648
+  },
+  "idempotentRepeat": {
+    "sameRunAuthority": true,
+    "durationMilliseconds": 975.3,
+    "runRowsAfterRepeat": 1,
+    "outboxEventsAfterRepeat": 1,
+    "auditEventsAfterRepeat": 1
+  },
+  "paginationBoundary": {
+    "firstPageOrdinals": [0, 99],
+    "lastPageOrdinals": [99900, 99999],
+    "lastPageHasNextCursor": false
+  },
+  "tenantIsolation": {
+    "foreignRunRepositoryResult": "undefined",
+    "foreignInputRepositoryResult": "undefined",
+    "applicationRole": "reconai_app",
+    "applicationRoleSuperuser": false,
+    "applicationRoleBypassesRls": false,
+    "cursorIsAuthority": false
+  },
+  "integrity": {
+    "successfulClusterOfflineDataChecksums": {
+      "filesScanned": 1471,
+      "blocksScanned": 31319,
+      "badChecksums": 0,
+      "dataChecksumVersion": 1
+    },
+    "preflightRepositoryClusterOfflineDataChecksums": {
+      "filesScanned": 1472,
+      "blocksScanned": 4145,
+      "badChecksums": 0,
+      "dataChecksumVersion": 1
+    },
+    "supersededClusterOfflineDataChecksums": {
+      "filesScanned": 1470,
+      "blocksScanned": 33764,
+      "badChecksums": 0,
+      "dataChecksumVersion": 1
+    }
+  },
+  "repositoryVerification": {
+    "focusedBatchAndCursor": {
+      "command": "CI=true pnpm exec vitest run apps/api/src/repository.batch.test.ts apps/api/src/repository.cursor.test.ts --reporter=dot",
+      "testFilesPassed": 2,
+      "testsPassed": 17,
+      "testsFailed": 0,
+      "batchSizesUnderTest": [1000, 1000, 1],
+      "parameterCeilingAssertionPassed": true,
+      "globalOrdinalAndIdentityAssertionPassed": true,
+      "emptySnapshotCreatesNoBatch": true
+    },
+    "freshPostgresqlRepositoryPreflight": {
+      "command": "CI=true DATABASE_ADMIN_URL=[local] DATABASE_MIGRATION_URL=[local] DATABASE_URL=[local] pnpm exec vitest run --project integration apps/api/src/repository.integration.test.ts --reporter=dot",
+      "testFilesPassed": 1,
+      "testsPassed": 4,
+      "testsFailed": 0,
+      "actualBatchedSqlPathExercised": true
+    },
+    "fullVerify": {
+      "command": "CI=true pnpm verify",
+      "passed": true,
+      "testFilesPassed": 69,
+      "testsPassed": 430,
+      "format": "passed",
+      "lint": "passed",
+      "typecheck": "passed",
+      "build": "passed",
+      "migrationsValidated": 44,
+      "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+      "contractEntrypointsValidated": 4,
+      "containerChecks": "3 Dockerfiles, 5 Compose images, 3 workflow images, 25 action pins, and non-publishing candidate controls passed",
+      "dependencyManifestsValidated": 20,
+      "productionLicensesValidated": 224,
+      "lockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94"
+    },
+    "writeOptInNegative": {
+      "passed": true,
+      "connectionAttempted": false,
+      "result": "rejected before connection because RECONAI_ALLOW_LOCAL_VERIFICATION_WRITES=1 was absent"
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "passed": true
+    },
+    "productionDependencyAudit": {
+      "command": "pnpm audit --prod --audit-level=high",
+      "passed": true,
+      "result": "No known vulnerabilities found"
+    }
+  },
+  "supersededAttempts": [
+    {
+      "evidenceRetained": false,
+      "reason": "The database privacy trigger rejected a verifier fixture that supplied Shopify customer references; the seed transaction rolled back and all relevant table counts remained zero.",
+      "correction": "The synthetic fixture now omits customerReference. No database trigger or privacy control was changed or weakened.",
+      "clusterStopped": true,
+      "runtimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-run-creation-max-pg.io93c3-superseded-verifier-query-20260729"
+    },
+    {
+      "evidenceRetained": false,
+      "reason": "After the corrected fixture created a valid product authority, a verifier-only postcondition queried a nonexistent outbox aggregate_id column.",
+      "correction": "The verifier now checks the exact reconciliation-run dispatch idempotency key, and the complete exercise was rerun from a new clean cluster.",
+      "clusterStopped": true,
+      "runtimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-run-creation-max-pg.io93c3-superseded-verifier-query-20260729"
+    }
+  ],
+  "cleanup": {
+    "postgresqlStopped": true,
+    "listenPortClosed": true,
+    "successfulRuntimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-run-creation-final-pg.oLwM95-verified-20260729",
+    "preflightRuntimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-run-batch-preflight-pg.MbEvSJ-verified-20260729",
+    "supersededRuntimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-run-creation-max-pg.io93c3-superseded-verifier-query-20260729",
+    "applicationAndDatabasePortsClosed": [
+      3000, 4000, 55462, 55463, 55464, 55465, 56380, 59010, 59011, 8180
+    ]
+  },
+  "sourceSha256": {
+    "apps/api/src/repository.ts": "ade8040e58e7ea828b4ea61617e7cd992e953bc6a47d339d123b472a8ceedbfd",
+    "apps/api/src/repository.batch.test.ts": "f2f5174f85fd62856719a280b1df8f665c7465a5c5322ba9c3a7fb173470c755",
+    "scripts/verify-reconciliation-run-creation.mjs": "0b7af8369f1383cc4e4966a088b3cf182a2a06f209473c5030d854cc0e7ea5a6",
+    "package.json": "80de41b163a5e4495497210b22c9e889972b9357c8e5f69d4905827d35112e8e",
+    "docs/adr/0032-bounded-reconciliation-run-input-persistence.md": "517ebc48528d6f3977038dfc10805692b110ef89ad71e40de1eae05e67335795",
+    "docs/architecture.md": "9b98dcb071cd186a35ec9e35b055baf9dd9ed0882a15a95350c08a7b25c16c21",
+    "docs/reconciliation-engine.md": "bf9bf28f64f053d3512570fe5422df92e0b2a62be3b648d9e51f2f6b1a4bc9e0",
+    "pnpm-lock.yaml": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94"
+  },
+  "safety": {
+    "moneyUsesBinaryFloatingPoint": false,
+    "currencyConversionAdded": false,
+    "reconciliationRuleBehaviorChanged": false,
+    "sourceSystemWritesAdded": false,
+    "financialApprovalAuthorityAdded": false,
+    "aiAuthorityChanged": false,
+    "productionDataUsed": false,
+    "credentialsRecorded": false,
+    "externalMessagesSent": false,
+    "deploymentPerformed": false,
+    "gitStageCommitPushPerformed": false
+  },
+  "limitations": [
+    "The synthetic fixture contains schema-valid canonical order JSON and matching content hashes but omits field-provenance rows because this verifier isolates run-authority creation.",
+    "The run remains queued; worker execution, rule execution, result persistence, and end-to-end job completion were not exercised.",
+    "The API process still materializes the selected canonical records and derived identities; this evidence does not establish constant-memory streaming.",
+    "The 2,694.99 ms repository call, 975.3 ms repeat, and 105,627,648-byte RSS-growth observations are one local workstation sample and are not an HTTP/API SLO, capacity guarantee, or production projection.",
+    "Multi-host contention, transaction timeout and failure injection, network partitions, TLS/ingress, protected staging, alert behavior, representative customer data, and operator outcomes remain unverified.",
+    "No protected staging or production deployment was performed."
+  ]
+}

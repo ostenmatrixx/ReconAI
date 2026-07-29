@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-27T16:04:02Z",
+  "component": "database-upgrade-0031",
+  "outcome": "passed",
+  "database": {
+    "serverVersion": "PostgreSQL 17.10",
+    "package": "@embedded-postgres/darwin-arm64@17.10.0-beta.17",
+    "binarySha256": "8776e8dfcc8fd7eaaf02db978d00f225a1905b6cbe9ecdd3cf5e86cf3a00e33f",
+    "freshIsolatedDatabase": true,
+    "previousMigrationCount": 31,
+    "previousLatestMigration": "0030_provider_sync_runs.sql",
+    "appliedByNormalRunner": [
+      "0031_scheduled_provider_gap_repair.sql"
+    ],
+    "resultingMigrationCount": 32,
+    "resultingMigrationChainSha256": "fed45566c68de11255ba0d7efc3031091a6a73ad897671af48f7075ca6ae9af2"
+  },
+  "fixtures": {
+    "organizations": 2,
+    "users": 1,
+    "memberships": 2,
+    "postUpgradeFieldSnapshotEqual": true
+  },
+  "compatibility": {
+    "previousTenantQueryThroughApplicationRole": true,
+    "organizationDirectoryThroughApplicationRole": true,
+    "organizationDirectoryOrganizationCount": 2,
+    "existingProviderSyncRunPreserved": true,
+    "existingProviderSyncRequesterType": "user",
+    "existingProviderSyncMembershipAuthorityPreserved": true,
+    "connectionWithoutReadCredentialIsSchedulerIneligible": true,
+    "migrationIsAdditive": true,
+    "destructiveDownMigrationRequired": false,
+    "applicationRollbackStrategy": "disable periodic repair, stop new provider sync requests, remove outbound read authority, leave migration 0031 dormant, and run the prior compatible image"
+  },
+  "automatedVerification": {
+    "testFile": "packages/database/src/upgrade.integration.test.ts",
+    "testsPassed": 2,
+    "repositoryDeterministicTests": 177,
+    "repositoryTestFiles": 33,
+    "repositoryVerifyPassed": true
+  },
+  "cleanup": {
+    "isolatedUpgradeDatabaseDropped": true,
+    "serverStopped": true,
+    "temporaryClusterMovedToTrash": true,
+    "listeningPortAfterRun": false
+  },
+  "limitations": [
+    "The prior application image was not launched against the upgraded schema.",
+    "No backup restoration or production-style cutover was exercised.",
+    "No protected staging environment was available.",
+    "The local fixture is not representative migration-volume timing evidence."
+  ],
+  "credentialsRecorded": false
+}

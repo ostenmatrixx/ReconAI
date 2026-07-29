@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-07-28T15:08:31.744Z",
+  "scope": "Local synthetic durable job-execution ledger and empty-Redis classified queue reconstruction",
+  "result": "passed_with_explicit_non_production_limits",
+  "implementation": {
+    "migration": "0040_durable_job_execution_ledger.sql",
+    "migrationCount": 41,
+    "migrationChainSha256": "9350abafdd67e995c435ffa275fa489c0f68c8ff158072d6aea819532f749086",
+    "outboxTrackingDefault": null,
+    "oldWriterRowsRemainUnclassified": true,
+    "updatedWritersOptInToTrackingVersion": 1,
+    "workerFirstRolloutRequired": true,
+    "durableExecutionStatuses": [
+      "running",
+      "retryable",
+      "succeeded",
+      "dead_lettered"
+    ],
+    "rawExecutionTokenPersisted": false,
+    "executionTokenSha256Persisted": true,
+    "workerHeartbeatImplemented": true,
+    "terminalRowsImmutable": true,
+    "recoveryEventsAppendOnly": true,
+    "admittedRecoveryClassifications": [
+      "unpublished",
+      "never_started",
+      "retryable",
+      "stale_running"
+    ],
+    "excludedRecoveryStates": [
+      "active_running",
+      "succeeded",
+      "dead_lettered",
+      "legacy_published_without_execution_or_recovery_evidence"
+    ]
+  },
+  "environment": {
+    "platform": "Darwin arm64",
+    "postgres": {
+      "serverPackage": "@embedded-postgres/darwin-arm64@17.10.0-beta.17",
+      "serverPackageSha256": "41fa2aa47ec3ae7c8692719881c6bdb8376365dd417673b37ffe8281f28f7064",
+      "serverVersion": "PostgreSQL 17.10",
+      "dataChecksumsEnabled": true,
+      "loopbackOnly": true,
+      "systemIdentifier": "7667590822158919419",
+      "freshSyntheticCluster": true,
+      "restoredProductionLikeBackup": false
+    },
+    "redis": {
+      "sourceArchive": "https://download.redis.io/releases/redis-8.2.8.tar.gz",
+      "sourceArchiveSha256": "01354ee4449e758e6e45d056fe5802abd9ccde4d669b79c9d5e9f6d730a80759",
+      "serverVersion": "8.2.8",
+      "allocator": "libc",
+      "loopbackOnly": true,
+      "protectedMode": true,
+      "authenticated": true,
+      "logicalDatabase": 15,
+      "initialDatabaseSize": 0,
+      "persistenceEnabledForDrill": false
+    },
+    "customerSystemsContacted": false,
+    "providerCredentialsUsed": false,
+    "customerDataUsed": false
+  },
+  "livePostgresqlVerification": {
+    "testFiles": 2,
+    "tests": 9,
+    "result": "passed",
+    "covered": [
+      "execution acquire, busy, heartbeat, success, and terminal repeat",
+      "retryable failure and attempt state",
+      "forged tenant authority rejection",
+      "application-role execution-ledger denial",
+      "foreign-worker tenant concealment",
+      "unpublished, never-started, retryable, and stale-running classification",
+      "active, succeeded, dead-lettered, and legacy published exclusion",
+      "append-only exact-once recovery evidence",
+      "pre-migration unpublished reclassification through recovery evidence",
+      "scheduled-writer transaction-local tracking opt-in"
+    ],
+    "postRecoveryLedgerAggregate": {
+      "running": 2,
+      "retryable": 1,
+      "succeeded": 1,
+      "dead_lettered": 1
+    },
+    "postRecoveryEvidenceAggregate": {
+      "recoveryRuns": 2,
+      "events": 11,
+      "classifications": {
+        "unpublished": 7,
+        "never_started": 2,
+        "retryable": 1,
+        "stale_running": 1
+      }
+    }
+  },
+  "liveRedisWorkerVerification": {
+    "testFiles": 1,
+    "tests": 2,
+    "result": "passed",
+    "stableTenantBoundJobCompleted": true,
+    "duplicateStableIdentityDeduplicated": true,
+    "invalidCapabilityUnrecoverableAfterOneAttempt": true
+  },
+  "queueReconstruction": {
+    "command": "pnpm backup:rebuild-queue",
+    "confirmationRequired": "REBUILD-RECOVERABLE-IN-ISOLATED-REDIS",
+    "restoredDatabaseSystemIdentifierMatched": true,
+    "staleBoundaryAtLeastFifteenMinutesOld": true,
+    "maximumApprovedEvents": 20,
+    "approvedEvents": 10,
+    "classificationCounts": {
+      "unpublished": 6,
+      "never_started": 2,
+      "retryable": 1,
+      "stale_running": 1
+    },
+    "stableJobIdSetSha256": "37dfe2185157eb112a2afc06d024d432698cfab9b47d1a3de5cd70578b8b98fb",
+    "recoveryRunIdSha256": "e692f4f8d6ea5ded414e9ed16fa230a207998246592358e11b77a5a2b5411b72",
+    "recordedRecoveryEvents": 10,
+    "duplicateReplayCount": 10,
+    "queueCounts": {
+      "wait": 10,
+      "active": 0,
+      "completed": 0,
+      "delayed": 0,
+      "failed": 0,
+      "paused": 0,
+      "prioritized": 0,
+      "waiting-children": 0
+    },
+    "secondInvocationRejectedNonemptyRedis": true,
+    "wrongDatabaseSystemIdentifierRejectedBeforeRedisMutation": true
+  },
+  "securityControls": {
+    "parameterizedDatabaseQueries": true,
+    "runtimeInputSchemas": true,
+    "fixedSecurityDefinerSearchPath": true,
+    "forcedRowLevelSecurity": true,
+    "applicationRoleRecoveryAccessDenied": true,
+    "workerDirectMutationDenied": true,
+    "recoveryBatchBounded": true,
+    "redisDatabaseMustBeExplicitAndNondefault": true,
+    "redisMustBeCompletelyEmpty": true,
+    "loopbackDefault": true,
+    "remoteRedisRequiresTls": true,
+    "remotePostgresRequiresVerifyFull": true,
+    "organizationIdsEmitted": false,
+    "jobIdsEmitted": false,
+    "payloadsEmitted": false,
+    "operatorAndReasonTextEmitted": false,
+    "credentialsEmitted": false
+  },
+  "repositoryVerification": {
+    "ciVerify": {
+      "result": "passed",
+      "testFiles": 63,
+      "tests": 330,
+      "format": "passed",
+      "lint": "passed",
+      "typecheck": "passed",
+      "migrationValidation": "passed",
+      "schemaValidation": "passed",
+      "configurationValidation": "passed",
+      "edgeSecurityValidation": "passed",
+      "oidcSecurityValidation": "passed",
+      "containerInputValidation": "passed",
+      "dependencyPolicy": "passed",
+      "licenseValidation": "passed",
+      "productionBuild": "passed"
+    },
+    "staticMigrationTenantTests": 30,
+    "secretScan": "passed_after_artifact_creation",
+    "productionAudit": "no_known_vulnerabilities"
+  },
+  "cleanup": {
+    "postgresStopped": true,
+    "redisStopped": true,
+    "loopbackPostgresPortClosed": true,
+    "loopbackRedisPortClosed": true,
+    "temporaryDrillDirectoryMovedToTrash": true,
+    "recoverableTrashPath": "<local-home>/.Trash/reconai-queue-recovery.xnhtZv"
+  },
+  "limitations": [
+    "This used fresh synthetic PostgreSQL state, not a production-like base backup, WAL/PITR restore, or atomic database/object recovery point.",
+    "Redis queue insertion and PostgreSQL recovery evidence cannot be atomic; a mid-command evidence failure intentionally leaves non-empty Redis for manual reconciliation.",
+    "The prior application/worker image was not executed through a real rolling deployment or rollback.",
+    "The drill did not measure representative volume, migration lock/scan impact, RPO, RTO, staging cutover, external alerts, or remote TLS topology.",
+    "This does not verify configuration/key recovery, immutable backup storage, object tags/lock/lifecycle/replication, or production readiness."
+  ]
+}

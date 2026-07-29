@@ -1,0 +1,203 @@
+apiVersion: reconai.io/operational-alert-policy/v1
+status: proposed
+productionEnabled: false
+scope: leased-operational-monitor-v1
+defaults:
+  evaluationIntervalSeconds: 60
+  thresholdNoDataState: normal
+  evaluationErrorState: alerting
+rollout:
+  ownerApprovalRequired: true
+  backendTranslationValidated: false
+  deliveryPathValidated: false
+  protectedEnvironmentExerciseValidated: false
+rules:
+  - id: durable-queue-monitor-failed
+    summary: The lease-owned durable queue monitor reported a failed poll.
+    severity: critical
+    metric: reconai.queue.monitor.polls
+    filters:
+      reconai.outcome: [failed]
+    groupBy: []
+    windowSeconds: 300
+    forSeconds: 0
+    condition:
+      type: threshold
+      reducer: rate
+      operator: greater_than
+      value: 0
+    runbook: docs/operations-runbook.md#telemetry-alert-policy-pack
+
+  - id: durable-queue-monitor-silent
+    summary: Durable queue monitor poll telemetry is absent beyond the bounded export allowance.
+    severity: critical
+    metric: reconai.queue.monitor.polls
+    filters: {}
+    groupBy: []
+    windowSeconds: 1200
+    forSeconds: 0
+    condition:
+      type: absence
+    runbook: docs/operations-runbook.md#telemetry-alert-policy-pack
+
+  - id: durable-queue-failed-jobs
+    summary: One or more durable queue jobs remain in the failed lifecycle state.
+    severity: critical
+    metric: reconai.queue.jobs
+    filters:
+      reconai.queue.state: [failed]
+    groupBy: []
+    windowSeconds: 300
+    forSeconds: 300
+    condition:
+      type: threshold
+      reducer: last
+      operator: greater_than
+      value: 0
+    runbook: docs/operations-runbook.md#telemetry-alert-policy-pack
+
+  - id: durable-queue-ready-head-old
+    summary: A dispatchable queue frontier item has remained ready for more than five minutes.
+    severity: warning
+    metric: reconai.queue.ready_head.maximum_age
+    filters: {}
+    groupBy: []
+    windowSeconds: 300
+    forSeconds: 300
+    condition:
+      type: threshold
+      reducer: max
+      operator: greater_than
+      value: 300
+    runbook: docs/operations-runbook.md#telemetry-alert-policy-pack
+
+  - id: durable-queue-ready-head-critically-old
+    summary: A dispatchable queue frontier item has remained ready for more than fifteen minutes.
+    severity: critical
+    metric: reconai.queue.ready_head.maximum_age
+    filters: {}
+    groupBy: []
+    windowSeconds: 300
+    forSeconds: 300
+    condition:
+      type: threshold
+      reducer: max
+      operator: greater_than
+      value: 900
+    runbook: docs/operations-runbook.md#telemetry-alert-policy-pack
+
+  - id: exception-queue-monitor-invalid-or-failed
+    summary: The unresolved-exception monitor reported invalid time evidence or a failed poll.
+    severity: critical
+    metric: reconai.review.exception_queue.monitor.polls
+    filters:
+      reconai.outcome: [future_timestamp, invalid_age, failed]
+    groupBy: []
+    windowSeconds: 300
+    forSeconds: 0
+    condition:
+      type: threshold
+      reducer: rate
+      operator: greater_than
+      value: 0
+    runbook: docs/operations-runbook.md#telemetry-alert-policy-pack
+
+  - id: exception-queue-monitor-silent
+    summary: Unresolved-exception monitor telemetry is absent beyond the bounded export allowance.
+    severity: critical
+    metric: reconai.review.exception_queue.monitor.polls
+    filters: {}
+    groupBy: []
+    windowSeconds: 1200
+    forSeconds: 0
+    condition:
+      type: absence
+    runbook: docs/operations-runbook.md#telemetry-alert-policy-pack
+
+  - id: exception-queue-oldest-warning
+    summary: The oldest unresolved exception has remained unresolved for more than one day.
+    severity: warning
+    metric: reconai.review.exception_queue.oldest_age
+    filters: {}
+    groupBy: []
+    windowSeconds: 900
+    forSeconds: 900
+    condition:
+      type: threshold
+      reducer: max
+      operator: greater_than
+      value: 86400
+    runbook: docs/operations-runbook.md#telemetry-alert-policy-pack
+
+  - id: exception-queue-oldest-critical
+    summary: The oldest unresolved exception has remained unresolved for more than three days.
+    severity: critical
+    metric: reconai.review.exception_queue.oldest_age
+    filters: {}
+    groupBy: []
+    windowSeconds: 900
+    forSeconds: 900
+    condition:
+      type: threshold
+      reducer: max
+      operator: greater_than
+      value: 259200
+    runbook: docs/operations-runbook.md#telemetry-alert-policy-pack
+
+  - id: provider-active-sync-monitor-invalid-or-failed
+    summary: The active provider-sync monitor reported invalid time evidence or a failed poll.
+    severity: critical
+    metric: reconai.provider.sync.active.monitor.polls
+    filters:
+      reconai.outcome: [future_timestamp, invalid_age, failed]
+    groupBy: []
+    windowSeconds: 300
+    forSeconds: 0
+    condition:
+      type: threshold
+      reducer: rate
+      operator: greater_than
+      value: 0
+    runbook: docs/operations-runbook.md#telemetry-alert-policy-pack
+
+  - id: provider-active-sync-monitor-silent
+    summary: Active provider-sync monitor telemetry is absent beyond the bounded export allowance.
+    severity: critical
+    metric: reconai.provider.sync.active.monitor.polls
+    filters: {}
+    groupBy: []
+    windowSeconds: 1200
+    forSeconds: 0
+    condition:
+      type: absence
+    runbook: docs/operations-runbook.md#telemetry-alert-policy-pack
+
+  - id: provider-active-sync-oldest-warning
+    summary: A queued or running provider sync has remained active for more than thirty minutes.
+    severity: warning
+    metric: reconai.provider.sync.active.oldest_age
+    filters: {}
+    groupBy: [reconai.provider, reconai.provider.sync.status]
+    windowSeconds: 300
+    forSeconds: 300
+    condition:
+      type: threshold
+      reducer: max
+      operator: greater_than
+      value: 1800
+    runbook: docs/operations-runbook.md#telemetry-alert-policy-pack
+
+  - id: provider-active-sync-oldest-critical
+    summary: A queued or running provider sync has remained active for more than two hours.
+    severity: critical
+    metric: reconai.provider.sync.active.oldest_age
+    filters: {}
+    groupBy: [reconai.provider, reconai.provider.sync.status]
+    windowSeconds: 300
+    forSeconds: 300
+    condition:
+      type: threshold
+      reducer: max
+      operator: greater_than
+      value: 7200
+    runbook: docs/operations-runbook.md#telemetry-alert-policy-pack

@@ -1,0 +1,172 @@
+{
+  "evidenceType": "postgresql-51-migration-integration-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T07:56:01.000Z",
+  "scope": "Fresh local PostgreSQL 17.10 execution of the complete 51-migration chain and all database integration files after the source-classification, Stripe balance-transaction, privacy-package browser-receipt, and operational-alert-policy increments. This is synthetic loopback evidence, not provider, hosted-database, protected-staging, production, legal, SLO, or external-alert evidence.",
+  "priorEvidence": {
+    "path": "artifacts/goal-1-requirement-audit-2-verification-2026-07-29.json",
+    "sha256": "8f7d1a543c874e437be4fd00a28302241bcebfba5e4edd728bab599923910561",
+    "relationship": "Supersedes only that audit's point-in-time local PostgreSQL runtime blocker. The immutable audit and its remaining provider, owner, distributed, alert-delivery, and staging blockers are unchanged."
+  },
+  "runtime": {
+    "product": "PostgreSQL",
+    "version": "17.10",
+    "sourceUrl": "https://ftp.postgresql.org/pub/source/v17.10/postgresql-17.10.tar.bz2",
+    "checksumUrl": "https://ftp.postgresql.org/pub/source/v17.10/postgresql-17.10.tar.bz2.sha256",
+    "expectedSourceSha256": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+    "actualSourceSha256": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+    "checksumStatus": "passed",
+    "platform": "aarch64-apple-darwin25.5.0",
+    "compiler": "Apple clang 21.0.0",
+    "configureArguments": [
+      "--without-readline",
+      "--without-zlib",
+      "--without-icu",
+      "--without-lz4",
+      "--without-zstd"
+    ],
+    "networkBinding": "127.0.0.1 only on an ephemeral port",
+    "authentication": "trust on the loopback-only temporary synthetic cluster",
+    "dataChecksums": true,
+    "fsync": true,
+    "fullPageWrites": true,
+    "synchronousCommit": true,
+    "temporaryRuntimeOutsideRepository": true,
+    "repositoryEnvironmentFilesCreated": false,
+    "customerOrProviderDataUsed": false
+  },
+  "databaseVerification": {
+    "command": "CI=true pnpm exec vitest run --project integration packages/database/src",
+    "status": "passed",
+    "testFilesPassed": 10,
+    "testsPassed": 37,
+    "testsSkipped": 0,
+    "elapsedSeconds": 4.81,
+    "rolesExercised": [
+      "administrator",
+      "reconai_migrator",
+      "reconai_app",
+      "reconai_worker"
+    ],
+    "restrictedRoleProperties": {
+      "superuser": false,
+      "createDatabase": false,
+      "createRole": false,
+      "inherit": false,
+      "bypassRls": false
+    },
+    "migrationLedger": {
+      "appliedMigrations": 51,
+      "firstVersion": "0000_broken_shriek.sql",
+      "lastVersion": "0050_provider_privacy_data_package_receipts.sql",
+      "sourceChainSha256": "65f50eb6d241c9e5b510cdfdb90277c41a401f4d803357c1752f762de3e1d7d1",
+      "migration0049LedgerSha256": "fcf9b9e7ec1151231699257e0cadbde56ee3d321f029770bbe51eaaabeb896a0",
+      "migration0050LedgerSha256": "645b495ccc63d2d9e6d330cdfea20c09f030aba49cdd1ac7be24a895c2afc85c"
+    },
+    "catalogSnapshot": {
+      "publicTables": 42,
+      "rlsEnabledTables": 41,
+      "forcedRlsTables": 41,
+      "targetForcedRlsTables": [
+        "source_event_object_classifications",
+        "provider_privacy_data_packages",
+        "provider_privacy_data_package_receipts"
+      ],
+      "classificationPrivileges": {
+        "reconai_app": [
+          "INSERT",
+          "SELECT"
+        ],
+        "reconai_worker": [
+          "INSERT",
+          "SELECT"
+        ]
+      },
+      "privacyPackagePrivileges": {
+        "reconai_app": [
+          "INSERT"
+        ],
+        "reconai_worker": []
+      },
+      "privacyReceiptDirectTablePrivileges": {
+        "reconai_app": [],
+        "reconai_worker": []
+      }
+    },
+    "coveredDatabaseSurfaces": [
+      "fresh migration execution",
+      "populated 0041-to-0050 previous-release upgrade with preserved membership and audit evidence",
+      "tenant isolation and cross-tenant not-found behavior",
+      "provider authorization and encrypted connector credential lifecycle",
+      "Shopify webhook deduplication, ordering, privacy intake, deadline alerts, erasure tombstones, and append-only denials",
+      "source-event family classification persistence and restricted grants",
+      "minimized Stripe balance-transaction fee persistence, classification, replay, and tenant isolation",
+      "privacy-package digest-only authority, same-membership receipt, idempotence, cross-tenant concealment, audit atomicity, append-only behavior, and worker denial",
+      "CSV import, outbox, retention, provider sync, and job execution boundaries"
+    ]
+  },
+  "harnessCorrections": [
+    {
+      "file": "packages/database/src/provider-webhook.integration.test.ts",
+      "problemObserved": "The live privacy-package preparation path was rejected by provider_privacy_data_packages_preparer_membership_fk because the integration fixture created tenant contexts but did not persist their synthetic users and memberships.",
+      "correction": "Seed both synthetic users and active administrator memberships before provider connections.",
+      "productionBehaviorChanged": false,
+      "databaseControlWeakened": false,
+      "postCorrectionTargetedResult": "2 tests passed"
+    },
+    {
+      "file": "packages/database/src/upgrade.integration.test.ts",
+      "problemObserved": "The previous-release upgrade expectation stopped at migration 0047 even though the migrator correctly applied 0048, 0049, and 0050.",
+      "correction": "Extend the exact pending migration list and current ledger expectation through 0050; assert the new watermark index and forced-RLS classification/package/receipt tables.",
+      "productionBehaviorChanged": false,
+      "postCorrectionTargetedResult": "2 tests passed"
+    }
+  ],
+  "repositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 75,
+    "testsPassed": 499,
+    "migrationsValidated": 51,
+    "migrationChainSha256": "65f50eb6d241c9e5b510cdfdb90277c41a401f4d803357c1752f762de3e1d7d1",
+    "operationalAlertRulesValidated": 13,
+    "metricContractsValidated": 9,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "productionBuildStatus": "passed",
+    "secretScanStatus": "passed",
+    "dependencyAuditStatus": "no known vulnerabilities"
+  },
+  "sourceSha256": {
+    "packages/database/src/provider-webhook.integration.test.ts": "a229be8d5075866f66ed7cbe312cc280a841bc96d8556548f50c88cfb78c660a",
+    "packages/database/src/upgrade.integration.test.ts": "870263307edd7162780f8866c215b3c08fcbe2d7b7ce0b723184c063a8234e75",
+    "packages/database/src/provider-privacy-data-package.ts": "7edb346f5b70f0d52e089dfdbcfcd91b6de8f6ac6b1f059784f14bd98855847a",
+    "packages/database/migrations/0048_source_event_object_watermark_index.sql": "84d86b8df5b97ecc579058290093ff657e870df8154eba02e4e3b77c1ac526a6",
+    "packages/database/migrations/0049_source_event_object_classifications.sql": "fcf9b9e7ec1151231699257e0cadbde56ee3d321f029770bbe51eaaabeb896a0",
+    "packages/database/migrations/0050_provider_privacy_data_package_receipts.sql": "645b495ccc63d2d9e6d330cdfea20c09f030aba49cdd1ac7be24a895c2afc85c",
+    "GOALS.md": "50eeeb49150d3ac78ac10c8a83b142c6a73c1e8fddd985f93db86238978f9758",
+    "docs/goals/goal-1-vertical-slice.md": "3d8d02f11bbb8430e6fdc91e6a43f69d3faca131e836afde7ad1ec154d1834e0",
+    "docs/security-review.md": "0840f8ac600c1467945ff3ae5bde0c0e6cfe9a23ad5e35ad9dccdce8e8661a88",
+    "docs/threat-model.md": "1f1b4e5e7f0e7cc8d700e9195f9604ce54e273c0168be4a49dc9a2a29d66e129",
+    "docs/known-limitations.md": "fc45e5359285ba921ab3a68bece9f6d9203bbe2b3fa113211027b21e62125e59"
+  },
+  "repositoryState": {
+    "jsonEvidenceArtifactsAfterThisRun": 82,
+    "migrationFiles": 51,
+    "stagedFiles": 0,
+    "runtimeEnvironmentFilesPresent": false,
+    "environmentTemplatePresent": true
+  },
+  "goalStatus": {
+    "goal": "Goal 1 — Deterministic vertical slice",
+    "status": "Active",
+    "verifiedComplete": false
+  },
+  "remainingClaimBoundary": [
+    "No authorized Shopify or Stripe provider acceptance run exists.",
+    "No bounded populated repair of pre-classification receipts or mixed-writer rollout rehearsal exists.",
+    "No hosted PostgreSQL, protected staging, representative distributed load/partition, or production deployment evidence exists.",
+    "No owner-approved retention, provider capacity, privacy transfer/disposition, alert thresholds, notification delivery, or on-call response evidence exists.",
+    "Privacy-package browser receipt remains evidence of complete bytes received by the authenticated preparing browser, not merchant/customer delivery, recipient acknowledgement, review, fulfillment, or downloaded-copy disposal."
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-07-28T15:46:22Z",
+  "environment": "local-synthetic",
+  "scope": "Explicit ReconAI API, durable-worker, reconciliation, and outbox OTLP/HTTP protobuf runtime contract",
+  "runtime": {
+    "node": "v24.15.0",
+    "pnpm": "11.9.0",
+    "opentelemetryApi": "1.9.1",
+    "opentelemetrySdk": "2.10.0",
+    "opentelemetryOtlpExporters": "0.221.0",
+    "captureEndpoint": "ephemeral loopback HTTP server"
+  },
+  "assertions": [
+    {
+      "name": "standard_signal_paths",
+      "result": "pass",
+      "evidence": "The real exporters POSTed to /v1/traces and /v1/metrics only."
+    },
+    {
+      "name": "protobuf_transport",
+      "result": "pass",
+      "evidence": "Both requests used application/x-protobuf and contained non-empty bodies."
+    },
+    {
+      "name": "explicit_resources_and_instruments",
+      "result": "pass",
+      "evidence": "Captured bytes contained the fixed test service plus API, worker, reconciliation, and outbox instruments."
+    },
+    {
+      "name": "w3c_parent_extraction",
+      "result": "pass",
+      "evidence": "A valid version-00 traceparent produced the expected active 32-hex trace ID."
+    },
+    {
+      "name": "untrusted_context_minimization",
+      "result": "pass",
+      "evidence": "Caller-controlled tracestate is unsupported; invalid caller text supplied as method and traceparent was normalized/rejected and absent from captured bytes."
+    },
+    {
+      "name": "tenant_and_payload_sentinel_scan",
+      "result": "pass",
+      "evidence": "Captured protobuf bytes did not contain organization-secret-value or customer-payload-value."
+    },
+    {
+      "name": "configuration_fail_closed",
+      "result": "pass",
+      "evidence": "Production requires a fixed HTTPS collector origin; credentials, path, query, fragment, plaintext production transport, invalid sampling, and incompatible timeout/interval are rejected."
+    },
+    {
+      "name": "local_disabled_mode",
+      "result": "pass",
+      "evidence": "An empty non-production endpoint returned a network-free no-op runtime."
+    },
+    {
+      "name": "bounded_runtime",
+      "result": "pass",
+      "evidence": "Sampling, signal concurrency, trace queue/batch, span fields, metric cardinality/batch, export interval, and timeout have explicit ceilings."
+    },
+    {
+      "name": "reconciliation_aggregate_signals",
+      "result": "pass",
+      "evidence": "Run outcome/duration and input/match/exception/ambiguous-candidate values exported with fixed labels and no organization or run identifier; replay wiring omits duplicate result totals."
+    },
+    {
+      "name": "outbox_aggregate_signals",
+      "result": "pass",
+      "evidence": "Relay batch outcome/duration and published/retried/dead-lettered event values exported with fixed labels and no tenant, event, job, or payload identifier."
+    },
+    {
+      "name": "graceful_flush",
+      "result": "pass",
+      "evidence": "forceFlush delivered both signals and shutdown closed both providers and the loopback server."
+    }
+  ],
+  "commands": [
+    {
+      "command": "pnpm exec vitest run --project unit packages/observability/src/observability.test.ts packages/config/src/config.test.ts",
+      "result": "pass",
+      "summary": "2 files, 28 tests"
+    },
+    {
+      "command": "pnpm test",
+      "result": "pass",
+      "summary": "64 files, 336 tests"
+    },
+    {
+      "command": "CI=true pnpm verify",
+      "result": "pass",
+      "summary": "format, lint, typecheck, 336 tests, migration/schema/config/edge/OIDC/container/dependency/license policies, and all builds"
+    },
+    {
+      "command": "pnpm secret:scan",
+      "result": "pass",
+      "summary": "secretlint reported no finding"
+    },
+    {
+      "command": "pnpm audit --prod --audit-level high",
+      "result": "pass",
+      "summary": "No known vulnerabilities found"
+    },
+    {
+      "command": "pnpm license:check",
+      "result": "pass",
+      "summary": "224 production packages matched the approved offline inventory"
+    }
+  ],
+  "sha256": {
+    "packages/observability/src/runtime.ts": "c6f868d38f91745c06cf5c3d252a221f7318defa6e31af33102f66a5840103d0",
+    "packages/observability/src/telemetry.ts": "d5cdadccc6cb71eff8a72c999a12f4168a4c29c470574937644a78923865315c",
+    "packages/observability/src/observability.test.ts": "37aeb2fe1d8e1381be068642fd9a870c73b900f5e7a44709bb1d6ef25b2782f7",
+    "packages/config/src/index.ts": "0cab41944b56d929d34587ffaecac5a0086bc260c336a8809275346c38cae3f6",
+    "apps/api/src/app.ts": "94502836299cd3c5ee0b0b66bc37cf578f5a2f3b2e21c2c33fdca151cc4176c9",
+    "apps/api/src/main.ts": "bc1afffada9e915a733cf61b181679a39567ad0ceee1518fb1a9b658ee39ec7a",
+    "apps/worker/src/worker.ts": "369dfa74fbb9a675f9bd722ee833008932dd62714c4545da4d6a3555b77ce8ec",
+    "apps/worker/src/main.ts": "527eb54435f60af96d35b69d219a5d766009c97869e9e1a0f9ebcd6b6907d62d",
+    "apps/worker/src/outbox-relay.ts": "3c25090c410471d106203fd9695dcc2da4262a96f5b4b84ae1c693206912c527",
+    "pnpm-lock.yaml": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "config/production-license-inventory.json": "ed281766e77ec75ce56cca5564c60bedea6e4ed1101c1e9370f3983a65c9091f",
+    "artifacts/sbom.cdx.json": "93dedecb513245e9ffd805e5324ad594e36fe16aa169a2bbcc803958ee716fe7"
+  },
+  "cleanup": {
+    "captureServerClosed": true,
+    "temporaryFilesCreated": false,
+    "relevantListeningProcessesRemaining": false
+  },
+  "limitations": [
+    "This is a local loopback exporter contract, not protected staging or production collector/backend evidence.",
+    "W3C context is not persisted through the outbox; worker consumer spans are separate traces correlated through logs.",
+    "Queue depth/age, connector freshness, webhook, review-age, and AI signals remain unimplemented.",
+    "Collector authentication, egress/TLS, backend access and retention, representative load/cardinality, outage/recovery, termination, dashboards, and external alerts remain unexercised."
+  ],
+  "claim": "Local observability runtime and OTLP transport contract verified; no production-readiness, SLO, staging, or alert-delivery claim."
+}

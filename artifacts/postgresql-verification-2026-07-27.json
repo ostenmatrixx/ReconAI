@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-27T16:04:02Z",
+  "component": "current-postgresql-integration-suite",
+  "outcome": "passed",
+  "database": {
+    "serverVersion": "PostgreSQL 17.10",
+    "package": "@embedded-postgres/darwin-arm64@17.10.0-beta.17",
+    "binarySha256": "8776e8dfcc8fd7eaaf02db978d00f225a1905b6cbe9ecdd3cf5e86cf3a00e33f",
+    "freshIsolatedDatabase": true,
+    "migrationCount": 32,
+    "migrationChainSha256": "fed45566c68de11255ba0d7efc3031091a6a73ad897671af48f7075ca6ae9af2"
+  },
+  "rolesExercised": [
+    "cluster administrator",
+    "reconai_migrator",
+    "reconai_app",
+    "reconai_worker"
+  ],
+  "testFiles": [
+    "apps/api/src/repository.integration.test.ts",
+    "apps/worker/src/reconciliation-run-execution.integration.test.ts",
+    "packages/database/src/csv-import.integration.test.ts",
+    "packages/database/src/outbox.integration.test.ts",
+    "packages/database/src/provider-sync.integration.test.ts",
+    "packages/database/src/provider-webhook.integration.test.ts",
+    "packages/database/src/retention.integration.test.ts",
+    "packages/database/src/tenant.integration.test.ts",
+    "packages/database/src/upgrade.integration.test.ts"
+  ],
+  "testFileCount": 9,
+  "testsPassed": 23,
+  "coverage": [
+    "tenant and cross-tenant RLS",
+    "append-only audit enforcement",
+    "identity-derived multi-organization directory",
+    "provider receipt idempotency",
+    "bounded Stripe and Shopify provider sync RLS, cursor authority, immutable progress, and retry ceiling",
+    "fixed-service scheduled repair authority, cadence replay, concurrency, active-run, and cross-tenant denial",
+    "CSV commit replay and rollback",
+    "least-privilege outbox relay",
+    "immutable reconciliation run execution and authority",
+    "disabled/held/nonterminal retention denial",
+    "terminal retention claim, retry, finalization, and immutable tombstones",
+    "populated 31-to-32 previous-release upgrade with preservation of member-requested user authority"
+  ],
+  "cleanup": {
+    "serverStopped": true,
+    "temporaryClusterMovedToTrash": true,
+    "listeningPortAfterRun": false
+  },
+  "limitations": [
+    "Redis and object-storage integration files were not part of this database-only command.",
+    "The fixture volume is not representative migration or workload timing evidence.",
+    "No protected staging environment was available."
+  ],
+  "credentialsRecorded": false
+}

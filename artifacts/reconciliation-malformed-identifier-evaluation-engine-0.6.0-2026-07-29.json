@@ -1,0 +1,72 @@
+{
+  "evaluation": "reconciliation-malformed-identifier-v1",
+  "engineVersion": "0.6.0",
+  "ruleSetVersion": "1.4.0",
+  "unsafeCases": [
+    {
+      "category": "surrounding_whitespace",
+      "expectedIssueCode": "SURROUNDING_WHITESPACE",
+      "emittedType": "malformed_identifier",
+      "quarantineApplied": true,
+      "displayUnsafeCodePointsEscaped": true
+    },
+    {
+      "category": "control_character",
+      "expectedIssueCode": "FORBIDDEN_CONTROL_CHARACTER",
+      "emittedType": "malformed_identifier",
+      "quarantineApplied": true,
+      "displayUnsafeCodePointsEscaped": true
+    },
+    {
+      "category": "line_separator",
+      "expectedIssueCode": "FORBIDDEN_LINE_SEPARATOR",
+      "emittedType": "malformed_identifier",
+      "quarantineApplied": true,
+      "displayUnsafeCodePointsEscaped": true
+    },
+    {
+      "category": "bidi_control",
+      "expectedIssueCode": "BIDI_CONTROL_CHARACTER",
+      "emittedType": "malformed_identifier",
+      "quarantineApplied": true,
+      "displayUnsafeCodePointsEscaped": true
+    },
+    {
+      "category": "invisible_format",
+      "expectedIssueCode": "INVISIBLE_FORMAT_CHARACTER",
+      "emittedType": "malformed_identifier",
+      "quarantineApplied": true,
+      "displayUnsafeCodePointsEscaped": true
+    },
+    {
+      "category": "replacement_character",
+      "expectedIssueCode": "REPLACEMENT_CHARACTER",
+      "emittedType": "malformed_identifier",
+      "quarantineApplied": true,
+      "displayUnsafeCodePointsEscaped": true
+    },
+    {
+      "category": "unpaired_surrogate",
+      "expectedIssueCode": "UNPAIRED_SURROGATE",
+      "emittedType": "malformed_identifier",
+      "quarantineApplied": true,
+      "displayUnsafeCodePointsEscaped": true
+    }
+  ],
+  "trimmedExactLink": {
+    "matches": 0,
+    "exceptionTypes": [
+      "malformed_identifier",
+      "payment_missing_order"
+    ],
+    "permutationReplayEquivalent": true
+  },
+  "visibleUnicode": {
+    "accepted": true,
+    "exceptions": 0
+  },
+  "measuredAt": "2026-07-28T17:42:12.610Z",
+  "runtime": "v24.15.0",
+  "platform": "darwin-arm64",
+  "interpretation": "Unsafe identifier formatting emits bounded display-safe evidence and quarantines the affected record from automatic reconciliation. Visible Unicode remains eligible. Synthetic local evidence is not a production data-quality or operator-outcome claim."
+}

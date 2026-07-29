@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-28T13:06:11Z",
+  "component": "current-postgresql-integration-suite-and-upgrade",
+  "outcome": "passed",
+  "database": {
+    "serverVersion": "PostgreSQL 17.10",
+    "package": "@embedded-postgres/darwin-arm64@17.10.0-beta.17",
+    "binarySha256": "8776e8dfcc8fd7eaaf02db978d00f225a1905b6cbe9ecdd3cf5e86cf3a00e33f",
+    "loopbackOnly": true,
+    "freshIsolatedDatabase": true,
+    "migrationCount": 40,
+    "firstMigration": "0000_broken_shriek.sql",
+    "latestMigration": "0039_audit_chain_topology.sql",
+    "migrationLedgerChecksumsValid": true,
+    "migrationChainSha256": "75aaa78f514eda88526ea9dee14e894489cba2a40a91d6a9b8ad656417afe84c"
+  },
+  "rolesExercised": [
+    "cluster administrator",
+    "reconai_migrator",
+    "reconai_app",
+    "reconai_worker"
+  ],
+  "roleAssertions": {
+    "reconai_migratorSuperuser": false,
+    "reconai_migratorBypassRls": false,
+    "reconai_appSuperuser": false,
+    "reconai_appBypassRls": false,
+    "reconai_workerSuperuser": false,
+    "reconai_workerBypassRls": false
+  },
+  "auditTopologyAssertions": {
+    "rowLevelSecurityEnabled": true,
+    "rowLevelSecurityForced": true,
+    "requiredConstraintCount": 3,
+    "requiredIndexCount": 3
+  },
+  "testFiles": [
+    "apps/api/src/repository.integration.test.ts",
+    "apps/worker/src/reconciliation-run-execution.integration.test.ts",
+    "packages/database/src/connector-credentials.integration.test.ts",
+    "packages/database/src/csv-import.integration.test.ts",
+    "packages/database/src/outbox.integration.test.ts",
+    "packages/database/src/provider-authorization.integration.test.ts",
+    "packages/database/src/provider-sync.integration.test.ts",
+    "packages/database/src/provider-webhook.integration.test.ts",
+    "packages/database/src/retention.integration.test.ts",
+    "packages/database/src/tenant.integration.test.ts",
+    "packages/database/src/upgrade.integration.test.ts"
+  ],
+  "testFileCount": 11,
+  "testsPassed": 34,
+  "repeatVerification": {
+    "sameDatabase": true,
+    "testFiles": [
+      "packages/database/src/provider-authorization.integration.test.ts",
+      "packages/database/src/provider-webhook.integration.test.ts"
+    ],
+    "testsPassed": 7
+  },
+  "populatedUpgrade": {
+    "previousMigrationCount": 39,
+    "previousLatestMigration": "0038_provider_privacy_deadline_alerts.sql",
+    "appliedByNormalRunner": [
+      "0039_audit_chain_topology.sql"
+    ],
+    "resultingMigrationCount": 40,
+    "organizations": 2,
+    "users": 1,
+    "memberships": 2,
+    "connections": 1,
+    "providerSyncRuns": 1,
+    "legacyAuditEvents": 2,
+    "membershipSnapshotPreserved": true,
+    "legacyAuditIdsHashesAndPredecessorsPreserved": true,
+    "legacyAuditHashVersionAfterUpgrade": 1,
+    "previousApplicationRoleTenantQueryCompatible": true,
+    "identityDerivedOrganizationDirectoryCompatible": true
+  },
+  "coverage": [
+    "tenant and negative cross-tenant RLS",
+    "append-only audit enforcement and deterministic topological writer",
+    "late and equal business time plus concurrent application-role audit append",
+    "fork, orphan, second-genesis, self-link, cross-tenant predecessor, and multi-row-cycle denial",
+    "identity-derived multi-organization directory",
+    "OAuth state claim, encrypted token installation, refresh rotation, and append-only evidence",
+    "Stripe signed deauthorization authority and replay",
+    "Shopify privacy request minimization, deletion jobs, tombstones, deadline signals, and bounded data package",
+    "connector credential rotation, resolution, revocation, and tenant binding",
+    "provider receipt idempotency, ordering, sync authority, cursor, retry, and repair ceilings",
+    "CSV commit replay and rollback",
+    "least-privilege outbox relay",
+    "immutable reconciliation run execution and authority",
+    "retention legal-hold denial, claim, retry, finalization, and tombstones",
+    "populated 0038-to-0039 upgrade without legacy audit rewrite"
+  ],
+  "demonstratedCorrections": [
+    "advanced the stale upgrade harness from the 0034-to-0035 boundary to the current 0038-to-0039 boundary and seeded a valid legacy audit chain",
+    "aligned the OAuth integration key fixture with the connector encryption-key environment-reference contract",
+    "removed a Shopify privacy update to the nonexistent data_source_connections.last_error_code column",
+    "aligned the OAuth resolver assertion with its access-token-only connector boundary",
+    "made globally deduplicated provider event fixtures unique so the provider suites are repeatable"
+  ],
+  "repositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFiles": 60,
+    "tests": 321,
+    "productionBuild": "passed",
+    "secretScan": "passed",
+    "dependencyAudit": "no known vulnerabilities"
+  },
+  "cleanup": {
+    "serverStopped": true,
+    "temporaryClusterMovedToTrash": true,
+    "trashPath": "<local-home>/.Trash/reconai-pg-verification.LAdU9X",
+    "listeningPortAfterRun": false
+  },
+  "limitations": [
+    "The synthetic fixture volume is not representative migration or workload timing evidence.",
+    "The prior application image was not launched against the upgraded schema.",
+    "No backup restoration or production-style cutover was exercised.",
+    "Redis and object-storage integration files were not part of this database-only command.",
+    "No real Shopify or Stripe credential, provider sandbox, or production payload was used.",
+    "No protected staging environment was available."
+  ],
+  "credentialsRecorded": false
+}

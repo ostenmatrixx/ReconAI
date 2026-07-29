@@ -1,0 +1,256 @@
+{
+  "evidenceType": "durable-producer-trace-context-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T02:27:48.681Z",
+  "scope": "Local source, schema, unit, tenant/API, loopback OTLP/HTTP protobuf, and fresh restricted-role PostgreSQL 17.10 evidence for extending authenticated trace-context propagation to every current shared durable-envelope type. No production, staging, provider sandbox, external collector, or customer data was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/reconciliation-durable-trace-context-verification-2026-07-29.json",
+      "sha256": "193d91a5279610c2df1384063be53267c7766a4d2c7474fa0199e1aec11f2e2f",
+      "purpose": "Accepted ADR 0036 schema, canonical job-hash binding, authority-before-parent worker contract, reconciliation producer, and two-span loopback trace evidence."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "postgresql": "17.10",
+    "postgresClient": "3.4.9",
+    "opentelemetryApi": "1.9.1",
+    "opentelemetryTraceSdk": "2.10.0",
+    "opentelemetryOtlpProtoExporter": "0.221.0"
+  },
+  "decision": {
+    "governingAdr": "ADR 0036",
+    "newAdrRequired": false,
+    "reasonNoNewAdr": "ADR 0036 explicitly permits other durable producers to adopt the optional field when they capture local context and preserve authority-before-parent ordering.",
+    "securityReviewControl": "OBSERVABILITY-DURABLE-CONTEXT-001",
+    "outerEnvelopeSchemaVersion": 1,
+    "traceContextSchemaVersion": 1,
+    "traceContextOptional": true,
+    "sharedDurableEnvelopeTypes": [
+      "connector.webhook.received",
+      "csv.import.commit",
+      "connector.sync.requested",
+      "reconciliation.run.requested"
+    ],
+    "sharedDurableEnvelopeTypesWithProducerCapture": [
+      "connector.webhook.received",
+      "csv.import.commit",
+      "connector.sync.requested",
+      "reconciliation.run.requested"
+    ],
+    "fieldsPersisted": [
+      "schemaVersion",
+      "traceparent"
+    ],
+    "rawInboundTraceparentPersisted": false,
+    "tracestatePersisted": false,
+    "baggagePersisted": false,
+    "traceContextIncludedInCanonicalJobHash": true,
+    "workerAuthorityOrderingChanged": false,
+    "schemaMigrationRequired": false,
+    "moneyRulePermissionOrProviderScopeChanged": false
+  },
+  "producerContract": {
+    "captureSource": "activeTraceparent() from the currently active locally accepted API or authorized worker consumer span",
+    "providerWebhookAuthorizationBoundary": "The local context is passed into the service, but the immutable receipt and outbox are written only after exact provider-signature verification and tenant-bound connection authority resolution.",
+    "csvCommitAuthorizationBoundary": "Tenant permission is resolved before locally accepted context reaches the commit service and tenant transaction.",
+    "userProviderSyncAuthorizationBoundary": "Tenant permission and exact organization confirmation are resolved before locally accepted context reaches the sync manager and tenant transaction.",
+    "reconciliationAuthorizationBoundary": "Existing tenant-authorized ADR 0036 producer remains unchanged.",
+    "nestedProviderSyncBoundary": "After the sync queue envelope is authorized against PostgreSQL and its consumer span is active, the worker captures that local span for each child connector.webhook.received envelope.",
+    "scheduledProviderSyncRoot": "provider-gap-repair-scheduler requests intentionally omit traceContext because no authenticated API request exists; child item jobs can continue from the active authorized sync-consumer span.",
+    "legacyEnvelopeWithoutContextAccepted": true,
+    "contextValidatedBeforeProviderObjectWrite": true,
+    "contextValidatedBeforeCsvOrSyncOutboxWrite": true,
+    "exactReplayReplacesFirstStoredContext": false,
+    "publicApiResponseContainsTraceContext": false
+  },
+  "schemaAndReplayVerification": {
+    "singleSharedConstructionHelper": "createDurableTraceContext",
+    "undefinedContextOmitted": true,
+    "invalidSecretLikeContextRejected": true,
+    "invalidContextCreatesProviderReceipt": false,
+    "invalidContextCreatesProviderObject": false,
+    "duplicateWebhookWithDifferentContextKeepsFirstImmutableEnvelope": true,
+    "scheduledSyncContextOmitted": true,
+    "unknownContextFieldsAccepted": false,
+    "jobIdentityStillBindsCompleteContext": true
+  },
+  "otlpTraceVerification": {
+    "transport": "OTLP/HTTP protobuf",
+    "captureAddress": "ephemeral loopback HTTP server",
+    "apiSpanToDurableConsumerSharedTraceId": true,
+    "durableConsumerToNestedDurableConsumerSharedTraceId": true,
+    "distinctSpanIdsInThreeSpanChain": true,
+    "nestedContextCapturedOnlyWhileAuthorizedConsumerSpanActive": true,
+    "tracePayloadNonEmpty": true,
+    "forbiddenOrganizationCustomerCredentialPaymentSentinelsAbsent": true,
+    "singleProcessContractTest": true
+  },
+  "focusedVerification": [
+    {
+      "command": "pnpm exec vitest run --project unit packages/connectors/src/connectors.test.ts packages/ingestion/src/provider-webhooks.test.ts packages/ingestion/src/ingestion.test.ts packages/ingestion/src/provider-sync.test.ts packages/observability/src/observability.test.ts apps/worker/src/worker.test.ts",
+      "testFilesPassed": 6,
+      "testsPassed": 32,
+      "testsFailed": 0
+    },
+    {
+      "command": "pnpm exec vitest run --project tenant apps/api/src/app.tenant.test.ts",
+      "testFilesPassed": 1,
+      "testsPassed": 50,
+      "testsFailed": 0,
+      "rawCallerHeaderCopiedWithoutLocalSpan": false
+    }
+  ],
+  "freshPostgresqlVerification": {
+    "command": "DATABASE_ADMIN_URL=[fresh-loopback-admin] DATABASE_MIGRATION_URL=[fresh-loopback-migrator] DATABASE_URL=[fresh-loopback-restricted-app] DATABASE_WORKER_URL=[fresh-loopback-restricted-worker] pnpm exec vitest run --project integration packages/database/src/provider-webhook.integration.test.ts packages/database/src/csv-import.integration.test.ts packages/database/src/provider-sync.integration.test.ts",
+    "loopbackPort": 55468,
+    "freshDatabase": true,
+    "databaseSystemIdentifier": "7667769111491741014",
+    "hostAuthentication": "loopback-only trust for disposable local test orchestration",
+    "dataChecksumsEnabled": true,
+    "migrationsApplied": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "testFilesPassed": 3,
+    "testsPassed": 6,
+    "testsFailed": 0,
+    "roles": {
+      "reconai_migrator": {
+        "superuser": false,
+        "createDatabase": false,
+        "createRole": false,
+        "bypassesRls": false
+      },
+      "reconai_app": {
+        "superuser": false,
+        "createDatabase": false,
+        "createRole": false,
+        "bypassesRls": false
+      },
+      "reconai_worker": {
+        "superuser": false,
+        "createDatabase": false,
+        "createRole": false,
+        "bypassesRls": false
+      }
+    },
+    "forcedRlsTables": [
+      "imports",
+      "outbox_events",
+      "provider_sync_runs",
+      "source_events"
+    ],
+    "outboxEvidence": {
+      "connector.webhook.received": {
+        "total": 2,
+        "withTraceContext": 1,
+        "withoutTraceContext": 1
+      },
+      "csv.import.commit": {
+        "total": 1,
+        "withTraceContext": 1,
+        "withoutTraceContext": 0
+      },
+      "connector.sync.requested": {
+        "total": 6,
+        "withTraceContext": 1,
+        "withoutTraceContext": 5,
+        "scheduledProviderGapRepairRoots": 3
+      },
+      "exactExpectedContextBearingTypes": [
+        "connector.webhook.received",
+        "csv.import.commit",
+        "connector.sync.requested"
+      ],
+      "contextShapeMismatches": 0,
+      "forbiddenTracestateBaggageCredentialSentinels": 0
+    },
+    "offlineChecksumVerification": {
+      "filesScanned": 1468,
+      "blocksScanned": 4074,
+      "badChecksums": 0,
+      "dataChecksumVersion": 1
+    },
+    "runtimeStopped": true,
+    "listenPortClosed": true,
+    "runtimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-trace-producers-pg.BFKbno-verified-20260729",
+    "postgresqlLogLines": 92,
+    "postgresqlLogBytes": 6739,
+    "postgresqlLogSha256": "1fcc3ba433d46022f3300ee4f960344ce6a78ce22e1eb5828b6216ad5208e06a",
+    "initdbLogLines": 24,
+    "initdbLogBytes": 983,
+    "initdbLogSha256": "4c58d3f20febeee0f68b7a1f2acaa6aebcc932b5427320f08e394968e158544e"
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 69,
+    "testsPassed": 446,
+    "testsFailed": 0,
+    "migrationsValidated": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "secretScan": "passed",
+    "productionDependencyAuditAtHighSeverity": "no known vulnerabilities found"
+  },
+  "sourceSha256": {
+    "packages/connectors/src/index.ts": "8eb47d9b357bd9fb260c12987bb581d555b837d08a73bd2a3833d73004a4ea33",
+    "packages/connectors/src/connectors.test.ts": "45861b90eb1af4f70720887acefcd771209f9286166f81534ea96900b4a92d46",
+    "packages/ingestion/src/provider-webhooks.ts": "c0ea66ff3fc79bf00158e0ff47f98bf0e1657fc8d9aa8502421aedee4fad23f5",
+    "packages/ingestion/src/provider-webhooks.test.ts": "e8ef1349916837d98067b8a8b95e704e23d02f0553c5f03ce7c78eb649120b0b",
+    "packages/ingestion/src/index.ts": "a3d19f103bf2a80d16e1e6616379bca448e759549038c2b14832599572216912",
+    "packages/ingestion/src/ingestion.test.ts": "ce11f1549a19d1bbe726b49cbdea9a0a20b437085e52e535e9a6b83b39debfdf",
+    "packages/ingestion/src/provider-sync.ts": "8f11cac9ab35897f133dacb7c085ce2ce66d12b9fe134674d77ead9a7699955a",
+    "packages/ingestion/src/provider-sync.test.ts": "4a1eaef72e9c10399ce3eb5ff73e17c46ec7b2067aa69ab1baf95914c0f6f90a",
+    "packages/database/src/csv-imports.ts": "18f28ffb72478efa338eb6ad58bdb6c6e077901dc76ef6134e856b29d6a0246a",
+    "packages/database/src/csv-import.integration.test.ts": "dc41c9b2ef9d041716fc5bd58b587c42feeb54654fc591e9c1d3c155a6b97ddf",
+    "packages/database/src/provider-sync.ts": "91aa16d3c76c1cb26c188d67e979b9a2617426340bcaccb12acc6c62ee071a89",
+    "packages/database/src/provider-sync.integration.test.ts": "3b5b3779cc887e06144c9a12d2a4660a5b1f6b24a6a38aac301686f1b55dee3b",
+    "packages/database/src/provider-webhook.integration.test.ts": "24566e3faaf3ce2a377f5e39d2c013b36a6ea82e0bce1b8bb6f71da8e64cd4cf",
+    "packages/observability/src/observability.test.ts": "1a39097abf6b04c4145f0e499dd628804d98098f74431deb5f1b46d5a6134d36",
+    "apps/api/src/app.ts": "3d7e839e5d3790e774b0623b08406f5266eba8070ab89fc2ebc9d530579ede07",
+    "apps/api/src/app.tenant.test.ts": "64ea94a76fdc99231f0f885afdef27fbbd5181c8411b0930b589f1f5c16f876f",
+    "apps/worker/src/main.ts": "4e56e7ecd71ddbb55f1d7946ae2ddcda78a38620ddcbd77810b998b049d0908d",
+    "apps/worker/src/worker.ts": "8e87a38f3124ba2a063de62fd6f2ceef53a08faf8cb9e3c096742325c365766b",
+    "apps/worker/src/worker.test.ts": "df5922212e82d7a5dd7b5f1cbcad920606e16a8e3c1b3178d1c8353d62c059e5",
+    "docs/adr/0036-authenticated-durable-trace-context.md": "1a441987b06bc0aceba8a1aee259e748bc66f5f698e52d1c72e275130786eef7",
+    "docs/observability.md": "78042e7ee3b3c6062a5f0e52551b936108f3f9569d613360627dec723eeff068",
+    "docs/architecture.md": "002361fe997002f895061af625d499831d6ce6de7c38573c5c91b1923bd983cd",
+    "docs/threat-model.md": "bd4423913b0aec1b729a13aebe77ccb1deadfc3910e4f55d1d2620b7630b27c3",
+    "docs/security-review.md": "83a5c08d2b19908b519becef3853a738dee1e10c42135d09f5d6ec295141adc8",
+    "docs/known-limitations.md": "aa6f82776f83a416cbb60cbdd231767efee7d9a158b1bbcc315f812402dde330",
+    "docs/goals/goal-1-vertical-slice.md": "1a22db19bf687c2a41009d5166a7b611dbfe1c7962b63291b6a224cfec3e9c2b",
+    "docs/goals/goal-1-audit-2026-07-29.md": "6eef4808e7d21db346501b767237b035181ec9aabd555421f6b08d6f63974b46",
+    "docs/goals/goal-0-foundation.md": "fbebda30f3288df3805edbbd300bc2ddb3d77542cbd9b5bd6226217dbbfb30aa",
+    "README.md": "a777580f039d0ea8b2a7e73c0c659184d7173a3723b199c12a13ca98fb6cc512",
+    "GOALS.md": "a28039ffeb3e8ae744f6535ef8c00a7596cc36687728a3ed2ff652bbcc1c847c",
+    "CHANGELOG.md": "fad60d0210dc7577380f6c7180f36922a47c5737aa7b992e1bc74e2afa88e4ae"
+  },
+  "safety": {
+    "loopbackOnly": true,
+    "syntheticDataOnly": true,
+    "productionDataUsed": false,
+    "productionOrStagingAccessed": false,
+    "providerSandboxOrExternalCollectorAccessed": false,
+    "sourceSystemWriteScopeChanged": false,
+    "financialOrApprovalAuthorityChanged": false,
+    "environmentFileCreated": false,
+    "repositoryFilesStaged": 0,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "The loopback OTLP test runs one process-global SDK and reconstructs API, durable consumer, and nested durable consumer spans directly. It proves context semantics, not a deployed API/outbox/Redis/worker/collector multi-process trace.",
+    "The fresh PostgreSQL exercise verifies exact immutable outbox payloads and restricted application/worker behavior but does not run Redis, BullMQ, an independent API process, or an independent worker process.",
+    "The disposable database used loopback host trust for test orchestration. Role capability, tenant transactions, forced RLS, and offline checksums were exercised, but this is not production transport/authentication evidence.",
+    "Provider webhook and sync behavior used synthetic signed fixtures and page sources. No authorized Shopify or Stripe sandbox was accessed.",
+    "Scheduled provider-sync requests intentionally have no authenticated request parent and start roots. Existing envelopes without traceContext also remain valid roots for rolling compatibility.",
+    "No protected collector/backend, authentication/egress, retention/access policy, trace search, representative load, collector outage, termination, dashboard, alert, notification, acknowledgement, or on-call response was exercised.",
+    "Trace context intentionally contains no tenant, customer, payment, job, credential, or financial data. Operators must use separately protected correlation and tenant-authorized evidence.",
+    "Telemetry remains bounded and lossy. Missing context or export failure starts or breaks a trace but cannot alter financial work, durable identity, retries, approval, or source-system state."
+  ],
+  "claim": "All current shared durable-envelope producers locally satisfy the authenticated versioned trace-context contract with authority-before-parent worker handling. This is local contract evidence, not production readiness, staging compatibility, provider connectivity, an SLO, or an exercised operational alert path."
+}

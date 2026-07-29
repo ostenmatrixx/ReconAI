@@ -1,0 +1,11 @@
+{
+  "mode": "autonomous",
+  "sourceOfTruth": {
+    "product": "PRD.md",
+    "execution": "GOALS.md",
+    "contributorRules": "AGENTS.md"
+  },
+  "research": "targeted",
+  "commitAutomatically": false,
+  "publishAutomatically": false
+}

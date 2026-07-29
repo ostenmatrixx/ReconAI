@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-27T12:17:16Z",
+  "provider": {
+    "name": "Keycloak",
+    "version": "26.7.0",
+    "realmData": "synthetic",
+    "accessTokenLifespanSeconds": 65,
+    "revokeRefreshToken": true,
+    "refreshTokenMaxReuse": 0
+  },
+  "runtime": {
+    "webOrigin": "http://localhost:3000",
+    "issuerOrigin": "http://127.0.0.1:58080",
+    "transport": "loopback development HTTP",
+    "productionTlsClaim": false
+  },
+  "assertions": {
+    "authorizationCodePkceLoginCompleted": true,
+    "accessTokenRotated": true,
+    "refreshTokenRotated": true,
+    "accessTokenExpiryAdvancedSeconds": 6,
+    "browserSessionStatus": 200,
+    "browserReauthenticationRequired": false,
+    "browserCredentialDisclosure": false,
+    "sessionCookieChunkCount": 1,
+    "sessionCookieHttpOnly": true,
+    "sessionCookieSameSite": "Lax"
+  },
+  "limitations": [
+    "This is one isolated local Keycloak exercise, not staging or production identity evidence.",
+    "RP-initiated provider logout and upstream revocation propagation remain unverified.",
+    "No raw access token, refresh token, session cookie, authorization code, or client secret is recorded."
+  ]
+}

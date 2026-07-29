@@ -1,0 +1,100 @@
+name: reconai-local
+
+services:
+  postgres:
+    image: postgres:17.6-alpine3.22@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+    environment:
+      POSTGRES_DB: reconai
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: local-postgres-only
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d reconai"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks: [internal]
+
+  redis:
+    image: redis:8.2.8-alpine@sha256:a7859ed111db3c1f5404a973a4747505d559fb5ca32d37e447afc0ef845a2103
+    command: ["redis-server", "--appendonly", "yes", "--save", "60", "1"]
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks: [internal]
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-07-23T15-54-02Z@sha256:d249d1fb6966de4d8ad26c04754b545205ff15a62e4fd19ebd0f26fa5baacbc0
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: local-minio-only
+      MINIO_ROOT_PASSWORD: local-minio-secret-only
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks: [internal]
+
+  minio-bootstrap:
+    image: quay.io/minio/mc:RELEASE.2025-07-21T05-28-08Z@sha256:fb8f773eac8ef9d6da0486d5dec2f42f219358bcb8de579d1623d518c9ebd4cc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        mc alias set local http://minio:9000 local-minio-only local-minio-secret-only
+        mc mb --ignore-existing local/reconai-development
+        mc anonymous set none local/reconai-development
+    networks: [internal]
+
+  oidc:
+    image: quay.io/keycloak/keycloak:26.7.0@sha256:0f198be292568439d700cdbfb893e69a6009bb43a94a06a945b1d3d506c76b13
+    command: ["start-dev", "--import-realm", "--health-enabled=true"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: local-admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: local-admin-only
+    ports:
+      - "127.0.0.1:8080:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./infra/keycloak/reconai-development-realm.json:/opt/keycloak/data/import/reconai-development-realm.json:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "exec 3<>/dev/tcp/127.0.0.1/9000 && printf 'GET /health/ready HTTP/1.1\\r\\nHost:
+          localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q '200 OK' <&3",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    networks: [internal]
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  minio-data:

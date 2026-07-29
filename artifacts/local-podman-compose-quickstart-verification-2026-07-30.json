@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "reconai-verification-v1",
+  "verification": "local-podman-compose-quickstart",
+  "result": "passed",
+  "generatedAt": "2026-07-29T19:28:47.789Z",
+  "scope": {
+    "customerDataUsed": false,
+    "providerSystemsContacted": false,
+    "productionSystemsContacted": false,
+    "topology": "one rootless Podman machine with host-run web, API, and worker processes"
+  },
+  "runtime": {
+    "host": "Darwin 25.5.0 arm64",
+    "nodeVersion": "v24.15.0",
+    "pnpmVersion": "11.9.0",
+    "podmanClientVersion": "5.8.2",
+    "podmanServerVersion": "5.8.5",
+    "podmanMachine": {
+      "virtualization": "applehv",
+      "rootless": true,
+      "cpus": 4,
+      "memoryBytes": 8589934592
+    },
+    "composeProvider": {
+      "name": "podman-compose",
+      "version": "1.6.0",
+      "installation": "isolated temporary Python virtual environment",
+      "wheelSha256": "98e48af25d44c10ecef948163bfcca002e32aa8bbb7e66593fbd4faff7270c30"
+    },
+    "browserVersion": "Google Chrome for Testing 151.0.7922.34",
+    "images": [
+      "postgres:17.6-alpine3.22@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94",
+      "redis:8.2.8-alpine@sha256:a7859ed111db3c1f5404a973a4747505d559fb5ca32d37e447afc0ef845a2103",
+      "quay.io/minio/minio:RELEASE.2025-07-23T15-54-02Z@sha256:d249d1fb6966de4d8ad26c04754b545205ff15a62e4fd19ebd0f26fa5baacbc0",
+      "quay.io/minio/mc:RELEASE.2025-07-21T05-28-08Z@sha256:fb8f773eac8ef9d6da0486d5dec2f42f219358bcb8de579d1623d518c9ebd4cc",
+      "quay.io/keycloak/keycloak:26.7.0@sha256:0f198be292568439d700cdbfb893e69a6009bb43a94a06a945b1d3d506c76b13"
+    ],
+    "sourceHashes": {
+      "compose.yaml": "ad41a75bc75c3bdeb4f110e994f7ef8522015f3803b0893ccad9b464168bb885",
+      "scripts/run-compose.mjs": "13c94bddf2d7763f48f2a2a9569a26ca94de0847930090c1a6665e1e3bab995c",
+      "scripts/run-compose.test.mjs": "39ceafa73ade625becb81f18fba4c0092cd42e39f4789e50625d6096e2e901ad",
+      ".env.example": "c626cb29f2d9fe355037e9137f918a9181a3f3a65fd56f70fc32597dc41298fa",
+      "infra/keycloak/reconai-development-realm.json": "4fbfc8a1ed62288b56f4719275ac25a3e342eeeb865d407940fcc3b31c3f6c8b",
+      "package.json": "4c428c3b9f151f080f393120657251665d6a66c87378261db6a6ef6238c8973e",
+      "pnpm-lock.yaml": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0"
+    }
+  },
+  "infrastructure": {
+    "initialProjectContainers": 0,
+    "initialProjectVolumes": 0,
+    "composeConfigurationParsed": true,
+    "postgresqlHealthy": true,
+    "redisHealthy": true,
+    "minioHealthy": true,
+    "keycloakHealthy": true,
+    "minioBootstrapExitCode": 0,
+    "oidcDiscoveryIssuerMatched": true,
+    "minioReadyProbePassed": true,
+    "idempotentInfraUpPassed": true,
+    "infraLogsExitCode": 0,
+    "infraLogLinesChecked": 224,
+    "knownLocalCredentialValuesFoundInLogs": false
+  },
+  "databaseAndFixtures": {
+    "appliedMigrations": 56,
+    "migrationChainSha256": "4c05eb0dc3685fcf04cdd9f236b7632e6263a8e097196bc6ca8849bfa04e1f96",
+    "organizations": 2,
+    "users": 2,
+    "memberships": 2,
+    "connections": 3,
+    "imports": 1,
+    "sourceEvents": 8,
+    "canonicalRecords": 8,
+    "fieldProvenanceRows": 54,
+    "auditEvents": 4,
+    "privateObjectCount": 7,
+    "unpublishedOutboxEventsAfterWorker": 0,
+    "tenantlessApplicationRoleCounts": {
+      "organizations": 0,
+      "memberships": 0,
+      "sourceEvents": 0,
+      "canonicalRecords": 0,
+      "auditEvents": 0
+    }
+  },
+  "applicationSmoke": {
+    "apiLivenessStatus": 200,
+    "apiReadinessStatus": 200,
+    "publicWebStatus": 200,
+    "oidcAuthorizationCodePkceLoginPassed": true,
+    "authenticatedDashboardRendered": true,
+    "selectedOrganization": "synthetic fixture",
+    "exceptionQueueRendered": true,
+    "connectorHealthRendered": true,
+    "expectedConnectionRows": 3,
+    "completedCsvImportRendered": true,
+    "browserConsoleErrors": 0,
+    "browserConsoleWarnings": 1,
+    "warningClassification": "Next.js development-only smooth-scroll advisory"
+  },
+  "cleanup": {
+    "applicationProcessesStopped": true,
+    "projectContainersRemaining": 0,
+    "projectVolumesDeleted": 3,
+    "projectVolumesRemaining": 0,
+    "reservedPortsRemaining": 0,
+    "runtimeEnvironmentFileCreated": false,
+    "temporaryDirectoriesMovedToTrash": 2,
+    "composeImagesRetainedAsNon-authoritativeLocalCache": 5
+  },
+  "controlsExercised": [
+    "digest-pinned PostgreSQL, Redis, MinIO, MinIO client, and Keycloak image pulls",
+    "portable fixed-command Docker-or-Podman Compose selection without arbitrary executable input",
+    "bounded explicit Podman health polling with unhealthy and failed one-shot denial",
+    "loopback-only service publication and private Compose network",
+    "real 56-migration runner and synthetic fixture loader",
+    "host-run API composite readiness across PostgreSQL, Redis, and private object storage",
+    "real local Keycloak authorization-code and S256 PKCE browser login",
+    "tenant-derived organization, BFF/API reads, connector health, and completed import rendering",
+    "tenantless restricted application-role RLS reads",
+    "worker outbox consumption and successful documented shutdown"
+  ],
+  "limitations": [
+    "This is a single-workstation development exercise using Podman and synthetic fixtures, not Docker, a literal fresh clone, hosted CI, protected staging, or production evidence.",
+    "The Compose file starts development dependencies; web, API, and worker processes ran on the host and no release-candidate application image was built or deployed.",
+    "The Compose provider was installed into a temporary virtual environment for this run. A self-host must install Docker Compose v2 or a Podman external Compose provider.",
+    "Development-only credentials from the checked-in example configuration were used in memory and were not copied into a runtime .env file or recorded in this artifact.",
+    "The browser recorded one Next.js development-only smooth-scroll advisory and zero console errors.",
+    "Five digest-pinned images remain only as a local Podman cache; every project container, network, data volume, listener, and temporary runtime was removed or moved to Trash.",
+    "No provider sandbox, external identity federation, customer payload, deployment credential, production identifier, or production system was used."
+  ],
+  "credentialsRecorded": false
+}

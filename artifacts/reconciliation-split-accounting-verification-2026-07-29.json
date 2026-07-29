@@ -1,0 +1,226 @@
+{
+  "evidenceType": "reconciliation-split-accounting-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-28T22:09:17Z",
+  "scope": "Local synthetic and fresh loopback PostgreSQL evidence for engine 0.7.0 / rule set 1.5.0 conserved refund-accounting splits. This is not staging, accuracy, operator-outcome, SLO, or production-capacity evidence.",
+  "versions": {
+    "engine": "0.7.0",
+    "ruleSet": "1.5.0",
+    "rule": "1.5.0",
+    "postgresql": "17.10",
+    "node": "v24.15.0",
+    "platform": "darwin-arm64"
+  },
+  "policy": {
+    "minimumAccountingEntries": 2,
+    "maximumAccountingEntries": 50,
+    "strictlyPositiveMinorAmounts": true,
+    "sameCurrencyRequired": true,
+    "exactStrongTransactionReferenceRequired": true,
+    "wholeBucketRequired": true,
+    "subsetSelectionPerformed": false,
+    "orderReferenceOnlyAggregationAllowed": false,
+    "checkedSigned64BitTotal": true,
+    "capturedCurrencyToleranceApplied": true,
+    "crossRefundRowReuseAllowed": false
+  },
+  "postgresqlSource": {
+    "archive": "postgresql-17.10.tar.bz2",
+    "officialDirectory": "https://www.postgresql.org/ftp/source/v17.10/",
+    "officialChecksumFile": "https://ftp.postgresql.org/pub/source/v17.10/postgresql-17.10.tar.bz2.sha256",
+    "archiveSha256": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+    "checksumVerifiedBeforeBuild": true,
+    "compiledBinarySha256": "8c5eec2f2da34b18a119b29b4d59ac18d7ec73ec5ff8264b8f872d5b1c050c77",
+    "cluster": "fresh empty loopback-only disposable cluster using trust authentication for the local test",
+    "locale": "C",
+    "encoding": "UTF8"
+  },
+  "database": {
+    "freshDatabase": true,
+    "migrationsApplied": 44,
+    "firstMigration": "0000_broken_shriek.sql",
+    "latestMigration": "0043_reconciliation_occurrence_snapshots.sql",
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "migrationRequiredForThisChange": false,
+    "workerUsesRestrictedRole": true,
+    "roleAssertions": {
+      "reconai_migratorSuperuser": false,
+      "reconai_migratorBypassRls": false,
+      "reconai_appSuperuser": false,
+      "reconai_appBypassRls": false,
+      "reconai_workerSuperuser": false,
+      "reconai_workerBypassRls": false
+    },
+    "forcedRowLevelSecurity": {
+      "reconciliation_runs": true,
+      "matches": true,
+      "audit_events": true
+    }
+  },
+  "verification": {
+    "focusedReconciliation": {
+      "command": "pnpm exec vitest run packages/reconciliation/src/reconciliation.test.ts",
+      "testFilesPassed": 1,
+      "testsPassed": 59,
+      "testsFailed": 0,
+      "propertyRunsForPositivePartitions": 100
+    },
+    "focusedPostgresqlWorker": {
+      "command": "pnpm exec vitest run --project integration apps/worker/src/reconciliation-run-execution.integration.test.ts",
+      "testFilesPassed": 1,
+      "testsPassed": 3,
+      "testsFailed": 0,
+      "durationMs": 1300
+    },
+    "focusedPostgresqlTenant": {
+      "command": "pnpm exec vitest run --project integration packages/database/src/tenant.integration.test.ts",
+      "testFilesPassed": 1,
+      "testsPassed": 11,
+      "testsFailed": 0,
+      "durationMs": 471
+    },
+    "evaluators": {
+      "benchmarkPassed": true,
+      "collisionEvaluationPassed": true,
+      "identifierEvaluationPassed": true,
+      "taxonomyAndSplitEvaluationPassed": true
+    },
+    "fullVerify": {
+      "command": "CI=true pnpm verify",
+      "passed": true,
+      "testFilesPassed": 68,
+      "testsPassed": 414,
+      "format": "passed",
+      "lint": "passed",
+      "typecheck": "passed",
+      "build": "passed",
+      "migrationsValidated": 44,
+      "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+      "contractEntrypointsValidated": 4,
+      "containerChecks": "3 Dockerfiles, 5 Compose images, 3 workflow images, 25 action pins, and non-publishing candidate controls passed",
+      "dependencyManifestsValidated": 20,
+      "productionLicensesValidated": 224,
+      "lockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94"
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "passed": true
+    },
+    "productionDependencyAudit": {
+      "command": "pnpm audit --prod --audit-level=high",
+      "passed": true,
+      "result": "No known vulnerabilities found"
+    }
+  },
+  "ruleScenario": {
+    "inputRecords": 6,
+    "inputKinds": {
+      "refund": 2,
+      "accounting_entry": 2,
+      "processing_fee": 2
+    },
+    "expectedMatches": 2,
+    "expectedExceptions": 1,
+    "persistedRun": {
+      "status": "succeeded",
+      "engineVersion": "0.7.0",
+      "ruleSetVersion": "1.5.0",
+      "matchCount": 2,
+      "exceptionCount": 1
+    },
+    "persistedMatches": [
+      {
+        "ruleId": "refund",
+        "ruleVersion": "1.5.0",
+        "reasonCode": "SHOPIFY_STRIPE_REFUND_MATCHED",
+        "recordReferences": 2
+      },
+      {
+        "ruleId": "refund-accounting-split",
+        "ruleVersion": "1.5.0",
+        "reasonCode": "REFUND_ACCOUNTING_SPLIT_TOTAL_MATCHED",
+        "recordReferences": 3
+      }
+    ],
+    "persistedExceptions": [
+      {
+        "type": "duplicate_processing_fee",
+        "severity": "high",
+        "ruleVersion": "1.5.0",
+        "reasonCode": "DUPLICATE_SOURCE_EXTERNAL_IDENTIFIER",
+        "recordReferences": 2
+      }
+    ],
+    "immutableOccurrenceSnapshots": {
+      "matchSnapshots": 2,
+      "exceptionSnapshots": 1,
+      "snapshotVersion": "artifact-occurrence-v1",
+      "workerMutationRejectedWithPostgresqlCode": "42501"
+    }
+  },
+  "replay": {
+    "firstExecutionAlreadyCompleted": false,
+    "secondExecutionAlreadyCompleted": true,
+    "stableRunIdentityReused": true,
+    "duplicateArtifactsObserved": false
+  },
+  "tenantIsolation": {
+    "foreignOrganizationVisibleRows": {
+      "reconciliationRuns": 0,
+      "matches": 0,
+      "exceptions": 0,
+      "matchOccurrences": 0,
+      "exceptionOccurrences": 0,
+      "matchSnapshots": 0,
+      "exceptionSnapshots": 0
+    },
+    "generalTenantIntegrationTestsPassed": 11,
+    "crossTenantResult": "passed"
+  },
+  "boundaryCoverage": [
+    "arbitrary complete positive partitions conserve the refund total across 100 property runs",
+    "captured one-minor-unit currency tolerance applies to the complete split total",
+    "non-conserving total records the exact difference and fails",
+    "a competing tolerance-valid one-row representation fails as identity ambiguity",
+    "rows under different strong refund references are never combined",
+    "zero or negative rows cannot be netted into a split",
+    "50 rows are the maximum and 51 fails closed without a partial set",
+    "checked signed-64-bit total overflow fails closed",
+    "a cross-sign mismatch whose difference exceeds signed 64-bit retains exact source evidence without throwing",
+    "strong-reference and amount-window overflow taint prevents hidden row reuse",
+    "one accounting row or split bucket cannot be reused across refunds",
+    "reversed input order replays identically"
+  ],
+  "evaluationArtifacts": [
+    "artifacts/reconciliation-benchmark-engine-0.7.0-2026-07-29.json",
+    "artifacts/reconciliation-collision-evaluation-engine-0.7.0-2026-07-29.json",
+    "artifacts/reconciliation-malformed-identifier-evaluation-engine-0.7.0-2026-07-29.json",
+    "artifacts/reconciliation-taxonomy-accounting-evaluation-engine-0.7.0-2026-07-29.json"
+  ],
+  "sourceSha256": {
+    "packages/reconciliation/src/index.ts": "ccf2308380002b74685cf7c2fd3d222255f88a9f0bf058c5f5c9078c06bfd04f",
+    "packages/reconciliation/src/reconciliation.test.ts": "b0a5bf40a2623334f441f8b8cc36ab18fe00499a09c246341e8c48c41f96156e",
+    "packages/reconciliation/src/taxonomy-evaluation.ts": "1adbd48dea31781832ccfb4325ab39fad164683d15aa350fdd4e5526c74057a5",
+    "apps/worker/src/reconciliation-run-execution.integration.test.ts": "015a93682fd83614d832ab49de9aaa4ab91a9a75bdab08dbf59e4be961fa0784",
+    "apps/worker/src/reconciliation-run-execution.ts": "1b59eb2e87c81d20b171b612958f418f4cbd55fe735f8cf33d2f53f9d1c81cf5",
+    "pnpm-lock.yaml": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94"
+  },
+  "safety": {
+    "moneyUsesBinaryFloatingPoint": false,
+    "currencyConversionAdded": false,
+    "sourceSystemWritesAdded": false,
+    "financialApprovalAuthorityAdded": false,
+    "aiAuthorityChanged": false,
+    "productionDataUsed": false,
+    "externalMessagesSent": false,
+    "deploymentPerformed": false,
+    "gitStageCommitPushPerformed": false
+  },
+  "limitations": [
+    "The accounting rows and provider records are synthetic; representative source distributions and split-shape prevalence are unknown.",
+    "The focused worker invocation did not traverse the API, transactional outbox relay, Redis, BullMQ, BFF, or browser.",
+    "The separate continuous browser-to-worker verifier still uses a one-row accounting fixture rather than a split.",
+    "No protected staging rollout, mixed-image drain, concurrent workload, alert delivery, rollback, or production deployment was authorized or performed.",
+    "The benchmark is one local synthetic run and is not an SLO, percentile, capacity, accuracy, or operator-outcome claim."
+  ]
+}

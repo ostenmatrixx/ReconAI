@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-28T03:43:46Z",
+  "scope": "Deterministic per-tenant audit-chain topology, canonical version-2 event hashing, legacy graph preflight, and fail-closed database constraints",
+  "productionReadinessClaim": false,
+  "result": "static_and_synthetic_verification_passed_live_postgresql_upgrade_concurrency_restore_and_external_anchor_evidence_pending",
+  "environment": {
+    "node": "v24.15.0",
+    "pnpm": "11.9.0",
+    "currentPostgresqlIntegrationConfigured": false,
+    "backupRestoreTested": false,
+    "representativeVolumeMigrationTimed": false,
+    "externalIntegrityAnchorConfigured": false
+  },
+  "defect": {
+    "priorHeadSelection": "occurred_at desc, id desc",
+    "failureMode": "A late event with an older business instant, or equal-time events ordered by unrelated random UUIDs, could leave an already-consumed predecessor eligible for reuse and fork a tenant chain.",
+    "legacyRowsRewritten": false
+  },
+  "implementedControls": [
+    "business occurred_at remains evidence/display chronology and no longer defines chain order",
+    "writer holds the tenant advisory transaction lock and selects the sole event with no child as the topological head",
+    "zero heads with existing rows or more than one head raises AuditChainIntegrityError before insert",
+    "repository-authored rows explicitly use hash version 2",
+    "version-2 SHA-256 input binds tenant, event ID, actor, action, resource, correlation, reason, before/after values, version context, normalized UTC time, predecessor, and hash-version domain",
+    "canonical JSON recursively sorts object keys while preserving array order and explicit nulls",
+    "migration 0039 labels preserved existing rows as version 1 without recomputing or rewriting evidence",
+    "migration preflight aborts on malformed or duplicate hashes, forked predecessors, self-references, missing or multiple genesis events, orphans, unreachable events, and disconnected cycles",
+    "tenant-scoped unique event-hash and predecessor-hash indexes enforce one digest and one child",
+    "partial tenant genesis uniqueness permits exactly one null predecessor after the first insert",
+    "tenant-composite self-foreign key prevents orphaned and cross-tenant predecessor references",
+    "same-lock BEFORE INSERT validation requires every non-replay row to create genesis or extend the current head and blocks disconnected multi-row cycles",
+    "hash-format, self-reference, and bounded hash-version checks fail closed",
+    "existing append-only trigger and update/delete/truncate role denial remain in force",
+    "runbook classifies topology or migration-preflight failure as an integrity incident and forbids silent re-chaining"
+  ],
+  "verification": {
+    "repositoryGate": {
+      "command": "pnpm verify",
+      "status": "passed",
+      "checks": [
+        "Prettier format check",
+        "ESLint with zero warnings",
+        "TypeScript typecheck across 19 workspace projects",
+        "51 unit/tenant/reconciliation files with 270 passing tests",
+        "40-file migration-chain validation",
+        "schema/config/dependency-policy validation",
+        "production builds across all applicable workspace projects, including Next.js"
+      ]
+    },
+    "migrationChain": {
+      "command": "pnpm migrations:check",
+      "status": "passed",
+      "migrationCount": 40,
+      "sha256": "75aaa78f514eda88526ea9dee14e894489cba2a40a91d6a9b8ad656417afe84c",
+      "newBoundary": "0039_audit_chain_topology.sql"
+    },
+    "syntheticAuditCoverage": {
+      "status": "passed",
+      "covered": [
+        "equivalent timezone instants produce the same digest",
+        "nested object key order does not change the digest",
+        "tenant, reason, after-value, and predecessor mutations change the digest",
+        "malformed predecessor and invalid instant fail closed",
+        "migration text requires every legacy preflight and topology constraint"
+      ]
+    },
+    "browserRegression": {
+      "command": "pnpm --filter @workspace/web exec playwright test",
+      "status": "passed",
+      "testCount": 31,
+      "accessibilityScanCount": 10,
+      "interpretation": "No operator regression was introduced; audit topology has no new browser surface."
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "liveIntegrationAttempt": {
+      "command": "pnpm test:integration",
+      "status": "not_executed_missing_environment",
+      "processExitCode": 1,
+      "suiteCountAtSetup": 13,
+      "skippedTestCount": 37,
+      "missingConfiguration": [
+        "DATABASE_ADMIN_URL and related PostgreSQL role URLs",
+        "REDIS_URL",
+        "S3_ENDPOINT and related object-store configuration"
+      ],
+      "plannedAuditCoverage": [
+        "apply migration 0039 through the least-privilege migration role",
+        "append an old-business-time event and an equal-time successor to the actual topological head",
+        "serialize two concurrent application-role writers into one chain and retain exactly one head",
+        "reject a direct second child, orphan, second genesis, self-reference, and cross-tenant predecessor",
+        "reject a disconnected two-event cycle supplied in one multi-row insert",
+        "preserve existing database-owner update rejection",
+        "exercise the preflight against valid and intentionally corrupt populated previous-release databases"
+      ],
+      "interpretation": "No integration assertion ran. The three new PostgreSQL test cases and migration execution remain unavailable evidence, not passing results."
+    }
+  },
+  "operationalImpact": {
+    "migrationIsAdditive": true,
+    "migrationIsLockFree": false,
+    "requiresWriterQuiescence": true,
+    "requiresVerifiedBackup": true,
+    "requiresRepresentativeTiming": true,
+    "rollback": "Leave migration 0039 and immutable rows in place. Stop audit-producing mutations and restore the compatible writer or ship an approved forward repair; do not drop constraints or restore the business-time writer while writes continue."
+  },
+  "remainingEvidenceAndOperationalRisks": [
+    "Run migration 0039 from empty and a populated previous supported release through the migration, application, and worker roles.",
+    "Measure repeated preflight scans, transactional unique-index builds, lock waits, and disk impact at representative audit volume with reviewed lock and statement timeouts.",
+    "Exercise application-role late/equal-time and concurrent writers plus every direct database constraint negative.",
+    "Restore an isolated backup and verify full per-tenant genesis reachability, one head, and version-2 recomputation.",
+    "Design and review external integrity anchoring, key custody, availability, privacy, and disaster recovery if independent notarization is required.",
+    "Version-1 hashes are preserved historical evidence but arbitrary legacy JavaScript object insertion order may not be portably recomputable.",
+    "A fully compromised database owner or host is outside the protection of database-local hash chaining and append-only triggers.",
+    "No production, staging, hosted CI, backup/restore, representative-volume, or external-anchor result is claimed."
+  ],
+  "decisionsAndRunbooks": [
+    "docs/adr/0016-deterministic-audit-chain-topology.md",
+    "docs/architecture.md",
+    "docs/data-model.md",
+    "docs/migrations.md",
+    "docs/upgrade-and-rollback.md",
+    "docs/operations-runbook.md",
+    "docs/threat-model.md",
+    "docs/security-review.md",
+    "docs/known-limitations.md"
+  ]
+}

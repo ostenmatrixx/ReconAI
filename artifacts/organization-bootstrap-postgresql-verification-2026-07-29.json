@@ -1,0 +1,178 @@
+{
+  "artifactVersion": 1,
+  "recordedAt": "2026-07-28T19:32:48Z",
+  "scope": "fresh and populated-upgrade PostgreSQL verification of identity-bound first-organization bootstrap",
+  "sourceState": "uncommitted working tree; no repository commit exists",
+  "outcome": "passed with explicit external identity, multi-user, rolling-image, and staging exclusions",
+  "runtime": {
+    "postgresql": {
+      "version": "17.10",
+      "serverBinarySha256": "8c5eec2f2da34b18a119b29b4d59ac18d7ec73ec5ff8264b8f872d5b1c050c77",
+      "dataChecksums": "on",
+      "listenAddresses": "127.0.0.1",
+      "port": 55461,
+      "authentication": "isolated temporary cluster with loopback-only trust; application, worker, and migrator behavior used separate non-superuser roles",
+      "officialSourceEvidence": "artifacts/reconciliation-continuous-journey-verification-2026-07-29.json"
+    },
+    "redis": {
+      "version": "8.2.8",
+      "serverBinarySha256": "9278d11cd89f1b5ce49ce6d83b5d32f332cc8c883ab4a1aa81095e27252f270a",
+      "listenAddress": "127.0.0.1",
+      "port": 56380,
+      "authentication": "password required; credential not recorded"
+    },
+    "minio": {
+      "version": "RELEASE.2025-07-23T15-54-02Z",
+      "serverBinarySha256": "0939ce5553ce9e6451b69e049fbf399794368276b61da8166f84cbd8c7f2d641",
+      "listenAddress": "127.0.0.1",
+      "apiPort": 59002,
+      "consolePort": 59003,
+      "authentication": "temporary local root credential; credential not recorded"
+    }
+  },
+  "migrationEvidence": {
+    "validatedMigrationCount": 44,
+    "chainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "lastMigration": "0043_reconciliation_occurrence_snapshots.sql",
+    "freshDatabase": {
+      "status": "passed",
+      "appliedBy": "reconai_migrator",
+      "bootstrapMigration": "0042_identity_bound_organization_bootstrap.sql"
+    },
+    "populatedUpgrade": {
+      "status": "passed",
+      "startingBoundary": "0041_paginated_organization_access_directory.sql",
+      "runnerApplied": [
+        "0042_identity_bound_organization_bootstrap.sql",
+        "0043_reconciliation_occurrence_snapshots.sql"
+      ],
+      "preservedEvidence": [
+        "two existing organizations and memberships for one identity",
+        "existing data-source connection and provider sync run",
+        "two-row audit predecessor chain and hashes"
+      ],
+      "postUpgradeBehavior": "the application role created a new owner tenant through reconai_bootstrap_first_organization"
+    }
+  },
+  "focusedVerification": {
+    "command": "DATABASE_*_URL=<isolated-loopback-role-urls> pnpm exec vitest run --project integration apps/api/src/auth.integration.test.ts packages/database/src/tenant.integration.test.ts",
+    "result": {
+      "testFilesPassed": 2,
+      "testsPassed": 14,
+      "testsFailed": 0
+    },
+    "coveredCases": [
+      "actual PostgresOrganizationBootstrapper transaction under reconai_app",
+      "one server-generated organization, user, owner membership, and bootstrap request",
+      "AI disabled on the created organization",
+      "one canonical organization.created audit event in the creation transaction",
+      "exact replay returns the original authority and appends no duplicate audit",
+      "two concurrent service calls converge on created plus replayed and one durable authority set",
+      "invalid first audit correlation UUID rolls back user, organization, membership, request, and audit creation",
+      "clean retry after forced audit rollback succeeds",
+      "identity-derived directory returns the created tenant only to its verified issuer and subject",
+      "foreign identity directory result is empty",
+      "application-role direct bootstrap-request table access is denied",
+      "invalid time zone, changed-input replay, second-membership denial, function-level concurrency, and append-only tenant controls"
+    ]
+  },
+  "populatedUpgradeVerification": {
+    "command": "DATABASE_*_URL=<isolated-loopback-role-urls> pnpm exec vitest run --project integration packages/database/src/upgrade.integration.test.ts",
+    "result": {
+      "testFilesPassed": 1,
+      "testsPassed": 2,
+      "testsFailed": 0
+    }
+  },
+  "completeIntegrationVerification": {
+    "firstAttempt": {
+      "result": "13 PostgreSQL-backed files and 46 tests passed; six suites failed closed before testing because REDIS_URL and S3_ENDPOINT were absent",
+      "claim": "not counted as a passing complete-integration run"
+    },
+    "finalCommand": "DATABASE_*_URL=<fresh-loopback-role-urls> REDIS_URL=<authenticated-loopback-url> S3_*=<loopback-MinIO-config> pnpm test:integration",
+    "finalResult": {
+      "testFilesPassed": 19,
+      "testsPassed": 54,
+      "testsFailed": 0,
+      "testsSkipped": 0
+    }
+  },
+  "repositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "exitCode": 0,
+    "unitTenantReconciliation": {
+      "testFilesPassed": 67,
+      "testsPassed": 399
+    },
+    "migrationsValidated": 44,
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "checks": [
+      "format",
+      "lint",
+      "typecheck",
+      "unit",
+      "tenant",
+      "reconciliation",
+      "migration",
+      "schema",
+      "config",
+      "edge",
+      "oidc",
+      "container",
+      "dependency policy",
+      "license",
+      "production build"
+    ]
+  },
+  "observedDatabaseControls": {
+    "organizationBootstrapRequests": {
+      "rowLevelSecurityEnabled": true,
+      "rowLevelSecurityForced": true,
+      "reconaiAppDirectSelect": false
+    },
+    "bootstrapFunction": {
+      "securityDefiner": true,
+      "searchPath": "pg_catalog, public",
+      "rowSecurity": "on",
+      "reconaiAppExecute": true,
+      "reconaiWorkerExecute": false
+    },
+    "serviceFixtureFinalCounts": {
+      "users": 3,
+      "organizations": 3,
+      "memberships": 3,
+      "bootstrapRequests": 3,
+      "organizationCreatedAudits": 3
+    }
+  },
+  "integrityAndCleanup": {
+    "postgresqlOfflineChecksum": {
+      "filesScanned": 2514,
+      "blocksScanned": 6939,
+      "badChecksums": 0,
+      "dataChecksumVersion": 1
+    },
+    "redisKeysAfterSuite": 0,
+    "minioTopLevelEntriesAfterSuite": [
+      ".minio.sys"
+    ],
+    "listenersClosed": [
+      55461,
+      56380,
+      59002,
+      59003
+    ],
+    "temporaryStateMovedToTrash": "<local-home>/.Trash/reconai-bootstrap-live.5SyniB",
+    "temporaryStateRecoverableUntilTrashIsEmptied": true
+  },
+  "claimsExcluded": [
+    "No real external OIDC provider first-login-to-owner browser journey was executed.",
+    "No concurrent live browser-tab exercise was executed; concurrency was exercised through two actual API service transactions.",
+    "No multi-user invitation delivery, bounce, acceptance, or role-transition lifecycle was executed.",
+    "No more-than-100-membership browser lifecycle, prior/new-image rolling deployment, abuse/load timing, protected staging, or production behavior is claimed.",
+    "No pg_amcheck result is claimed because this minimal source build did not include the amcheck extension; the stopped cluster passed the complete offline page-checksum scan.",
+    "Later-organization creation, entitlement, billing, organization limits, and abuse policy remain intentionally outside the first-organization bootstrap."
+  ],
+  "credentialsOrCustomerDataRecorded": false
+}

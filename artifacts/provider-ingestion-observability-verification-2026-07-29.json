@@ -1,0 +1,284 @@
+{
+  "evidenceType": "provider-ingestion-observability-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T03:09:20.031Z",
+  "scope": "Local source, route-contract, API tenant/security, worker composition, and loopback OTLP/HTTP protobuf evidence for bounded Shopify and Stripe webhook-ingress and post-authority normalization telemetry. No production, staging, provider sandbox, external collector, customer data, or source-system write was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/durable-queue-observability-verification-2026-07-29.json",
+      "sha256": "2367fbe6d143dcfba39340f08234d67c679e5751535bdeda3e49f2a6f4705e85",
+      "purpose": "The immediately preceding 44-migration, 453-test durable queue and OTLP baseline."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "opentelemetryApi": "1.9.1",
+    "opentelemetryMetricsSdk": "2.10.0",
+    "opentelemetryOtlpProtoExporter": "0.221.0"
+  },
+  "decision": {
+    "governingAdr": "ADR 0038",
+    "securityReviewControl": "OBSERVABILITY-PROVIDER-INGESTION-001",
+    "databaseMigrationRequired": false,
+    "configurationChangeRequired": false,
+    "providerScopeChanged": false,
+    "webhookAcknowledgementBehaviorChanged": false,
+    "moneyRulePermissionDurableEnvelopeAuditOrAiBehaviorChanged": false,
+    "telemetryAuthoritativeForFinancialOrProviderBehavior": false,
+    "metricTemporality": {
+      "apiIngress": "cumulative",
+      "workerNormalization": "delta",
+      "reason": "ADR 0037 already fixes application-owned API cumulative and worker delta temporality; this change uses the existing process pipelines."
+    }
+  },
+  "ingressContract": {
+    "instrument": {
+      "name": "reconai.provider.webhook.ingress.requests",
+      "kind": "counter",
+      "unit": "{request}",
+      "attributes": [
+        "reconai.provider",
+        "reconai.provider.webhook.surface",
+        "reconai.outcome"
+      ]
+    },
+    "surfaceAuthority": "Fail-closed API route-security manifest provider-signature contracts",
+    "surfaces": [
+      {
+        "surface": "shopify_connection",
+        "provider": "shopify",
+        "verifier": "shopify_connection_hmac"
+      },
+      {
+        "surface": "shopify_privacy",
+        "provider": "shopify",
+        "verifier": "shopify_app_hmac"
+      },
+      {
+        "surface": "stripe_connection",
+        "provider": "stripe",
+        "verifier": "stripe_connection_signature"
+      },
+      {
+        "surface": "stripe_deauthorization",
+        "provider": "stripe",
+        "verifier": "stripe_app_signature"
+      }
+    ],
+    "outcomes": [
+      "accepted",
+      "duplicate",
+      "authentication_failed",
+      "validation_failed",
+      "evidence_conflict",
+      "dispatch_unavailable",
+      "rate_limited",
+      "failed",
+      "aborted"
+    ],
+    "outcomeDerivation": {
+      "accepted": "Successful 2xx response other than 200, including the normal 202 durable-intake acknowledgement.",
+      "duplicate": "HTTP 200 immutable-receipt duplicate acknowledgement.",
+      "authentication_failed": "HTTP 401; deliberately combines missing authority, secret resolution, and invalid signature.",
+      "validation_failed": "HTTP 400, 413, or 415.",
+      "evidence_conflict": "HTTP 409.",
+      "rate_limited": "HTTP 429.",
+      "dispatch_unavailable": "HTTP 503.",
+      "aborted": "Request abort or completion without a status.",
+      "failed": "Every other response."
+    },
+    "observationStartsBeforeRejectionCapablePlugins": true,
+    "observationFinishesAtResponseOrAbort": true,
+    "acceptedClaimsNormalizationSuccess": false,
+    "duplicateClaimsNewProcessing": false,
+    "unknownDynamicSurfaceEmitsMetric": false,
+    "maximumIntendedSeries": 36
+  },
+  "normalizationContract": {
+    "instruments": [
+      {
+        "name": "reconai.provider.normalization.runs",
+        "kind": "counter",
+        "unit": "{run}"
+      },
+      {
+        "name": "reconai.provider.normalization.duration",
+        "kind": "histogram",
+        "unit": "ms"
+      }
+    ],
+    "attributes": [
+      "reconai.provider",
+      "reconai.provider.normalization.source",
+      "reconai.outcome"
+    ],
+    "providers": [
+      "shopify",
+      "stripe",
+      "invalid"
+    ],
+    "sources": [
+      "webhook",
+      "sync",
+      "invalid"
+    ],
+    "sourceDerivation": {
+      "<provider>-webhook-ingress": "webhook",
+      "<provider>-sync-worker": "sync",
+      "everythingElse": "invalid"
+    },
+    "outcomes": [
+      "processed",
+      "already_processed",
+      "receipt_not_found",
+      "authority_mismatch",
+      "object_invalid",
+      "payload_invalid",
+      "event_unsupported",
+      "failed_terminal",
+      "failed_retryable"
+    ],
+    "terminalCodeMapping": {
+      "WEBHOOK_NOT_FOUND": "receipt_not_found",
+      "WEBHOOK_AUTHORITY_MISMATCH": "authority_mismatch",
+      "WEBHOOK_OBJECT_INVALID": "object_invalid",
+      "WEBHOOK_PAYLOAD_INVALID": "payload_invalid",
+      "WEBHOOK_EVENT_UNSUPPORTED": "event_unsupported",
+      "unknownTerminalCode": "failed_terminal"
+    },
+    "normalizationReturnValuesPreserved": [
+      "processed",
+      "already_processed"
+    ],
+    "nonTerminalThrownError": "failed_retryable",
+    "observationStartsAfterCommonOutboxAuthority": true,
+    "authorityChecksBeforeObservation": [
+      "durable envelope schema and canonical hash",
+      "PostgreSQL outbox lookup inside tenant transaction and RLS context",
+      "event type",
+      "stable job identity",
+      "correlation ID",
+      "requested-by provenance"
+    ],
+    "unknownProviderOrSourceFallback": "invalid",
+    "unknownOutcomeFallback": "failed_terminal",
+    "maximumDefensiveSeriesPerInstrument": 81
+  },
+  "cardinalityAndDataMinimization": {
+    "metricSeriesLimitPerInstrument": 256,
+    "eventTypeExported": false,
+    "httpRawPathOrQueryExported": false,
+    "organizationUserConnectionShopAccountExported": false,
+    "receiptObjectJobCorrelationRequestedByExported": false,
+    "credentialSecretProviderErrorExported": false,
+    "amountCurrencyPaymentOrPayloadExported": false,
+    "dynamicSecretLikeSurfaceProviderSourceAndOutcomeObservedInCapturedOtlp": false,
+    "authenticationFailureResourceExistenceDistinguishable": false
+  },
+  "failureIsolation": {
+    "additionalNetworkCallOnRequestOrJobPath": false,
+    "exporterPipelineChanged": false,
+    "telemetryControlsReadiness": false,
+    "telemetryControlsPersistenceRetryDeadLetterOrNormalization": false,
+    "telemetryCanAuthorizeReplayApprovalOrSourceWrite": false,
+    "rollback": "Remove the three observations and route mapper; webhook verification, immutable receipt/outbox persistence, provider responses, normalization, retries, and dead letters remain unchanged."
+  },
+  "focusedVerification": [
+    {
+      "command": "pnpm --filter @workspace/observability typecheck && pnpm --filter @workspace/api typecheck && pnpm --filter @workspace/worker typecheck",
+      "packagesPassed": 3,
+      "packagesFailed": 0
+    },
+    {
+      "command": "pnpm exec vitest run packages/observability/src/observability.test.ts apps/api/src/route-security.tenant.test.ts apps/api/src/app.tenant.test.ts --maxWorkers=1",
+      "testFilesPassed": 3,
+      "testsPassed": 58,
+      "testsFailed": 0
+    },
+    {
+      "command": "pnpm exec vitest run packages/observability/src/observability.test.ts apps/api/src/route-security.tenant.test.ts --maxWorkers=1",
+      "testFilesPassed": 2,
+      "testsPassed": 8,
+      "testsFailed": 0,
+      "dynamicValueSuppressionIncluded": true
+    }
+  ],
+  "otlpVerification": {
+    "transport": "HTTP protobuf",
+    "captureAddress": "ephemeral loopback HTTP server",
+    "standardMetricsPath": "/v1/metrics",
+    "contentType": "application/x-protobuf",
+    "ingressInstrumentPresent": true,
+    "normalizationInstrumentsPresent": true,
+    "allFourIngressSurfacesPresent": true,
+    "allNineIngressOutcomesPresent": true,
+    "allNineNormalizationOutcomesPresent": true,
+    "secretLikeDynamicValuesAbsent": true,
+    "externalCollectorAccessed": false
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 70,
+    "testsPassed": 454,
+    "testsFailed": 0,
+    "migrationsValidated": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "productionDependencyAuditAtHighSeverity": {
+      "command": "pnpm audit --prod --audit-level high",
+      "status": "no known vulnerabilities found"
+    }
+  },
+  "sourceSha256": {
+    "apps/api/src/app.ts": "74df1cbec1458427b1205412cdbfbfea59a8d1a150e58cb91fbe34d19b572554",
+    "apps/api/src/route-security.ts": "2e76cacd60ebdd767f61d17305f41e3951e550ac68789a31ea2ae71ad2730590",
+    "apps/api/src/route-security.tenant.test.ts": "0d02e9b5e06be816a2ddc7d4fdb4897f18d08a725934af6f6c8b0a59023adf44",
+    "apps/worker/src/main.ts": "af6303160e08f8b9f483986c1243360fdbd6fbb53ffd759d9cb77194b39e89c7",
+    "packages/observability/src/telemetry.ts": "f557a523a17284c8dcf6c8900cb528d3781ca3cec2383ef479ceeb8bf1e90980",
+    "packages/observability/src/index.ts": "c033d2456895fdd18006c964c5ec0f9cbb4a68f7a966e020299351fd7c308a4a",
+    "packages/observability/src/observability.test.ts": "6f8191b6d1d3f596acadd178c41618f21967d2f8e9960188c587d313d31366d2",
+    "docs/observability.md": "29ffe4cd972f98ce97ed25d4badaf8ffa8253474f36d99bfc3a973233c30b4b0",
+    "docs/operations-runbook.md": "77a5e7d00c83b8851f082633a62e0846195866f7ab710a6324d1183c16cf8faa",
+    "docs/known-limitations.md": "c0050d024132b0e700914bffd6267171f9a7f140c4a6f933cc67e96541dfa99c",
+    "docs/goals/goal-1-audit-2026-07-29.md": "c7a30b8e85b9dd5c12c128472b53cbb37841087ed8389812f15dd4540db574af",
+    "docs/adr/README.md": "a3e5072c7ab1f071815fcddf242a2adcc3f22c435bf77027f70e570df26119a7",
+    "docs/adr/0038-bounded-provider-ingestion-observability.md": "0e5eae410c2bae4225e018fe59db68e9faf6f041a1ebcf5485ddc0f839b30137"
+  },
+  "sealedPredecessorVerification": {
+    "docs/adr/0037-leased-durable-queue-observability.md": "b1c6320031de6149efea9fbae75be97304ee470918c1f4245602812fd8b376a4",
+    "artifacts/durable-queue-observability-verification-2026-07-29.json": "2367fbe6d143dcfba39340f08234d67c679e5751535bdeda3e49f2a6f4705e85"
+  },
+  "safety": {
+    "loopbackOnly": true,
+    "syntheticDataOnly": true,
+    "productionDataUsed": false,
+    "productionOrStagingAccessed": false,
+    "providerSandboxAccessed": false,
+    "sourceSystemWriteScopeChanged": false,
+    "financialOrApprovalAuthorityChanged": false,
+    "environmentFileCreated": false,
+    "repositoryFilesStaged": 0,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "Ingress outcomes are derived from completed HTTP status and do not prove provider delivery semantics, signature success distribution, receipt persistence latency, or downstream normalization.",
+    "Normalization duration starts after common durable outbox authority and does not measure provider-to-ingress latency, queue wait, end-to-end freshness, reconciliation latency, or operator review age.",
+    "The API and worker compositions were covered locally with synthetic tests. No authorized Shopify or Stripe sandbox delivery, replay, version drift, credential failure, provider rate limit, or provider outage was exercised.",
+    "The OTLP receiver captured real protobuf locally. No protected collector/backend, TLS/authentication, egress allowlist, access/retention policy, dashboard aggregation, threshold, silence rule, alert delivery, acknowledgement, or on-call response was exercised.",
+    "No sustained load, high-cardinality adversarial stream, exporter outage, forced termination, multi-process aggregation, staging, or production behavior was measured.",
+    "Connector freshness, review age, AI, representative business/SLO signals, and alert thresholds remain separate work.",
+    "Telemetry is deliberately lossy and non-authoritative. Missing or adverse samples cannot authorize queue mutation, provider replay, financial action, approval, or source-system state change."
+  ],
+  "claim": "ReconAI now has locally verified, low-cardinality provider webhook-ingress and post-authority normalization telemetry with manifest-derived surfaces, fixed outcome vocabularies, defensive dynamic-value suppression, and no customer dimensions. This is local component evidence, not provider, staging, production, freshness, capacity, SLO, dashboard, or exercised alert evidence."
+}

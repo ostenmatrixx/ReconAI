@@ -1,0 +1,255 @@
+{
+  "evidenceType": "privacy-package-browser-receipt-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T07:10:12.634Z",
+  "scope": "Local source, unit, API tenant, exhaustive route-contract, BFF, static migration, source-defined PostgreSQL, production-build, and Chromium evidence for digest-bound Shopify privacy-package browser receipts. No customer data, raw package/token fixture, provider credential/request, live PostgreSQL execution, secure downstream merchant/customer transfer, protected staging, or production environment was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/stripe-balance-transaction-recovery-verification-2026-07-29.json",
+      "sha256": "3be21437b7d0913b3c78bdddba956a6ef8b940ff77e04896c4ddbec9328d1c43",
+      "purpose": "The immediately preceding immutable 50-migration, 488-test Stripe balance-transaction recovery artifact. This increment does not modify its accepted ADR or evidence."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "playwright": "1.62.0",
+    "reconciliationEngine": "0.7.0",
+    "reconciliationRules": "1.5.0"
+  },
+  "decision": {
+    "governingAdr": "ADR 0049",
+    "governingAdrStatus": "Accepted",
+    "governingAdrSha256": "df457e2ed95496b47908f7d5dfc01986135f086585cd538e12a085b7efaec0e5",
+    "extends": [
+      "ADR 0015"
+    ],
+    "securityReviewControl": "SHOPIFY-PRIVACY-PACKAGE-RECEIPT-001",
+    "threatModelEntry": "TM-39",
+    "databaseMigrationRequired": true,
+    "databaseMigration": "0050_provider_privacy_data_package_receipts.sql",
+    "configurationChangeRequired": false,
+    "publicApiRouteAdded": true,
+    "routeInventoryBefore": 47,
+    "routeInventoryAfter": 48,
+    "sourceSystemWriteAdded": false,
+    "providerPermissionChanged": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyAiProposalApprovalOrPrivacyCompletionBehaviorChanged": false
+  },
+  "receiptAuthorityContract": {
+    "rawTokenEntropyBits": 256,
+    "rawTokenEncoding": "base64url without padding",
+    "rawTokenLength": 43,
+    "persistedTokenRepresentation": "SHA-256 lowercase hexadecimal digest only",
+    "persistedContentRepresentation": "SHA-256 lowercase hexadecimal digest and exact byte count only",
+    "packageBytesPersisted": false,
+    "rawTokenPersistedOrAudited": false,
+    "authorityTtlMilliseconds": 600000,
+    "authorityExpiresExactlyTenMinutesAfterPreparation": true,
+    "validAtExactExpiryInstant": false,
+    "samePreparingMembershipRequired": true,
+    "activeMembershipRequired": true,
+    "permissionsRequired": [
+      "retention:manage",
+      "data:export"
+    ],
+    "exactBindings": [
+      "organization",
+      "privacy request",
+      "package",
+      "preparing membership",
+      "receipt-token digest"
+    ],
+    "wrongOrForeignBindingsConcealedAsNotFound": true,
+    "unusedExpiredAuthorityHasDistinctBoundedError": true,
+    "exactSuccessfulRetryReturnsOriginalReceipt": true,
+    "exactSuccessfulRetryAcceptedAfterAuthorityExpiry": true,
+    "duplicateReceiptOrAuditCreatedOnRetry": false
+  },
+  "databaseAndTenantContract": {
+    "preparationTable": "provider_privacy_data_packages",
+    "receiptTable": "provider_privacy_data_package_receipts",
+    "customerOwnedTablesHaveNonNullOrganizationId": true,
+    "tenantCompositeRequestMembershipAndPackageForeignKeys": true,
+    "forcedRowLevelSecurity": true,
+    "appendOnlyMutationTriggers": true,
+    "uniqueReceiptPerTenantPackage": true,
+    "tenantPackageAdvisoryTransactionLock": true,
+    "acknowledgementFunction": "reconai_acknowledge_provider_privacy_data_package",
+    "acknowledgementFunctionSecurityDefiner": true,
+    "acknowledgementFunctionFixedSearchPath": true,
+    "acknowledgementFunctionRowSecurityOn": true,
+    "applicationDirectPackageAuthority": "INSERT only",
+    "applicationDirectPackageReadUpdateDeleteTruncate": false,
+    "applicationDirectReceiptTableAuthority": false,
+    "applicationFixedFunctionExecute": true,
+    "workerPackageReceiptOrFunctionAuthority": false,
+    "auditAndReceiptShareOneApplicationTransaction": true,
+    "migrationBackfillOrFinancialRowRewrite": false
+  },
+  "apiBffAndBrowserContract": {
+    "preparationResponsePrivateNoStore": true,
+    "receiptTokenReturnedOnlyInResponseHeader": true,
+    "receiptExpiryReturnedOnlyInResponseHeader": true,
+    "apiReceiptRoute": "POST /v1/organizations/:organizationId/provider-privacy-requests/:requestId/data-package/:packageId/receipt",
+    "apiReceiptStatusFirst": 201,
+    "apiReceiptStatusExactRetry": 200,
+    "apiUnusedExpiredStatus": 410,
+    "apiForeignWrongPermissionWrongTokenStatus": 404,
+    "bffExactOriginRequired": true,
+    "bffSessionAndSubjectBoundOrganizationContextRequired": true,
+    "browserCookiesForwardedToApi": false,
+    "apiRedirectAcceptedByBff": false,
+    "packageAndReceiptResponsesBoundedBeforeParse": true,
+    "browserBuffersCompleteNonemptyBytesBeforeAcknowledgement": true,
+    "browserDownloadBeginsOnlyAfterAcknowledgement": true,
+    "browserDownloadOnAcknowledgementFailure": false,
+    "receiptTokenStoredInUrlCookiePersistentBrowserStorageOrTelemetry": false
+  },
+  "auditSemantics": {
+    "preparationAction": "provider_privacy.data_package_prepared",
+    "receiptAction": "provider_privacy.data_package_received_by_browser",
+    "receiptActionAppendedOnce": true,
+    "deliveryStatus": "not_delivered",
+    "browserReceiptProves": "The authenticated browser verified receipt of the complete bounded package bytes before the acknowledgement call.",
+    "browserReceiptDoesNotProve": [
+      "merchant delivery",
+      "customer delivery",
+      "recipient identity",
+      "merchant or customer review",
+      "legal-request fulfillment",
+      "privacy-request completion",
+      "secure downstream transfer",
+      "downstream acknowledgement",
+      "deletion or expiry of downloaded copies"
+    ],
+    "privacyRequestRemainsActionRequired": true
+  },
+  "focusedVerification": {
+    "typecheck": {
+      "command": "pnpm typecheck",
+      "workspaceProjectsPassed": 19,
+      "status": "passed"
+    },
+    "tests": {
+      "command": "pnpm exec vitest run packages/ingestion/src/provider-privacy-data-package.test.ts packages/database/src/migration.tenant.test.ts apps/api/src/app.tenant.test.ts apps/api/src/route-security.tenant.test.ts apps/web/src/app/api/recon/exports/privacy-data-package/route.test.ts",
+      "testFilesPassed": 5,
+      "testsPassed": 107,
+      "testsFailed": 0,
+      "tokenDigestBoundaryCovered": true,
+      "dualPermissionBoundaryCovered": true,
+      "unknownAndExpiredServiceOutcomesCovered": true,
+      "apiFirstRetryExpiryForeignAndSchemaOutcomesCovered": true,
+      "routeInventoryCongruenceCovered": true,
+      "sameOriginBoundedBffAndHeaderValidationCovered": true,
+      "migrationRlsGrantAppendOnlyAndFunctionOrderingCovered": true
+    },
+    "focusedBrowser": {
+      "command": "CI=true pnpm --filter @workspace/web exec playwright test tests/retention-policy-settings.spec.ts --workers=1",
+      "testsPassed": 5,
+      "testsFailed": 0,
+      "accessibilityScansPassed": 1,
+      "nonemptyDownloadAfterReceiptCovered": true,
+      "noDownloadOnReceiptFailureCovered": true,
+      "preciseNonFulfillmentMessageCovered": true
+    }
+  },
+  "postgresqlIntegrationStatus": {
+    "checkedInTest": "packages/database/src/provider-webhook.integration.test.ts",
+    "digestOnlyPackageAuthorityPersistenceAsserted": true,
+    "sameMembershipFirstAcknowledgementAsserted": true,
+    "exactRetryIdempotenceAsserted": true,
+    "foreignTenantConcealmentAsserted": true,
+    "singleReceiptAndSingleAuditAsserted": true,
+    "rawTokenAbsentFromRowsAndAuditAsserted": true,
+    "applicationDirectPackageReadDeniedAsserted": true,
+    "workerDirectReceiptReadDeniedAsserted": true,
+    "typecheckPassed": true,
+    "executedThisIncrement": false,
+    "reason": "DATABASE_ADMIN_URL, DATABASE_MIGRATION_URL, DATABASE_URL, and DATABASE_WORKER_URL were absent; no .env or local restricted-role PostgreSQL runtime was available.",
+    "liveMigrationFunctionRlsGrantAuditAtomicityOrQueryBehaviorClaimed": false
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 74,
+    "testsPassed": 492,
+    "testsFailed": 0,
+    "migrationsValidated": 51,
+    "migrationChainSha256": "65f50eb6d241c9e5b510cdfdb90277c41a401f4d803357c1752f762de3e1d7d1",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "completeBrowser": {
+      "command": "CI=true pnpm --filter @workspace/web test:e2e",
+      "testsPassed": 38,
+      "testsFailed": 0,
+      "accessibilityScansPassed": 11
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "productionDependencyAuditAtHighSeverity": {
+      "command": "pnpm audit --prod --audit-level=high",
+      "status": "no known vulnerabilities found"
+    }
+  },
+  "sourceSha256": {
+    "docs/adr/0049-digest-bound-privacy-package-browser-receipts.md": "df457e2ed95496b47908f7d5dfc01986135f086585cd538e12a085b7efaec0e5",
+    "packages/database/migrations/0050_provider_privacy_data_package_receipts.sql": "645b495ccc63d2d9e6d330cdfea20c09f030aba49cdd1ac7be24a895c2afc85c",
+    "packages/database/src/schema.ts": "2973e3e3067c26ed6abad3c5c02e4f42908aec500a1909338b5d9814e8ce7f1a",
+    "packages/database/src/provider-privacy-data-package.ts": "7edb346f5b70f0d52e089dfdbcfcd91b6de8f6ac6b1f059784f14bd98855847a",
+    "packages/database/src/migration.tenant.test.ts": "813a61b3068678e12474d22f36e83fbda6d99d49f3e994e330fdff5c4e88ada1",
+    "packages/database/src/provider-webhook.integration.test.ts": "a9552d4775a7425155bd44e101739f1c0f90d5b58c7a052113b683403552756f",
+    "packages/ingestion/src/provider-privacy-data-package.ts": "5cdd673cf8ddb4d8a66c243ff54394cc5f5fb7f73d1c10bdcb2d7e107e0a38a8",
+    "packages/ingestion/src/provider-privacy-data-package.test.ts": "74616c84dcbe2ba02141c737ca7543e76b35c4e0ff7bdaa4aefa0168d0444bf3",
+    "apps/api/src/app.ts": "254c2653dcab47c2f43d4968924b728cf0707eb0d391ddcada621ed88ae5e313",
+    "apps/api/src/app.tenant.test.ts": "4d3f444b2243aad418fdb75620799c0e9fb2966549e0d182bd621bce7bc1e23b",
+    "apps/api/src/route-security.ts": "07fa333b66ef4abacdd65b884631d0d7c9ca4e9652bd5a743a041c9dc2914bae",
+    "apps/api/src/route-security.tenant.test.ts": "86d335cbcdc2b90e0cf3e12f3f778fb9a5cecc8c747c03de0ce1a113a6fe2490",
+    "apps/web/src/app/api/recon/exports/privacy-data-package/route.ts": "0252ce6a61122f6f3187032e33e2228a4bb16af20cc8a432f1bae7830e7566ce",
+    "apps/web/src/app/api/recon/exports/privacy-data-package/route.test.ts": "4ca430dec7cdb799360486491f203d92e8ce647a1507cfa4906e5a90d30cf5c4",
+    "apps/web/src/components/privacy-request-operations.tsx": "c3c7b6615cf210eded6574bc4290703428b1448a31387abe7e703a5b9a8d4ec0",
+    "apps/web/tests/retention-policy-settings.spec.ts": "ed45914fa3542d25fce1da56abd00dab058f5fae7144ad4a5f0d4cb5f48d814c",
+    "docs/adr/README.md": "1313676e7b6d50b282715413b6d5c3d4cd11559e32f3f7ca672837ea3a6af66a",
+    "docs/privacy-and-retention.md": "af85327c4c12df43921db7b19bba29059eb00f546fa7fb0891a863f4ef28cd0f",
+    "docs/data-model.md": "426e7061981f13b670bcd82b806b79c9c05ec2dc0d736974339ad555831bca3d",
+    "docs/architecture.md": "6a6dfe097541c20c72e64f75640679c2407e61f39d7b09cc8789e9cdd15add03",
+    "docs/connectors.md": "a1c1a509807716e72006759970fdfdff85262f5998542a743bdbd58a7843da1c",
+    "docs/operations-runbook.md": "3e18699454d9351c95342577da12ae66b14caaa6c2d1ce482b8dd0429630784b",
+    "docs/upgrade-and-rollback.md": "2ea34bd5eb6fdeccd1add43d2d2c5b9b9b0835f778f4eaf6f9c970d5f7e72d8d",
+    "docs/migrations.md": "9841bb34e0c90eeb40870cecd8034e96fdfb267f9bd2e0b16802170dcd11c506",
+    "docs/threat-model.md": "07406b2dd8d694945e79ad0a442e81050493817fbd6c1b24af92089a5fe11fdb",
+    "docs/security-review.md": "a1ccecc2cd09d3ae4aa53c823e4156c77dc96a01ff82e4b51dfbbb2315087e1e",
+    "docs/known-limitations.md": "497f2248fe24aa552d310c1a5063d19fc95fc3c0d72d58069da8a5181541f9d5",
+    "docs/goals/goal-0-foundation.md": "3778c85ee2c7e15ba04199b37f627b6b25aa4a20f6147f11e4f3a75dd8f29528",
+    "docs/goals/goal-1-vertical-slice.md": "54121a9ceebd3ae579b289e58b2d8b946126b5922affa44e71bd0eca900ad093",
+    "docs/goals/goal-1-audit-2026-07-29.md": "5bb1f95d1fc52285f5dbde51db1bb73e7934e4549de77fac74b03ce6c3b3d4be",
+    "GOALS.md": "1cd8abe7a748866a43d1ee952e400c653d921cce50ec5e6f2f09961f505f6ab3",
+    "CHANGELOG.md": "5568e46d761426e11beee63dda3a683f8bc7a413a93a098d6ba2f3049e93fd21"
+  },
+  "repositoryState": {
+    "priorJsonArtifactCount": 78,
+    "stagedFileCount": 0,
+    "environmentFilePresent": false,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "The restricted-role PostgreSQL integration test was not executed because all four database URLs, .env, and a local database runtime were absent. Migration application, function execution, forced RLS, grants, append-only triggers, same-membership behavior, concurrent convergence, receipt/audit atomicity, and query plans remain unverified at runtime for this increment.",
+    "No real Shopify privacy subscription, merchant case, customer data, browser session backed by a live OIDC provider, reverse proxy, multiple API/web replicas, clock skew, response interruption after acknowledgement, secure downstream transfer, recipient acknowledgement, or downloaded-copy disposal was exercised.",
+    "Browser receipt proves only that the authenticated browser had the complete bytes before acknowledging. A browser or operating-system failure after acknowledgement but before saving the file can leave receipt evidence without a durable downloaded copy.",
+    "The ten-minute token expiry limits only unused browser-receipt authority. It does not revoke, expire, locate, or delete any browser, filesystem, backup, ticket, email, or merchant-controlled copy.",
+    "Packages beyond 100 source records or five MiB still fail closed and require a separately reviewed export design. Canonical, legacy, cache, search, export, replica, backup, and whole-tenant privacy disposition remain incomplete."
+  ],
+  "nextRequiredEvidence": [
+    "Execute migration 0050 and the checked-in provider webhook/privacy-package test against fresh and populated PostgreSQL with administrator, migrator, application, and worker roles.",
+    "Measure migration locks, function/query behavior, concurrent acknowledgement convergence, exact-expiry boundaries, clock skew, and response interruption on protected staging with multiple API/web replicas.",
+    "Approve and exercise secure merchant/customer transfer, recipient identity verification and acknowledgement, case linkage, and independent downloaded-copy expiry/deletion without changing the browser-receipt claim.",
+    "Exercise the authorized Shopify app privacy subscription and complete the remaining over-limit export and data-disposition controls."
+  ]
+}

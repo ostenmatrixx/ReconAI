@@ -1,0 +1,230 @@
+{
+  "evidenceType": "reconciliation-artifact-pagination-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-28T22:51:10Z",
+  "scope": "Local API, cursor, BFF, Chromium, accessibility, fresh-PostgreSQL, static-security, and build evidence for bounded tenant-safe traversal of immutable per-run match and exception occurrences. This is not a staging, production, latency-SLO, capacity, accuracy, or operator-outcome result.",
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "postgresql": "17.10",
+    "next": "16.2.12",
+    "fastify": "5.10.0",
+    "postgresClient": "3.4.9",
+    "playwright": "1.62.0",
+    "vitest": "4.1.10",
+    "snapshotSchema": "artifact-occurrence-v1"
+  },
+  "design": {
+    "decision": "ADR 0030",
+    "runDetailPreviewPerType": 10,
+    "apiDefaultPageSize": 25,
+    "apiMaximumPageSize": 100,
+    "bffFixedPageSize": 25,
+    "bffMaximumUpstreamJsonBytes": 5242880,
+    "order": "immutable artifact UUID ascending",
+    "chronologyField": "observedAt",
+    "cursorEncoding": "canonical base64url JSON",
+    "cursorVersion": 1,
+    "cursorBindings": [
+      "organizationId",
+      "runId",
+      "artifactType",
+      "lastArtifactId"
+    ],
+    "cursorIsAuthority": false,
+    "authorizationPermission": "financial-records:view",
+    "schemaMigrationRequired": false,
+    "supportingIndex": "existing unique occurrence primary key on organization_id, run_id, artifact_id",
+    "typedApiRoutes": 46
+  },
+  "postgresqlSource": {
+    "archive": "postgresql-17.10.tar.bz2",
+    "officialDirectory": "https://www.postgresql.org/ftp/source/v17.10/",
+    "sha256": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+    "checksumVerifiedBeforeBuild": true,
+    "cluster": "fresh empty loopback-only disposable cluster using local test authentication",
+    "locale": "C",
+    "encoding": "UTF8",
+    "listenPort": 55462
+  },
+  "database": {
+    "freshDatabase": true,
+    "migrationsApplied": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "applicationRole": "restricted reconai_app",
+    "forcedRowLevelSecurity": {
+      "match_occurrences": true,
+      "exception_occurrences": true,
+      "match_occurrence_snapshots": true,
+      "exception_occurrence_snapshots": true
+    },
+    "supportingPrimaryKeys": [
+      "match_occurrences_organization_id_run_id_match_id_pk",
+      "exception_occurrences_organization_id_run_id_exception_id_pk"
+    ],
+    "syntheticRunId": "87b954b0-7388-40b3-9174-18799071cc41",
+    "matchOccurrences": 12,
+    "exceptionOccurrences": 1
+  },
+  "verification": {
+    "freshPostgresqlRepository": {
+      "command": "CI=true DATABASE_ADMIN_URL=[local] DATABASE_MIGRATION_URL=[local] DATABASE_URL=[local] pnpm exec vitest run --project integration apps/api/src/repository.integration.test.ts --reporter=dot",
+      "testFilesPassed": 1,
+      "testsPassed": 4,
+      "testsFailed": 0,
+      "artifactPageSizeUnderTest": 5,
+      "matchPageItemCounts": [
+        5,
+        5,
+        2
+      ],
+      "uniqueMatchIds": 12,
+      "duplicateMatchIds": 0,
+      "stableAscendingIds": true,
+      "exactAtObservationPreserved": true,
+      "legacyCurrentProjectionPreserved": true,
+      "exceptionObservedAndCurrentStatusPreserved": true,
+      "foreignTenantRepositoryResult": "undefined",
+      "foreignTenantVisibleRows": {
+        "reconciliationRuns": 0,
+        "matchOccurrenceSnapshots": 0,
+        "exceptionOccurrenceSnapshots": 0
+      },
+      "matchCursorRejectedForExceptionPage": true
+    },
+    "focusedApiCursorAndBff": {
+      "command": "CI=true pnpm exec vitest run apps/api/src/repository.cursor.test.ts apps/api/src/app.tenant.test.ts apps/api/src/route-security.tenant.test.ts apps/web/src/app/api/recon/route.test.ts --reporter=dot",
+      "testFilesPassed": 4,
+      "testsPassed": 68,
+      "testsFailed": 0,
+      "cursorRoundTrip": "passed",
+      "tenantRunAndTypeReplayRejection": "passed",
+      "malformedOversizedNonCanonicalCursorRejection": "passed",
+      "apiForeignOrganizationStatus": 404,
+      "apiMalformedCursorStatus": 400,
+      "foreignHandlerExecutionPrevented": true,
+      "bffFixedLimitForwarded": 25,
+      "invalidBffTypeAndCursorRejectedBeforeFetch": true
+    },
+    "focusedBrowser": {
+      "command": "CI=true pnpm --filter @workspace/web exec playwright test tests/reconciliation-runs.spec.ts --project=chromium --workers=1 --reporter=line",
+      "testsPassed": 5,
+      "testsFailed": 0,
+      "initialPreviewRows": 10,
+      "loadedRows": 12,
+      "duplicatePreviewRowsAfterLoad": 0,
+      "splitReasonOccurrencesAfterLoad": 1,
+      "exactEvidenceAccessibilityScanPassed": true,
+      "runHistoryAccessibilityScanPassed": true,
+      "mobileViewport": {
+        "width": 390,
+        "height": 844,
+        "documentOverflowPixels": 0
+      }
+    },
+    "fullVerify": {
+      "command": "CI=true pnpm verify",
+      "passed": true,
+      "testFilesPassed": 68,
+      "testsPassed": 421,
+      "format": "passed",
+      "lint": "passed",
+      "typecheck": "passed",
+      "build": "passed",
+      "migrationsValidated": 44,
+      "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+      "contractEntrypointsValidated": 4,
+      "containerChecks": "3 Dockerfiles, 5 Compose images, 3 workflow images, 25 action pins, and non-publishing candidate controls passed",
+      "dependencyManifestsValidated": 20,
+      "productionLicensesValidated": 224,
+      "lockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94"
+    },
+    "fullBrowser": {
+      "command": "CI=true pnpm test:e2e",
+      "browser": "Chromium",
+      "testsPassed": 34,
+      "testsFailed": 0,
+      "accessibilityScansExecutedAcrossSuite": 11
+    },
+    "focusedAccessibility": {
+      "command": "CI=true pnpm test:accessibility",
+      "testsPassed": 10,
+      "testsFailed": 0,
+      "detectedViolations": 0
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "passed": true
+    },
+    "productionDependencyAudit": {
+      "command": "pnpm audit --prod --audit-level=high",
+      "passed": true,
+      "result": "No known vulnerabilities found"
+    }
+  },
+  "behavior": {
+    "readOnlyEndpoint": "GET /v1/organizations/:organizationId/reconciliation-runs/:runId/artifacts",
+    "artifactTypes": [
+      "match",
+      "exception"
+    ],
+    "previewReplacedByFirstFullPage": true,
+    "laterPagesDeduplicatedByImmutableId": true,
+    "loadedEvidenceRetainedOnRetryableFailure": true,
+    "clientValidatesResponseTypeItemsAndCursor": true,
+    "exactAndLegacyMappingMatchesRunDetail": true,
+    "automaticHistoricalBackfill": false,
+    "offsetPaginationUsed": false,
+    "moneyOrRuleBehaviorChanged": false
+  },
+  "cleanup": {
+    "postgresqlStopped": true,
+    "listenPortClosed": true,
+    "runtimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-artifact-pagination-pg.P9OVDh-20260729",
+    "applicationAndBrowserPortsClosed": [
+      3000,
+      4000,
+      8180,
+      55462,
+      56380,
+      59010,
+      59011
+    ]
+  },
+  "sourceSha256": {
+    "apps/api/src/repository.ts": "58489121fa8192e31a345902dc05959b52f24eaf7dba070fa2ca4b4fafba9062",
+    "apps/api/src/app.ts": "330cf50422c51e1ddc525ae9b96b84be4653f76769288d7547410e2bf5f6ca5a",
+    "apps/api/src/route-security.ts": "3ca42d9e1d7b008c522515d938d7b5450d5a5456155e1bcb07543bfc79f1ae02",
+    "apps/api/src/route-security.tenant.test.ts": "f13efb1af39bf71f1f3190fc8bf6eea501f4f63f6ca9b59f21786d07bfa17751",
+    "apps/api/src/app.tenant.test.ts": "7605979e3d52132467722786410e38e6595944dedd31a676fbfaeb2731cf1fa9",
+    "apps/api/src/repository.cursor.test.ts": "4070883de14a28eb8acf0da957a7bb3c24efb57fcfac8e993be2a5268f1072ea",
+    "apps/api/src/repository.integration.test.ts": "9a0cd3a30c1daadce6f27a6f6a594c9bd8cc1bc19d159d897308b0ca1dd7bc96",
+    "apps/web/src/app/api/recon/route.ts": "d7738a47fe3f93f0841d7df6b994fa2c256605090eb0a3a430ad81b2d473a25f",
+    "apps/web/src/app/api/recon/route.test.ts": "fd9c97fb6fa02cb20af50befdb4f424bd6b3eef975b6e534e7baff3864e9a82d",
+    "apps/web/src/components/reconciliation-runs.tsx": "6370cfb310815f6e670e3d3a009aa6695a148e8b26dc6ba1a5a5cc08a5d21f0f",
+    "apps/web/tests/reconciliation-runs.spec.ts": "bd2c53ce19c6e2b44bdea22cb2641827db81ab4320416b6dca1641cca8586689",
+    "docs/adr/0030-tenant-bound-run-artifact-pagination.md": "d79b64865d97338f1e799d135ed2b3af500530c9a838df7c6b211b58b45b08f1",
+    "pnpm-lock.yaml": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94"
+  },
+  "safety": {
+    "moneyUsesBinaryFloatingPoint": false,
+    "currencyConversionAdded": false,
+    "reconciliationRuleBehaviorChanged": false,
+    "sourceSystemWritesAdded": false,
+    "financialApprovalAuthorityAdded": false,
+    "aiAuthorityChanged": false,
+    "productionDataUsed": false,
+    "credentialsRecorded": false,
+    "externalMessagesSent": false,
+    "deploymentPerformed": false,
+    "gitStageCommitPushPerformed": false
+  },
+  "limitations": [
+    "The fresh PostgreSQL test used 12 synthetic match occurrences and one exception, not a representative production-volume artifact ledger.",
+    "The Chromium pagination response was mocked at the BFF boundary; it did not consume the rows created by the fresh PostgreSQL repository test.",
+    "No concurrent reader, active-run transition, representative latency profile, multi-host API/BFF path, protected staging topology, alert exercise, or operator-outcome measurement was performed.",
+    "UUID keyset order is stable identity order rather than observation chronology; observedAt is displayed separately.",
+    "A rolling-window occurrence without an immutable snapshot remains an explicitly labeled legacy current projection and is not reconstructed as historical fact.",
+    "No production deployment or production-readiness claim was made."
+  ]
+}

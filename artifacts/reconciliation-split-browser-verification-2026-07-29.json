@@ -1,0 +1,51 @@
+{
+  "evidenceType": "reconciliation-split-browser-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-28T22:11:46Z",
+  "scope": "Local Chromium rendering and accessibility evidence for a mocked exact-at-observation engine 0.7.0 / rule 1.5.0 refund-accounting-split occurrence. This is not a live API, database, queue, staging, or operator-outcome result.",
+  "fixture": {
+    "engineVersion": "0.7.0",
+    "ruleSetVersion": "1.5.0",
+    "ruleId": "refund-accounting-split",
+    "ruleVersion": "1.5.0",
+    "reasonCode": "REFUND_ACCOUNTING_SPLIT_TOTAL_MATCHED",
+    "recordReferences": 3,
+    "evidenceFidelity": "exact_at_observation"
+  },
+  "verification": {
+    "focused": {
+      "command": "CI=true pnpm --filter @workspace/web exec playwright test tests/reconciliation-runs.spec.ts --workers=1",
+      "testsPassed": 4,
+      "testsFailed": 0,
+      "assertions": [
+        "the current split reason code is visible",
+        "the match table reports three participating records",
+        "the occurrence is labeled exact at observation",
+        "the selected-run evidence region has no automatically detected accessibility violation",
+        "the bounded artifact ledger has no horizontal document overflow at 390 by 844"
+      ]
+    },
+    "fullBrowser": {
+      "command": "CI=true pnpm --filter @workspace/web test:e2e",
+      "testsPassed": 33,
+      "testsFailed": 0,
+      "browser": "Chromium"
+    }
+  },
+  "sourceSha256": {
+    "apps/web/tests/reconciliation-runs.spec.ts": "392028fbb38bfd74138a28981ebf69f07d83d4f3b8228a0b21a027eb3fec91e1",
+    "apps/web/src/components/reconciliation-runs.tsx": "1153c140973aa180e6b1c3be899d0888d5eeac9602e0f9522e2a218480965cba"
+  },
+  "safety": {
+    "syntheticDataOnly": true,
+    "customerDataUsed": false,
+    "externalMessagesSent": false,
+    "deploymentPerformed": false,
+    "gitStageCommitPushPerformed": false
+  },
+  "limitations": [
+    "The browser route was fulfilled by the Playwright fixture rather than a live API.",
+    "The separate live continuous browser/BFF/API/outbox/Redis/worker/PostgreSQL verifier still uses a one-row accounting fixture.",
+    "No representative operator session, assistive-technology manual audit, concurrency, latency percentile, alert, staging, or production behavior was measured."
+  ]
+}

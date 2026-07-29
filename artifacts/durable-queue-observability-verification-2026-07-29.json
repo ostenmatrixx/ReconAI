@@ -1,0 +1,256 @@
+{
+  "evidenceType": "durable-queue-observability-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T02:57:37.576Z",
+  "scope": "Local source, configuration, unit, authenticated loopback Redis 8.2.8, real BullMQ, and loopback OTLP/HTTP protobuf evidence for bounded durable-queue backlog telemetry. No production, staging, provider sandbox, external collector, customer data, or source-system write was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/durable-producer-trace-context-verification-2026-07-29.json",
+      "sha256": "94613450270e70799930eeb504414b1cb0713149891b7ebaf16e7671b8e068a3",
+      "purpose": "The immediately preceding 44-migration, 446-test observability and durable-trace baseline."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "redis": "8.2.8",
+    "bullmq": "5.81.2",
+    "ioredis": "5.11.1",
+    "opentelemetryApi": "1.9.1",
+    "opentelemetryMetricsSdk": "2.10.0",
+    "opentelemetryOtlpProtoExporter": "0.221.0"
+  },
+  "decision": {
+    "governingAdr": "ADR 0037",
+    "securityReviewControl": "OBSERVABILITY-DURABLE-QUEUE-001",
+    "monitorEnabledOnlyWithWorkerOtlp": true,
+    "monitorControlsReadiness": false,
+    "monitorControlsQueueProcessing": false,
+    "monitorMutatesJobs": false,
+    "databaseMigrationRequired": false,
+    "moneyRulePermissionProviderScopeOrAiBehaviorChanged": false,
+    "metricTemporality": {
+      "api": "cumulative",
+      "worker": "delta",
+      "ambientEnvironmentOverrideAccepted": false,
+      "reason": "The pinned cumulative last-value aggregation retains a prior observable-gauge point after its callback stops observing. Explicit worker delta collection lets a follower or failed former leader stop exporting that queue series."
+    }
+  },
+  "boundedReadContract": {
+    "aggregateStates": [
+      "waiting",
+      "paused",
+      "active",
+      "delayed",
+      "prioritized",
+      "waiting-children",
+      "failed"
+    ],
+    "aggregateStateCardinality": 7,
+    "readyLists": [
+      "waiting",
+      "paused",
+      "prioritized"
+    ],
+    "maximumHydratedReadyHeadEnvelopesPerSuccessfulPoll": 3,
+    "unboundedBacklogScan": false,
+    "payloadFieldReadByMonitor": false,
+    "readyAgeDefinition": "Maximum age since job creation among the next dispatchable waiting, paused, and prioritized list heads.",
+    "readyAgeIsExactOldestAcrossEveryPrioritizedJob": false,
+    "reasonExactPriorityOldestRejected": "BullMQ orders prioritized jobs by priority rather than creation time, so an exact creation-age scan would grow with backlog.",
+    "emptyQueuePublishesExplicitZeros": true,
+    "invalidMetadataPublishesPartialOrFabricatedSnapshot": false
+  },
+  "metricContract": {
+    "instruments": [
+      {
+        "name": "reconai.queue.jobs",
+        "kind": "observable_gauge",
+        "unit": "{job}",
+        "attributes": [
+          "reconai.queue.state"
+        ],
+        "allowedAttributeValues": 7
+      },
+      {
+        "name": "reconai.queue.ready_head.maximum_age",
+        "kind": "observable_gauge",
+        "unit": "s",
+        "attributes": []
+      },
+      {
+        "name": "reconai.queue.monitor.polls",
+        "kind": "counter",
+        "unit": "{poll}",
+        "attributes": [
+          "reconai.outcome"
+        ],
+        "allowedAttributeValues": [
+          "succeeded",
+          "failed"
+        ]
+      }
+    ],
+    "ordinaryFollowerSkipEmitsPollOutcome": false,
+    "queueNameExported": false,
+    "leaseKeyOrTokenExported": false,
+    "tenantJobCorrelationProviderCredentialMoneyOrPayloadAttributes": false,
+    "failedPollPublishesFakeZeroGauge": false
+  },
+  "singleWriterContract": {
+    "leaseAuthority": "authenticated environment-scoped Redis",
+    "leaseKeySource": "fixed durable queue namespace only",
+    "leaseToken": "random per process, compare-renewed and compare-deleted",
+    "leaseTokenLoggedOrRecorded": false,
+    "leaseTtlFormula": "max(5000, min(900000, intervalMs * 3))",
+    "defaultPollIntervalMilliseconds": 15000,
+    "defaultLeaseTtlMilliseconds": 45000,
+    "pollSingleFlightPerProcess": true,
+    "followerReadsQueue": false,
+    "processLocalSnapshotClearedOnFollowerFailureOrShutdown": true,
+    "isolatedSnapshotExpiresByLeaseTtl": true,
+    "previousGaugeRetainedAfterFollowerDeltaExport": false
+  },
+  "failureIsolation": {
+    "dedicatedRedisConnection": true,
+    "defaultConnectTimeoutMilliseconds": 1000,
+    "defaultCommandTimeoutMilliseconds": 1000,
+    "maximumCommandRetries": 1,
+    "offlineQueueEnabled": false,
+    "connectionErrorsCanCrashWorker": false,
+    "errorLogUsesRedactedSafeError": true,
+    "queueOrFinancialWorkDependsOnMonitorSuccess": false,
+    "shutdownOrder": "monitor, monitor BullMQ client, dedicated monitor Redis, then existing worker resources and OTLP shutdown"
+  },
+  "focusedVerification": [
+    {
+      "command": "pnpm exec vitest run packages/config/src/config.test.ts packages/observability/src/observability.test.ts apps/worker/src/queue-observability.test.ts --maxWorkers=1",
+      "testFilesPassed": 3,
+      "testsPassed": 37,
+      "testsFailed": 0
+    },
+    {
+      "command": "pnpm lint && pnpm typecheck && pnpm test",
+      "testFilesPassed": 70,
+      "testsPassed": 453,
+      "testsFailed": 0
+    }
+  ],
+  "authenticatedRedisAndOtlpVerification": {
+    "command": "REDIS_URL=<authenticated-loopback-url> pnpm exec vitest run --project integration apps/worker/src/queue-observability.integration.test.ts --maxWorkers=1",
+    "testFilesPassed": 1,
+    "testsPassed": 1,
+    "testsFailed": 0,
+    "redis": {
+      "version": "8.2.8",
+      "bind": "127.0.0.1",
+      "loopbackPort": 56381,
+      "protectedMode": true,
+      "authenticationRequired": true,
+      "credentialRecorded": false,
+      "persistenceEnabled": false,
+      "database": 15,
+      "databaseSizeAfterCleanup": 0
+    },
+    "clients": {
+      "producer": 1,
+      "leaderMonitor": 1,
+      "followerMonitor": 1
+    },
+    "bullmqStructures": [
+      "waiting",
+      "prioritized",
+      "delayed"
+    ],
+    "exactLeaderSnapshot": {
+      "waiting": 1,
+      "paused": 0,
+      "active": 0,
+      "delayed": 1,
+      "prioritized": 1,
+      "waiting-children": 0,
+      "failed": 0,
+      "readyHeadMaximumAgeSeconds": 120
+    },
+    "oneEnvironmentLease": true,
+    "leaseTtlPositive": true,
+    "followerOutcome": "not_leader",
+    "followerQueueCountReads": 0,
+    "followerQueueJobReads": 0,
+    "otlpTransport": "HTTP protobuf",
+    "otlpCaptureAddress": "ephemeral loopback HTTP server",
+    "leaderGaugeAndPollMetricsPresent": true,
+    "postFollowerForcedExportContainsPriorQueueGauges": false,
+    "payloadTenantLeaseTokenAndLeaseKeySentinelsAbsent": true,
+    "runtimeStopped": true,
+    "listenPortClosed": true,
+    "runtimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-queue-observability-redis.Drd9ym-verified-20260729"
+  },
+  "rejectedIntermediateDesign": {
+    "design": "Cumulative observable gauge with only a process-local lease-expiring snapshot",
+    "testResult": "A forced export after follower transition still contained the prior queue gauge because the pinned SDK cumulative temporal processor merged the last observation.",
+    "acceptedAsEvidence": false,
+    "correction": "The worker exporter now selects delta temporality explicitly, and the same post-follower assertion passes.",
+    "productionClaimMadeFromFailedRun": false
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 70,
+    "testsPassed": 453,
+    "testsFailed": 0,
+    "migrationsValidated": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "secretScan": "passed",
+    "productionDependencyAuditAtHighSeverity": "no known vulnerabilities found"
+  },
+  "sourceSha256": {
+    ".env.example": "774ee7e1d3343ead6e898936eaaade74bc3470400b16a63b313d0428c8783fda",
+    "apps/worker/src/main.ts": "9abe521ea8b51fa8c877507cb385c7ae21cb9f724bfa5ecc302734282424486b",
+    "apps/worker/src/queue-observability.ts": "b704c6f0d446a05cc6b9a9792568f01bb16d5f1996bc4dbe9934ea647965563d",
+    "apps/worker/src/queue-observability.test.ts": "7ab745be55e30d5fb4b87d67b88073475237deaddf22a37e61a9ff121ebbad21",
+    "apps/worker/src/queue-observability.integration.test.ts": "275511f09cdaa5c3f7cc660d352cf419938e8bc44d5085aaf9ee75079ab38c09",
+    "packages/config/src/index.ts": "dbcec9526656a3362eeeb615e640b042b41dcf3c953c2dee7b5802af86ee19a1",
+    "packages/config/src/config.test.ts": "801b9206f005dcf6200fd78839e18fbbc0f595dc32335a1afcb5cfb1584d57f0",
+    "packages/observability/src/runtime.ts": "c965662e5754e83d1bbb46a4d653345967983cec65269875e64c38e82847a88f",
+    "packages/observability/src/telemetry.ts": "42411f020dab6f8a77309f9ddfe7b14e517e8ce6d6964cdf0105c01a7214ac6e",
+    "packages/observability/src/index.ts": "ea60b46e1179ef412229da07813228b65e17422c30d9ccbd1b6f5797b5653b68",
+    "packages/observability/src/observability.test.ts": "59489d40782d58484a8dfedf9f1ef2b497df66ec3b5052d91ed8727bcb043c81",
+    "docs/environment.md": "a093e5f0d5c13d9b3455e1258325aa51616fc80c735899ae12e9fd0e82d53232",
+    "docs/observability.md": "75cfcc91cf723a648088ac255206537c2353141000a45d3f6389be45ad9e6c9d",
+    "docs/operations-runbook.md": "cdb233f614d6f6658281e2b2733e710206728391b554027cca0e9ddfb62dcfce",
+    "docs/known-limitations.md": "1ab8b874f8e1bc90ad6f82b1ead461bdc1a1220bf533372833f8746fcc93faec",
+    "docs/goals/goal-1-audit-2026-07-29.md": "c168fe302e8ddefdcb9f367581dcf8c0b8dcad4b36d6b44f734a8d7133613192",
+    "docs/adr/README.md": "460c293623bf4e463b9ba240692b46330ded141be445912f76ec4476ef317791",
+    "docs/adr/0037-leased-durable-queue-observability.md": "b1c6320031de6149efea9fbae75be97304ee470918c1f4245602812fd8b376a4"
+  },
+  "safety": {
+    "loopbackOnly": true,
+    "syntheticDataOnly": true,
+    "productionDataUsed": false,
+    "productionOrStagingAccessed": false,
+    "externalCollectorAccessed": false,
+    "sourceSystemWriteScopeChanged": false,
+    "financialOrApprovalAuthorityChanged": false,
+    "environmentFileCreated": false,
+    "repositoryFilesStaged": 0,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "The lease and three clients ran on one workstation against one standalone Redis process, not independently scheduled worker hosts, Sentinel, Cluster, or a managed Redis topology.",
+    "The local Redis server used authenticated loopback TCP without TLS or an ACL user split. This is not production network, identity, transport, failover, or capacity evidence.",
+    "The test exercised one lease owner, one follower, exact fixed BullMQ states, and one ownership transition. It did not exercise process crash during polling, Redis partition/restart, clock skew, sustained backlog, replica churn, or multi-host lease fairness.",
+    "Ready-head maximum age is intentionally not the exact oldest creation age across all prioritized jobs. It observes only the next dispatchable head of each bounded ready list.",
+    "The OTLP receiver captured real protobuf locally. No protected collector/backend, TLS/authentication, egress allowlist, access/retention policy, dashboard aggregation, threshold, silence rule, alert delivery, acknowledgement, or on-call response was exercised.",
+    "Worker delta and API cumulative temporality are explicit and standard OTLP forms, but compatibility with the selected production collector/backend and its dashboard queries still requires staging verification.",
+    "Connector freshness, webhook verification, normalization failure, review age, AI, and representative business/SLO signals remain separate work.",
+    "Queue monitoring is deliberately lossy and non-authoritative. Missing samples require a silence alert and cannot authorize queue mutation, financial action, retry, approval, or source-system state change."
+  ],
+  "claim": "ReconAI now has a locally verified, constant-size, low-cardinality durable-queue state and ready-frontier monitor with Redis single-writer ownership, bounded failure isolation, and no stale gauge after a follower transition. This is local component evidence, not staging or production readiness, an SLO, a capacity result, or an exercised operational alert."
+}

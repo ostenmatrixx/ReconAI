@@ -1,0 +1,42 @@
+min_version: 2.1.10
+
+pre-commit:
+  parallel: true
+  commands:
+    staged-policy:
+      run: node scripts/check-staged-files.mjs
+    secrets:
+      glob: "*.{js,mjs,cjs,ts,tsx,json,yml,yaml,md,css,sql,env}"
+      run: pnpm exec secretlint {staged_files} --maskSecrets
+    format:
+      glob: "*.{js,mjs,cjs,ts,tsx,json,yml,yaml,md,css,sql}"
+      run: pnpm exec prettier --check {staged_files}
+    lint:
+      glob: "*.{js,mjs,cjs,ts,tsx}"
+      run: pnpm exec eslint --max-warnings=0 {staged_files}
+    config:
+      glob: "*.{json,yml,yaml}"
+      run: pnpm config:check
+
+commit-msg:
+  commands:
+    conventional:
+      run: node scripts/validate-commit-message.mjs {1}
+
+pre-push:
+  parallel: true
+  commands:
+    typecheck:
+      run: pnpm typecheck
+    tests:
+      run: pnpm test
+    reconciliation:
+      run: pnpm test:reconciliation
+    tenant:
+      run: pnpm test:tenant
+    migrations:
+      run: pnpm migrations:check
+    schemas:
+      run: pnpm schemas:check
+    dependencies:
+      run: pnpm dependency:policy

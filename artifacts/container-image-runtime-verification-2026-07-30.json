@@ -1,0 +1,424 @@
+{
+  "schemaVersion": 1,
+  "verification": "production-built-container-image-reconciliation-runtime",
+  "result": "local_pass",
+  "generatedAt": "2026-07-29T21:24:27.740Z",
+  "productionReadinessClaim": false,
+  "scope": {
+    "customerDataUsed": false,
+    "providerSystemsContacted": false,
+    "publishedOrDeployed": false,
+    "runtimeConfiguration": "development API/worker dependency transport plus production web authentication over ephemeral TLS, Secure cookies, Redis revocation, and production-built image artifacts",
+    "network": "reconai-local_internal"
+  },
+  "build": {
+    "engine": "rootless Podman",
+    "podmanClientVersion": "5.8.2",
+    "podmanServerVersion": "5.8.5",
+    "architecture": "linux/arm64",
+    "baseImage": "node:24.14.0-bookworm-slim@sha256:d8e448a56fc63242f70026718378bd4b00f8c82e78d20eefb199224a4d8e33d8",
+    "packageManager": "pnpm@11.9.0",
+    "images": {
+      "api": {
+        "imageId": "1c74e011561a421796e687aa5589728822d07c99f446e211b267574959f61ebc",
+        "sizeBytes": 354102674,
+        "buildPassed": true
+      },
+      "worker": {
+        "imageId": "a50e8fe57d244f9443a928b30c3fa1ead983b5ab680bee30e64b187378c0fe90",
+        "sizeBytes": 341936449,
+        "buildPassed": true
+      },
+      "web": {
+        "imageId": "e8ddae2486942e481d9dee4a75a73d4e0720d05cc7a09dde2190ce809038c8d0",
+        "sizeBytes": 272892173,
+        "buildPassed": true
+      }
+    },
+    "packagingDefectsFoundAndCorrected": [
+      {
+        "boundary": "workspace dependency installation",
+        "initialResult": "failed",
+        "cause": "the Git-free image context ran the repository Lefthook prepare command",
+        "correction": "exact command-scoped LEFTHOOK=0 plus a fail-closed prepare wrapper and validator tests",
+        "finalResult": "passed"
+      },
+      {
+        "boundary": "API and worker production deployment",
+        "initialResult": "failed",
+        "cause": "pnpm deploy performs a second production install and ran the same repository prepare command",
+        "correction": "the exact bypass is separately scoped to each production deploy lifecycle command",
+        "finalResult": "passed"
+      }
+    ],
+    "policyCoverage": {
+      "persistentOrParameterizedHookBypassRejected": true,
+      "dependencyLifecycleScriptDisablementRejected": true,
+      "unscopedProductionDeployRejected": true,
+      "ordinaryPnpmPrepareInstalledAllThreeRepositoryHooks": true,
+      "focusedPolicyFilesPassed": 2,
+      "focusedPolicyTestsPassed": 14,
+      "serviceConfigTestFilePassed": true,
+      "serviceConfigTestsPassed": 36,
+      "focusedServiceBoundaryTestsPassed": 4
+    },
+    "observedOptionalFallback": "msgpackr-extract had no usable Linux ARM64 native package in the slim build stage and its optional source fallback lacked Python; pnpm continued with the supported JavaScript path, and the final API/worker runtime passed"
+  },
+  "runtimeBoundaryDefectsFoundAndCorrected": [
+    {
+      "boundary": "long-lived API and worker runtime parsing",
+      "initialResult": "overbroad",
+      "cause": "both entrypoints required one full-stack schema containing peer database and web-session authority",
+      "correction": "service-specific API and worker schemas retain only fields consumed by the owning service",
+      "finalResult": "focused tests and corrected image runtime passed"
+    },
+    {
+      "boundary": "container environment projection",
+      "initialResult": "overprovisioned and rejected as least-privilege evidence",
+      "cause": "the first harness spread the full synthetic environment into every application container",
+      "correction": "explicit service allowlists plus live-container forbidden-variable inspection",
+      "finalResult": "all forbidden-variable sets were empty"
+    },
+    {
+      "boundary": "verifier filesystem projection",
+      "initialResult": "overbroad and rejected as least-privilege evidence",
+      "cause": "the first accepted-behavior run mounted the verifier's entire one-run TLS directory into the API, authenticated web, and TLS relay containers",
+      "correction": "exact read-only file mounts expose only the CA certificate to API and authenticated web, no verifier files to worker or public web, and only each verifier helper's required files",
+      "finalResult": "live application mount inspection matched the exact expected destinations with no writable or broadened mount"
+    },
+    {
+      "boundary": "production web identity and transport",
+      "initialResult": "rejected fail closed",
+      "cause": "the production bundle rejected the HTTP issuer and repository local-only OIDC client secret",
+      "correction": "isolated digest-pinned Keycloak, one-run client/session secrets, exact TLS issuer/callback, production Secure cookies, and Redis revocation",
+      "finalResult": "real authorization code plus PKCE login passed"
+    },
+    {
+      "boundary": "production tenant and browser-response contract",
+      "initialResult": "rejected fail closed",
+      "cause": "production ignored the development default organization, and the BFF intentionally omitted the upstream correlation ID",
+      "correction": "the browser explicitly selected an authorized organization and the verifier read correlation identity from append-only audit evidence",
+      "finalResult": "tenant selection returned 200, BFF run start returned 202, and the minimized response disclosed no upstream correlation ID"
+    }
+  ],
+  "runtime": {
+    "containers": {
+      "api": {
+        "declaredUser": "node",
+        "effectiveUid": 1000,
+        "capabilitiesDropped": true,
+        "noNewPrivileges": true,
+        "statusDuringProof": "running",
+        "readOnlyMountDestinations": [
+          "/runtime/tls-cert.pem"
+        ]
+      },
+      "worker": {
+        "declaredUser": "node",
+        "effectiveUid": 1000,
+        "capabilitiesDropped": true,
+        "noNewPrivileges": true,
+        "statusDuringProof": "running",
+        "readOnlyMountDestinations": []
+      },
+      "web": {
+        "declaredUser": "node",
+        "effectiveUid": 1000,
+        "capabilitiesDropped": true,
+        "noNewPrivileges": true,
+        "statusDuringProof": "running",
+        "readOnlyMountDestinations": [
+          "/runtime/tls-cert.pem"
+        ]
+      },
+      "publicWeb": {
+        "declaredUser": "node",
+        "effectiveUid": 1000,
+        "capabilitiesDropped": true,
+        "noNewPrivileges": true,
+        "statusDuringProof": "running",
+        "readOnlyMountDestinations": []
+      }
+    },
+    "declaredDockerHealthcheckObservedByPodman": false,
+    "manualApiLivenessStatus": 200,
+    "manualApiReadinessStatus": 200,
+    "webStatus": 200,
+    "webCspPresent": true,
+    "webConfiguration": {
+      "httpsOriginsConfigured": true,
+      "secureCookieConfigured": true,
+      "redisSessionRevocationConfigured": true,
+      "authenticatedBffRequestExercised": true,
+      "realKeycloakAuthorizationCodePkceCompleted": true,
+      "explicitOrganizationSelectionCompleted": true
+    },
+    "environmentCredentialIsolation": {
+      "api": {
+        "databaseRole": "application only",
+        "injectedVariableNames": [
+          "API_HOST",
+          "API_PORT",
+          "API_RATE_LIMIT_STORE",
+          "APP_ENV",
+          "CONNECTOR_ENCRYPTION_ACTIVE_KEY_VERSION",
+          "CONNECTOR_ENCRYPTION_KEYS",
+          "DATABASE_URL",
+          "LOG_LEVEL",
+          "NODE_ENV",
+          "NODE_EXTRA_CA_CERTS",
+          "OIDC_CLIENT_ID",
+          "OIDC_ISSUER",
+          "OTEL_EXPORTER_OTLP_ENDPOINT",
+          "OTEL_EXPORT_TIMEOUT_MS",
+          "OTEL_METRIC_EXPORT_INTERVAL_MS",
+          "OTEL_TRACE_SAMPLE_RATIO",
+          "RECONAI_CONNECTOR_ENCRYPTION_KEY_V1",
+          "REDIS_URL",
+          "S3_ACCESS_KEY_ID",
+          "S3_BUCKET",
+          "S3_ENDPOINT",
+          "S3_FORCE_PATH_STYLE",
+          "S3_KMS_KEY_ID",
+          "S3_REGION",
+          "S3_SECRET_ACCESS_KEY",
+          "S3_SERVER_SIDE_ENCRYPTION",
+          "WEB_ORIGIN"
+        ],
+        "forbiddenVariableNamesChecked": [
+          "API_ORIGIN",
+          "DATABASE_ADMIN_URL",
+          "DATABASE_MAINTENANCE_URL",
+          "DATABASE_MIGRATION_URL",
+          "DATABASE_WORKER_URL",
+          "OIDC_CLIENT_SECRET",
+          "SESSION_SECRET",
+          "AI_API_KEY"
+        ],
+        "forbiddenVariablesPresent": []
+      },
+      "worker": {
+        "databaseRole": "worker only",
+        "injectedVariableNames": [
+          "APP_ENV",
+          "CONNECTOR_ENCRYPTION_ACTIVE_KEY_VERSION",
+          "CONNECTOR_ENCRYPTION_KEYS",
+          "DATABASE_WORKER_URL",
+          "LOG_LEVEL",
+          "NODE_ENV",
+          "OTEL_EXPORTER_OTLP_ENDPOINT",
+          "OTEL_EXPORT_TIMEOUT_MS",
+          "OTEL_METRIC_EXPORT_INTERVAL_MS",
+          "OTEL_TRACE_SAMPLE_RATIO",
+          "PROVIDER_GAP_REPAIR_ENABLED",
+          "PROVIDER_PRIVACY_DEADLINE_MONITOR_ENABLED",
+          "RECONAI_CONNECTOR_ENCRYPTION_KEY_V1",
+          "REDIS_URL",
+          "S3_ACCESS_KEY_ID",
+          "S3_BUCKET",
+          "S3_ENDPOINT",
+          "S3_FORCE_PATH_STYLE",
+          "S3_KMS_KEY_ID",
+          "S3_REGION",
+          "S3_SECRET_ACCESS_KEY",
+          "S3_SERVER_SIDE_ENCRYPTION",
+          "WEB_ORIGIN"
+        ],
+        "forbiddenVariableNamesChecked": [
+          "API_ORIGIN",
+          "API_RATE_LIMIT_KEY_SECRET",
+          "DATABASE_ADMIN_URL",
+          "DATABASE_MAINTENANCE_URL",
+          "DATABASE_MIGRATION_URL",
+          "DATABASE_URL",
+          "EMAIL_DELIVERY_TOKEN",
+          "OIDC_CLIENT_SECRET",
+          "OIDC_ISSUER",
+          "SESSION_SECRET",
+          "STRIPE_APP_WEBHOOK_SECRET",
+          "SUPPORT_IDENTITY_HMAC_KEY",
+          "AI_API_KEY"
+        ],
+        "forbiddenVariablesPresent": []
+      },
+      "web": {
+        "databaseRole": "none",
+        "injectedVariableNames": [
+          "API_ORIGIN",
+          "APP_ENV",
+          "HOSTNAME",
+          "NEXTAUTH_URL",
+          "NODE_ENV",
+          "NODE_EXTRA_CA_CERTS",
+          "OIDC_CLIENT_ID",
+          "OIDC_CLIENT_SECRET",
+          "OIDC_ID_TOKEN_SIGNING_ALGORITHM",
+          "OIDC_ISSUER",
+          "PORT",
+          "REDIS_URL",
+          "SESSION_COOKIE_SECURE",
+          "SESSION_REVOCATION_REDIS_COMMAND_TIMEOUT_MS",
+          "SESSION_REVOCATION_REDIS_CONNECT_TIMEOUT_MS",
+          "SESSION_REVOCATION_STORE",
+          "SESSION_SECRET",
+          "WEB_ORIGIN"
+        ],
+        "forbiddenVariableNamesChecked": [
+          "API_RATE_LIMIT_KEY_SECRET",
+          "CONNECTOR_ENCRYPTION_KEYS",
+          "DATABASE_ADMIN_URL",
+          "DATABASE_MAINTENANCE_URL",
+          "DATABASE_MIGRATION_URL",
+          "DATABASE_URL",
+          "DATABASE_WORKER_URL",
+          "EMAIL_DELIVERY_TOKEN",
+          "RECONAI_CONNECTOR_ENCRYPTION_KEY_V1",
+          "S3_SECRET_ACCESS_KEY",
+          "SHOPIFY_CLIENT_SECRET",
+          "STRIPE_APP_WEBHOOK_SECRET",
+          "STRIPE_OAUTH_SECRET_KEY",
+          "SUPPORT_IDENTITY_HMAC_KEY",
+          "AI_API_KEY"
+        ],
+        "forbiddenVariablesPresent": []
+      }
+    }
+  },
+  "authorization": {
+    "oidcAuthority": "isolated digest-pinned Keycloak 26.7.0 verification container",
+    "oidcTransport": "ephemeral self-signed TLS trusted only by the bounded verifier runtime",
+    "authorizationCodePkceLoginCompleted": true,
+    "authorizationRequestObserved": true,
+    "authorizationClientIdMatched": true,
+    "authorizationRedirectMatched": true,
+    "authorizationPkceS256": true,
+    "browserSessionStatus": 200,
+    "browserProviderCredentialDisclosure": false,
+    "authenticatedBffRunStartStatus": 202,
+    "authenticatedBffRunDetailStatus": 200,
+    "bffUpstreamCorrelationIdDisclosed": false,
+    "explicitOrganizationSelectionStatus": 200,
+    "secureHttpOnlySessionCookieObserved": true,
+    "secureHttpOnlyOrganizationContextCookieObserved": true,
+    "syntheticKeycloakRealmImportedIntoIsolatedContainer": true,
+    "composeKeycloakClientMutated": false,
+    "verifiedSubjectBoundToFixtureMembership": true,
+    "syntheticFixtureIssuerTemporarilyRebound": true,
+    "syntheticFixtureIssuerRestored": true,
+    "foreignOrganizationExists": true,
+    "crossTenantRunDiscoveryStatus": 404,
+    "crossTenantExistenceDisclosed": false,
+    "tenantlessRestrictedRoleCounts": {
+      "organizations": 0,
+      "canonicalRecords": 0,
+      "reconciliationRuns": 0,
+      "auditEvents": 0
+    }
+  },
+  "reconciliation": {
+    "runId": "70b4813f-6109-4c45-a7f2-d9ec83ed3c2c",
+    "correlationId": "d9eecc45-d4aa-448d-9d68-49b36bdd05e3",
+    "status": "succeeded",
+    "inputCount": 8,
+    "matchCount": 3,
+    "exceptionCount": 1,
+    "errorCount": 0,
+    "operationalStateApplied": true,
+    "matchedRules": [
+      "order-payment",
+      "refund",
+      "refund-accounting-split"
+    ],
+    "splitRuleVersion": "1.5.0",
+    "splitReasonCode": "REFUND_ACCOUNTING_SPLIT_TOTAL_MATCHED",
+    "splitRecordReferenceCount": 3,
+    "exceptionReasonCode": "DUPLICATE_SOURCE_EXTERNAL_IDENTIFIER"
+  },
+  "persistence": {
+    "appliedMigrations": 56,
+    "successfulRuns": 1,
+    "matchOccurrenceSnapshots": 3,
+    "exceptionOccurrenceSnapshots": 1,
+    "publishedOutboxEvents": 1,
+    "successfulJobs": 1,
+    "runAuditEvents": 2
+  },
+  "boundedLogScan": {
+    "identity": {
+      "checkedLines": 23,
+      "credentialFindings": 0
+    },
+    "api": {
+      "checkedLines": 43,
+      "credentialFindings": 0
+    },
+    "apiTlsRelay": {
+      "checkedLines": 0,
+      "credentialFindings": 0
+    },
+    "worker": {
+      "checkedLines": 3,
+      "credentialFindings": 0
+    },
+    "authenticatedWeb": {
+      "checkedLines": 4,
+      "credentialFindings": 0
+    },
+    "publicWeb": {
+      "checkedLines": 4,
+      "credentialFindings": 0
+    }
+  },
+  "sourceHashes": {
+    "apps/api/Dockerfile": "7021dce8e43c0351647c0b712b7afb048ed903c7628f4ab6627d4679b6ec714e",
+    "apps/worker/Dockerfile": "991945175fbba65925b60d42def36e02b1158480e98d85ef12e090daa936e391",
+    "apps/web/Dockerfile": "d2035443066ec108e75709af6b713f67d9543de2a072a25a3e246300c39d3cb9",
+    "package.json": "1077c9b5df96fb8cb8daaffafbf2f2ac09c9ccb2d714fc5bf1cd8e77a8793e3e",
+    "pnpm-lock.yaml": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0",
+    "scripts/install-hooks.mjs": "55a4599d2964236e65c1496d8f0226432b35432240e680c534a9ee84636817bb",
+    "scripts/install-hooks.test.mjs": "ad9a7adf4fe194cc286fb3e0384a90b27dab2540455cf57764a4ff268c478d69",
+    "scripts/container-integrity-policy.mjs": "2a01748bbb33928e3bf8c82b2dad9fb088667da03ca25d17ba8d8c67017158a0",
+    "scripts/container-integrity-policy.test.mjs": "7103a7621aa02052430715686493715b94f261a6868e72014740ad813681d952",
+    "scripts/validate-container-integrity.mjs": "a8c9714fcf09b81a253816c28ac1ab9c7942d38f737f5586c52f9e86dc91e765",
+    "scripts/verify-container-image-runtime.mjs": "9a85edf2d5fa1c307e0186f9c6986ca8ef93b64c6814ff6a4ca424d783c825f1",
+    "packages/config/src/index.ts": "d112458041f40e2dd9974edb860961dcf5c730d011404c5f2d15935f9a76d0d2",
+    "packages/config/src/config.test.ts": "47a46f06845a2a1616b84442ae643f0300c4cb1c57ed898bbc88b8091d83ecfe",
+    "apps/api/src/main.ts": "bb21100462062a0b26c6c8614501447fe2551c609b51b5bdc1094d46cde5e8d1",
+    "apps/worker/src/main.ts": "984955581ec7a5835931032e2bcff3fab037375af11e8db65ddca8d86ead3bf0",
+    ".secretlintrc.json": "707e55866fa16f2bec8027789300fe2a3e47a157ea7419c3ee456481982c796e"
+  },
+  "repositoryVerification": {
+    "testFilesPassed": 87,
+    "testsPassed": 592,
+    "migrationFilesValidated": 56,
+    "sourceBoundaryFilesValidated": 580,
+    "evidenceFilesValidated": 112,
+    "productionLicensesValidated": 224,
+    "allWorkspaceBuildsPassed": true,
+    "secretlintPassed": true,
+    "highSeverityProductionDependencyAudit": "no known vulnerabilities"
+  },
+  "cleanup": {
+    "verificationContainersRemaining": 0,
+    "composeProjectContainersRemaining": 0,
+    "composeProjectVolumesRemaining": 0,
+    "composeProjectNetworkRemaining": 0,
+    "verificationImageTagsRemaining": 0,
+    "reservedListenersRemaining": 0,
+    "runtimeEnvFileCreated": false,
+    "temporaryComposeProviderMovedToTrash": true,
+    "dependencyAndIntermediateImageCacheRetained": true,
+    "reclaimablePodmanImageCacheBytes": 12489265293
+  },
+  "limitations": [
+    "The API and worker images were production-built but intentionally ran with development configuration because the local dependency network uses HTTP and development credentials.",
+    "One web-image instance ran the real Keycloak authorization-code-plus-PKCE and authenticated BFF journey with production HTTPS origins, Secure cookies, and Redis-backed revocation; a separate production-valid instance served only its public route over loopback HTTP.",
+    "Ephemeral self-signed TLS terminated at a verifier-owned Node proxy for the web image and directly in the isolated Keycloak container; this does not prove production ingress or certificate policy.",
+    "Chromium used fixed host-resolver mappings and ignored only the ephemeral synthetic CA error so the browser and private containers shared the exact Keycloak issuer and web callback hostnames without changing workstation DNS.",
+    "Podman's default OCI image format ignored Docker HEALTHCHECK metadata, so the verifier called liveness and readiness directly.",
+    "The explicit container environment allowlists and service parsers prove this local projection only; no production secret manager, orchestrator workload identity, managed-service ACL, or rotation policy was exercised.",
+    "This is one rootless single-machine ARM64 execution, not Docker Engine, an amd64 candidate archive, protected staging, trusted external TLS/identity, a prior/current image rollout, a vulnerability scan, or a capacity/SLO result.",
+    "No provider sandbox, customer payload, production credential, external collector, alert delivery, hosted CI, publication, registry push, or deployment was used."
+  ],
+  "credentialsRecorded": false
+}

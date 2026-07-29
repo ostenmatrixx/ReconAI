@@ -1,0 +1,33 @@
+packages:
+  - apps/*
+  - packages/*
+
+catalog:
+  "@types/node": 24.10.12
+  typescript: 6.0.3
+  zod: 4.4.3
+
+autoInstallPeers: false
+strictPeerDependencies: true
+resolutionMode: highest
+overrides:
+  brace-expansion: 5.0.8
+  esbuild@<=0.24.2: 0.25.12
+  postcss: 8.5.23
+  sharp: 0.35.3
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true
+minimumReleaseAgeExclude:
+  - next
+  - react
+  - react-dom
+engineStrict: true
+nodeVersion: 24.14.0
+allowBuilds:
+  "esbuild@0.18.20 || 0.25.12 || 0.28.1": true
+  "lefthook@2.1.10": true
+  "libxmljs2@0.37.0": true
+  "msgpackr-extract@3.0.4": true
+  "sharp@0.34.5": true
+patchedDependencies:
+  openid-client@5.7.1: patches/openid-client@5.7.1.patch

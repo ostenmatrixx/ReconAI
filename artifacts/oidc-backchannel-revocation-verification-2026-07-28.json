@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-28T08:24:11Z",
+  "supplementedAt": "2026-07-28T09:29:27Z",
+  "scope": "Provider-initiated OIDC Back-Channel Logout, signed logout-token validation, distributed local-session revocation, replay resistance, pseudonymous Redis indexes, and fail-closed authenticated admission",
+  "productionReadinessClaim": false,
+  "result": "static_and_synthetic_verification_passed_live_keycloak_redis_multi_replica_recovery_rotation_and_alert_evidence_pending",
+  "environment": {
+    "node": "v24.15.0",
+    "pnpm": "11.9.0",
+    "redisIntegrationConfigured": false,
+    "databaseIntegrationConfigured": false,
+    "objectStorageIntegrationConfigured": false,
+    "dockerExecutableAvailable": false,
+    "podmanExecutableAvailable": false,
+    "redisCliExecutableAvailable": false,
+    "stagingTopologyAvailable": false
+  },
+  "priorDefect": {
+    "control": "Encrypted stateless web cookies with bounded provider refresh and RP-initiated logout",
+    "failureMode": "A provider-initiated session termination had no authenticated path to invalidate a still-unexpired local web cookie across replicas.",
+    "tenantOrFinancialIntegrityImpactObserved": false
+  },
+  "implementedControls": [
+    "a fixed Node-runtime POST endpoint accepts only bounded application/x-www-form-urlencoded requests with one bounded logout_token",
+    "logout tokens must be signed compact JWTs; encrypted tokens and algorithm negotiation are not accepted",
+    "verification pins the configured Keycloak issuer, client audience, exact asymmetric signing algorithm, and issuer-derived JWKS URL",
+    "JWKS retrieval uses one exact URL, a five-second timeout, disabled redirects, omitted credentials, no cache, and a 256 KiB response ceiling",
+    "logout tokens require iat, jti, the standard back-channel event, and sid or sub; nonce is prohibited",
+    "token age is limited to five minutes with a one-minute clock tolerance, and an explicit typ must be logout+jwt",
+    "multiple audiences require a matching authorized-party claim",
+    "the provider issuer, subject, session start, and optional sid are captured only from the already validated ID token inside the encrypted server cookie",
+    "provider identifiers and tokens are never exposed by the browser-readable session endpoint",
+    "Redis keys use an environment namespace plus domain-separated HMAC-SHA-256 indexes and contain no raw sub, sid, jti, token, organization, tenant, or financial value",
+    "one atomic Redis script records the replay marker and monotonic revocation cutoff",
+    "sid revokes only the targeted provider session; sub is used only when sid is absent and does not revoke a later login",
+    "revocation and replay TTLs exceed the corresponding local-session and logout-token validity windows",
+    "every server-rendered authenticated page and BFF cookie decoder checks the same revocation store before using upstream authority",
+    "missing provider-bound identity, matching revocation, malformed store state, or store unavailability removes provider credentials and fails authenticated admission closed",
+    "production configuration rejects a process-local store and requires bounded Redis connect/command behavior with one retry and no offline queue",
+    "valid first delivery and replay return the standard success status; invalid tokens and failed revocation writes return a non-success status without echoing identity or token data",
+    "the local Keycloak realm pins the exact development back-channel URL, requires sid, and Compose provides only the documented host-gateway development path"
+  ],
+  "verification": {
+    "repositoryGate": {
+      "command": "CI=true pnpm verify",
+      "status": "passed",
+      "checks": [
+        "Prettier format check",
+        "ESLint with zero warnings",
+        "TypeScript typecheck across 19 workspace projects",
+        "57 unit/tenant/reconciliation files with 307 passing tests",
+        "40-file migration-chain validation with SHA-256 75aaa78f514eda88526ea9dee14e894489cba2a40a91d6a9b8ad656417afe84c",
+        "schema and runtime-config validation",
+        "reference edge request/forwarding/routing validation",
+        "OIDC and Keycloak security-configuration validation",
+        "container and release-candidate integrity validation",
+        "exact dependency-policy validation across 20 package manifests",
+        "offline lockfile-bound validation of 209 production package licenses",
+        "production builds across all applicable workspace projects, including the dynamic Next.js back-channel route"
+      ]
+    },
+    "syntheticLogoutCoverage": {
+      "status": "passed",
+      "covered": [
+        "valid signed logout-token verification and successful sid revocation",
+        "idempotent replay success without divergent state",
+        "wrong and ambiguous audiences",
+        "stale token, prohibited nonce, unsupported explicit type, missing event, and missing locator",
+        "recommended type omission allowed by the standard",
+        "fixed bounded Keycloak JWKS retrieval and ambiguous issuer rejection",
+        "bounded form and media-type rejection before cryptographic work",
+        "revocation-store failure returns a non-success logout result",
+        "sid-scoped revocation preserves another session for the same subject",
+        "subject cutoff revokes earlier sessions and preserves a later login",
+        "missing or issuer-confused cookie identity fails before store use",
+        "store unavailability fails closed and removes provider access, refresh, and ID tokens",
+        "the shared server-session reader rejects an existing cookie after provider logout"
+      ]
+    },
+    "staticProviderConfiguration": {
+      "command": "CI=true pnpm oidc:check",
+      "status": "passed",
+      "covered": [
+        "one exact confidential Keycloak client",
+        "authorization-code flow and S256 PKCE retained",
+        "resource-owner password grants disabled",
+        "exact callback, web origin, and post-logout redirect",
+        "front-channel logout disabled",
+        "exact back-channel URL with sid required",
+        "offline-token revocation not silently expanded",
+        "explicit RS256 development signing pin",
+        "explicit local-only development revocation store",
+        "Compose host-gateway mapping for the documented host-process development endpoint"
+      ]
+    },
+    "liveRedisTestDefinition": {
+      "file": "apps/web/src/session-revocation.integration.test.ts",
+      "testDefinitionCount": 1,
+      "status": "not_executed_missing_environment",
+      "missingConfiguration": [
+        "REDIS_URL"
+      ],
+      "plannedCoverage": [
+        "two independent Redis-backed store instances share one randomized test namespace",
+        "a logout recorded through one client is enforced through the second client",
+        "a different sid for the same subject remains valid",
+        "the same jti is classified as a replay across clients",
+        "exactly one replay and one sid key exist with only 64-character HMAC indexes",
+        "keys contain no raw synthetic subject, sid, or jti and have positive TTLs"
+      ],
+      "interpretation": "The production Redis adapter has an executable cross-client test definition. No live Redis assertion ran, so horizontal consistency is not claimed as observed evidence."
+    },
+    "dependencyAndArtifactChecks": {
+      "productionAudit": {
+        "command": "CI=true pnpm audit --prod",
+        "status": "passed",
+        "result": "No known vulnerabilities found"
+      },
+      "secretScan": {
+        "command": "CI=true pnpm secret:scan",
+        "status": "passed"
+      },
+      "sbom": {
+        "command": "CI=true pnpm sbom:generate",
+        "status": "passed",
+        "file": "artifacts/sbom.cdx.json",
+        "newDirectComponentsPresent": [
+          "jose@6.2.4",
+          "ioredis@5.11.1"
+        ]
+      },
+      "licenseAllowlist": {
+        "command": "CI=true pnpm license:check",
+        "status": "passed_with_replacement_validator",
+        "result": "Validated 209 production package licenses against lockfile SHA-256 24da6d00a98afa0a24b237065d99c886d10ebccc34f4dce5fe65260edf3fe0c6",
+        "inventory": "config/production-license-inventory.json",
+        "inventorySha256": "d1f92d79446582e1aba718dc37bde964e817ef11cc54d07de529c543203d3e26",
+        "priorToolFailure": {
+          "errorCode": "ERR_PNPM_MISSING_PACKAGE_INDEX_FILE",
+          "failedPackageIndex": "@fastify/cors@11.3.0",
+          "failedApproach": "pnpm licenses list --prod --json",
+          "repairAttempts": [
+            "frozen install",
+            "forced frozen fetch and relink",
+            "exact package store refresh"
+          ]
+        },
+        "replacementControls": [
+          "derive every production and optional package from all lockfile importers and snapshots",
+          "include cross-platform optional packages independent of the current host installation",
+          "bind the sorted reviewed inventory to the full lockfile SHA-256",
+          "require exact sha512 lockfile integrity for every external package",
+          "validate offline without the pnpm package-store index",
+          "reject incomplete inventories and unreviewed exact license expressions"
+        ],
+        "interpretation": "The earlier tooling defect is preserved above, but it no longer blocks the license decision. The replacement validator passed the complete 209-package production graph and is now part of pnpm verify."
+      }
+    },
+    "browserRegression": {
+      "command": "pnpm --filter @workspace/web exec playwright test",
+      "status": "previously_passed_same_date_not_rerun_for_server_session_increment",
+      "testCount": 31,
+      "accessibilityScanCount": 10,
+      "interpretation": "Provider credentials remain covered by browser non-disclosure tests. Provider-initiated logout requires an authorized live IdP and multi-replica topology beyond the local mocked browser harness."
+    }
+  },
+  "operationalImpact": {
+    "databaseMigrationRequired": false,
+    "financialRuleVersionChanged": false,
+    "tenantAuthorityChanged": false,
+    "productionRedisRequired": true,
+    "productionKeycloakClientChangeRequired": true,
+    "storeFailurePolicy": "fail authenticated admission and logout action closed while leaving process liveness independent",
+    "keyRotationEffect": "SESSION_SECRET changes the cookie encryption and pseudonymous Redis indexes; rotation must drain old replicas and invalidate old cookies rather than run mixed secrets",
+    "rollback": "Do not restore provider-blind stateless production sessions. Drain authenticated traffic if necessary, restore the shared Redis path, and re-prove cross-replica invalidation before reopening."
+  },
+  "remainingEvidenceAndOperationalRisks": [
+    "Execute the live two-client Redis integration definition against the supported production Redis version and configuration.",
+    "Register and exercise the exact HTTPS back-channel URL on an authorized Keycloak client.",
+    "Prove account-console and administrator-initiated logout denial across at least two independently scheduled web replicas.",
+    "Exercise one-subject/two-sid targeting, sid-absent subject logout, later login, and replay through the real provider.",
+    "Exercise Redis startup failure, runtime failure, recovery, liveness behavior, and alert delivery without enabling fail-open behavior.",
+    "Exercise accepted/rejected clock boundaries and prove synchronized production clocks.",
+    "Exercise coordinated SESSION_SECRET and provider signing-key rotation with no mixed replica window.",
+    "Repeat the license and SBOM gates in authoritative hosted CI before release.",
+    "No production, staging, live Keycloak delivery, live Redis, multi-replica, recovery, rotation, clock, load, or alert result is claimed."
+  ],
+  "decisionsAndRunbooks": [
+    "docs/adr/0020-oidc-backchannel-session-revocation.md",
+    "docs/session-revocation.md",
+    "docs/architecture.md",
+    "docs/environment.md",
+    "docs/self-hosting.md",
+    "docs/deployment.md",
+    "docs/operations-runbook.md",
+    "docs/threat-model.md",
+    "docs/security-review.md",
+    "docs/known-limitations.md",
+    "docs/dependency-policy.md"
+  ]
+}

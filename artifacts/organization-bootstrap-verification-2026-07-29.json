@@ -1,0 +1,157 @@
+{
+  "artifactVersion": 1,
+  "recordedAt": "2026-07-28T17:03:59Z",
+  "scope": "verified-identity, idempotent first-organization owner bootstrap",
+  "sourceState": "uncommitted working tree; no repository commit exists",
+  "outcome": "passed with explicit live-runtime exclusions",
+  "contract": {
+    "eligibility": "authenticated OIDC identity with provider-verified normalized email and zero active memberships",
+    "laterOrganizationCreationAvailable": false,
+    "browserSuppliedAuthority": [
+      "bounded organization name",
+      "valid IANA business time zone",
+      "UUID idempotency key"
+    ],
+    "serverGeneratedAuthority": [
+      "organization UUID",
+      "user UUID when the identity is new",
+      "membership UUID",
+      "bootstrap request UUID"
+    ],
+    "firstMembershipRole": "owner",
+    "aiEnabled": false,
+    "databaseSerialization": "transaction advisory lock over length-delimited issuer and subject",
+    "idempotency": {
+      "scope": "user UUID plus client idempotency UUID",
+      "inputDigest": "SHA-256 of canonical schema-versioned name and business time zone",
+      "exactRetry": "returns the original organization, membership, and user",
+      "changedInput": "generic conflict",
+      "secondKeyAfterActiveMembership": "generic conflict"
+    },
+    "transaction": "user/organization/owner/request creation and canonical organization.created audit append share one PostgreSQL transaction",
+    "auditReplayBehavior": "an exact replay does not append a duplicate audit event",
+    "databaseControls": [
+      "forced RLS and tenant-first access path",
+      "append-only bootstrap request trigger",
+      "fixed SECURITY DEFINER search path",
+      "row_security enabled",
+      "application execute-only function grant",
+      "no direct application or worker table access",
+      "public and worker function execution revoked",
+      "PostgreSQL time-zone catalog validation"
+    ],
+    "api": {
+      "route": "POST /v1/organizations",
+      "authentication": "verified identity",
+      "maximumRequestsPerMinute": 10,
+      "conflictDisclosure": "one generic ineligible/identity/idempotency response"
+    },
+    "bff": {
+      "route": "POST /api/recon/organizations",
+      "csrf": "exact WEB_ORIGIN and same-origin fetch metadata",
+      "apiForwarding": "bearer token only; browser cookies omitted",
+      "upstreamTimeoutMilliseconds": 8000,
+      "maximumResponseBytes": 65536,
+      "successContext": "HttpOnly SameSite=Lax HMAC context bound to OIDC subject"
+    },
+    "browserRetry": "retains the same request and idempotency key after uncertain network/upstream failure"
+  },
+  "automatedEvidence": {
+    "focusedCommand": "pnpm exec vitest run apps/api/src/auth.test.ts apps/api/src/app.tenant.test.ts apps/api/src/route-security.tenant.test.ts apps/web/src/organization-context.test.ts apps/web/src/app/api/recon/organizations/route.test.ts packages/database/src/migration.tenant.test.ts",
+    "focusedResult": {
+      "testFilesPassed": 6,
+      "testsPassed": 96,
+      "testsFailed": 0
+    },
+    "coveredCases": [
+      "verified-email admission and unverified denial before database access",
+      "exact API and BFF replay returns 200 with the original selected context",
+      "input-digest conflict and no-second-active-membership database contract",
+      "first audit append occurs in the creation transaction",
+      "audit insertion failure propagates and cannot be treated as success",
+      "replay does not append duplicate audit evidence",
+      "server-generated authority identifiers and fixed owner role",
+      "strict name, IANA time-zone, UUID, response, byte, and timeout bounds",
+      "non-test API startup refuses a missing bootstrap service",
+      "45-route security inventory classifies bootstrap as a state-changing identity route",
+      "cross-site and malformed BFF requests are rejected before API contact",
+      "API forwarding omits browser cookies and uses the fixed configured origin",
+      "ineligible responses do not issue a selected-context cookie",
+      "forced-RLS append-only table and narrow function privilege contract"
+    ],
+    "migrationValidation": {
+      "command": "pnpm migrations:check",
+      "migrationsValidated": 43,
+      "chainSha256": "c07ba83a547f14064d460f173f65cf2f5bf6218d55585dcef20c8990e2b6a3da"
+    },
+    "fullRepositoryVerification": {
+      "command": "CI=true pnpm verify",
+      "exitCode": 0,
+      "testFilesPassed": 67,
+      "testsPassed": 363,
+      "migrationsValidated": 43,
+      "schemasValidated": 4,
+      "productionLicensesValidated": 224,
+      "checks": [
+        "format",
+        "lint",
+        "typecheck",
+        "unit",
+        "tenant",
+        "reconciliation",
+        "migration",
+        "schema",
+        "config",
+        "edge",
+        "oidc",
+        "container",
+        "dependency policy",
+        "license",
+        "build"
+      ]
+    },
+    "browserRuntime": {
+      "status": "passed",
+      "tool": "playwright-cli 0.1.17 with local Chromium",
+      "application": "local Next.js development server",
+      "identity": "synthetic signed HttpOnly session",
+      "mockedBoundaries": [
+        "empty active-organization directory",
+        "empty exception summary",
+        "first bootstrap request aborted as an uncertain network outcome",
+        "second bootstrap request returned a synthetic success"
+      ],
+      "observed": [
+        "empty-membership first-organization form rendered",
+        "create action enabled only after a valid name",
+        "uncertain first response preserved and disabled the organization name",
+        "action changed to Retry creation with an alert explaining uncertainty",
+        "first and second request bodies had identical name, business time zone, and UUID idempotency key",
+        "successful retry returned to the dashboard",
+        "no browser console errors remained after successful navigation"
+      ]
+    }
+  },
+  "databaseRuntimeEvidence": {
+    "status": "not run in this verification slice",
+    "definedTests": [
+      "empty 43-migration chain",
+      "populated 0041-to-0042 upgrade preserving prior membership, directory, and audit evidence",
+      "application-role create, exact replay, input conflict, and no-second-membership behavior",
+      "application-role direct bootstrap-table access denial",
+      "PostgreSQL time-zone catalog rejection",
+      "two concurrent exact retries converge on one organization, membership, and user"
+    ],
+    "reason": "no PostgreSQL binary/listener or Docker/Podman runtime is available on this workstation",
+    "priorEvidence": "the prior 40-migration restricted-role PostgreSQL 17.10 run remains valid for the pre-0041 surfaces"
+  },
+  "claimsExcluded": [
+    "No PostgreSQL execution of migration 0042 or populated 0041-to-0042 upgrade is claimed.",
+    "No concurrent live browser-tab or restricted-role database bootstrap was executed.",
+    "No forced live audit failure/rollback was executed.",
+    "No real OIDC first-login-to-owner browser journey was executed.",
+    "No prior/new-image rolling deployment, representative abuse/load timing, protected staging, or production behavior is claimed.",
+    "Later-organization creation, entitlement, billing, organization limits, and abuse policy are not implemented."
+  ],
+  "credentialsOrCustomerDataRecorded": false
+}

@@ -1,0 +1,211 @@
+{
+  "evidenceType": "exception-final-resolution-age-observability-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T03:56:30.454Z",
+  "scope": "Local source, authenticated API tenant-test, repository integration-contract source, and loopback OTLP/HTTP protobuf evidence for bounded exception creation-to-final-approved-resolution age. No production, staging, live PostgreSQL integration run, external collector, customer data, new cross-tenant query, or source-system write was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/provider-gap-repair-freshness-observability-verification-2026-07-29.json",
+      "sha256": "aecbc14da03d217ae8b66963754b7a5eccab553ec223133952b641b24d1f8d8b",
+      "purpose": "The immediately preceding 44-migration, 456-test provider gap-repair freshness observability baseline."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "opentelemetryApi": "1.9.1",
+    "opentelemetryMetricsSdk": "2.10.0",
+    "opentelemetryOtlpProtoExporter": "0.221.0"
+  },
+  "decision": {
+    "governingAdr": "ADR 0042",
+    "securityReviewControl": "OBSERVABILITY-EXCEPTION-FINAL-RESOLUTION-001",
+    "databaseMigrationRequired": false,
+    "databaseQueryFunctionOrRoleGrantChanged": false,
+    "configurationChangeRequired": false,
+    "newCrossTenantRepositoryOrOperationalRoleAdded": false,
+    "publicApiResponseChanged": false,
+    "approvalThresholdOrReviewTransitionChanged": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyProviderSourceWriteOrAiBehaviorChanged": false,
+    "telemetryAuthoritativeForReviewOrFinancialBehavior": false,
+    "metricTemporality": "API delta through the existing observability pipeline"
+  },
+  "lifecycleSemantics": {
+    "measuredStart": "Database-authored exceptions.created_at for the stable exception.",
+    "measuredEnd": "Database-authored exceptions.updated_at returned by the exact transaction update that commits status approved.",
+    "finalReviewerState": "approved",
+    "thresholdCrossingApprovalIncluded": true,
+    "firstStageDualControlApprovalIncluded": false,
+    "rejectedProposalIncluded": false,
+    "rejectionReason": "The implemented transaction returns the exception to open and permits a later proposal.",
+    "automatedSupersessionIncluded": false,
+    "supersessionReason": "A later authoritative reconciliation run can reobserve and reopen a superseded stable exception.",
+    "approvedPreservedByAuthoritativeReconciliation": true,
+    "rejectedProposalCyclesRemainInExceptionLifetime": true
+  },
+  "repositoryObservationContract": {
+    "lockedTenantScopedJoinReused": true,
+    "organizationPredicatePreserved": true,
+    "rowLevelSecurityPreserved": true,
+    "additionalJoinedField": "exceptions.created_at",
+    "statusUpdateReturnedField": "exceptions.updated_at",
+    "databaseTimestampValidationRequired": true,
+    "internalResultFields": [
+      "exceptionCreatedAt",
+      "exceptionStatusChangedAt"
+    ],
+    "publicResponseExcludesInternalExceptionTimestamps": true,
+    "publicResponseAlsoContinuesToExcludeProposalCreatedAtAndDecidedAt": true,
+    "newDatabaseReadOrScanAdded": false
+  },
+  "metricContract": {
+    "maximumAgeSeconds": 31536000,
+    "maximumAgeDays": 365,
+    "maximumIsInclusive": true,
+    "sampleCounter": {
+      "name": "reconai.review.exception_final_resolution.samples",
+      "kind": "counter",
+      "unit": "{resolution}",
+      "attributes": [
+        "reconai.outcome"
+      ],
+      "outcomes": [
+        "observed",
+        "future_timestamp",
+        "invalid_timestamp",
+        "outside_window"
+      ],
+      "maximumDefensiveSeries": 4
+    },
+    "ageHistogram": {
+      "name": "reconai.review.exception_final_resolution.age",
+      "kind": "histogram",
+      "unit": "s",
+      "attributes": [],
+      "acceptedOutcome": "observed",
+      "minimumSeconds": 0,
+      "maximumSecondsInclusive": 31536000,
+      "maximumDefensiveSeries": 1
+    },
+    "classification": {
+      "not_final": "A pending, rejected, or unknown status returns before timestamp parsing and emits no metric.",
+      "observed": "Approved status with a valid age from zero through 365 days inclusive; the numeric age enters the histogram.",
+      "future_timestamp": "The exception creation timestamp is later than the approved transition timestamp; no histogram value is recorded.",
+      "invalid_timestamp": "Either source timestamp is absent or invalid; no histogram value is recorded.",
+      "outside_window": "The valid age is greater than 365 days; no histogram value is recorded."
+    },
+    "overWindowValueClampedIntoHistogram": false,
+    "futureValueClampedIntoHistogram": false
+  },
+  "authorityAndDeliverySemantics": {
+    "authorizationAndTenantResolutionPrecedeRepositoryCall": true,
+    "repositoryTransactionMustCommitBeforeTelemetry": true,
+    "nonFinalGuardPrecedesTimestampParsingAndMetricMutation": true,
+    "unauthorizedConflictAndRollbackEmitSample": false,
+    "telemetryDelivery": "at-most-once, lossy, and non-authoritative",
+    "telemetryFailureCanChangeReviewOrFinancialDecision": false,
+    "telemetryOutboxAdded": false,
+    "currentUnresolvedQueueMeasured": false,
+    "reviewerProductivityOrResolutionAccuracyProven": false
+  },
+  "cardinalityAndDataMinimization": {
+    "metricSeriesLimitPerInstrument": 256,
+    "counterMaximumDefensiveSeries": 4,
+    "histogramMaximumDefensiveSeries": 1,
+    "organizationUserMembershipReviewerExported": false,
+    "proposalExceptionTypeSeverityReasonExported": false,
+    "amountCurrencyPaymentOrCustomerDataExported": false,
+    "correlationOrRawTimestampExported": false,
+    "dynamicStatusExported": false,
+    "dynamicSecretLikeTimestampOrNonFinalValuesObservedInCapturedOtlp": false,
+    "timestampsUsedOnlyAsNumericAgeInput": true
+  },
+  "focusedVerification": [
+    {
+      "command": "pnpm --filter @workspace/observability typecheck; pnpm --filter @workspace/api typecheck; focused ESLint",
+      "packagesPassed": 2,
+      "lintStatus": "passed"
+    },
+    {
+      "command": "pnpm exec vitest run packages/observability/src/observability.test.ts apps/api/src/app.tenant.test.ts --maxWorkers=1",
+      "testFilesPassed": 2,
+      "testsPassed": 54,
+      "testsFailed": 0,
+      "approvedApiPathCovered": true,
+      "publicResponseTimestampSuppressionCovered": true,
+      "inclusiveThreeHundredSixtyFiveDayBoundaryCovered": true,
+      "allFourRecordedTimingOutcomesCovered": true,
+      "pendingAndUnknownStatusNoEmissionGuardCovered": true,
+      "dynamicValueSuppressionCovered": true
+    }
+  ],
+  "repositoryIntegrationContract": {
+    "sourceAssertionsAdded": true,
+    "finalDecisionStatusExpected": "approved",
+    "exceptionStatusChangedAtNotEarlierThanExceptionCreatedAtAsserted": true,
+    "livePostgresqlIntegrationExecutedForThisIncrement": false,
+    "reasonNotExecuted": "The repository has no local .env and the standard CI=true pnpm verify command does not execute the PostgreSQL integration project."
+  },
+  "otlpVerification": {
+    "transport": "HTTP protobuf",
+    "captureAddress": "ephemeral loopback HTTP server",
+    "standardMetricsPath": "/v1/metrics",
+    "contentType": "application/x-protobuf",
+    "sampleInstrumentPresent": true,
+    "ageInstrumentPresent": true,
+    "allFixedRecordedTimingOutcomesPresent": true,
+    "secretLikeDynamicValuesAbsent": true,
+    "externalCollectorAccessed": false
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 70,
+    "testsPassed": 456,
+    "testsFailed": 0,
+    "migrationsValidated": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "productionDependencyAuditAtHighSeverity": {
+      "command": "pnpm audit --prod --audit-level high",
+      "status": "no known vulnerabilities found"
+    }
+  },
+  "sourceSha256": {
+    "packages/observability/src/telemetry.ts": "f1f04faecb73cd3bf67c090d9033488159bd44d4c8ad54b2e9194682b679c3d1",
+    "packages/observability/src/index.ts": "4d6c69e0f43817c785ffa4c30a08c65beb9d07b8fe6ff9eef1c77894e9074379",
+    "packages/observability/src/observability.test.ts": "15607a2d9d23f40aceaa8de5991141cf17d503b91865d03ba8b41ade8e5b29e2",
+    "apps/api/src/repository.ts": "76e28be111a59b1e17b7f9c387b8cdbc1153530cf7670681bec91b3eae9686dc",
+    "apps/api/src/app.ts": "f5b94215b20703b2fc5a32e493a63bac549d97078822ac6f646c29dcbb9f1558",
+    "apps/api/src/repository.integration.test.ts": "7eec65436fbc2a95bded675c0fb9dbbb92744d6fe00ead08ab4fede429240f84",
+    "apps/api/src/app.tenant.test.ts": "f3acf1e9809878e7ebe36a567cb7a1c3560f7f85bf0c81130a1e4b41824eed10",
+    "docs/adr/0042-bounded-exception-final-resolution-age.md": "e5542e699bd08972b2d9f4f4be065973b89793d7765275ea3075381a898ada2f",
+    "docs/adr/README.md": "154d8638d719eb3c4545242a98588f7dbb0dac23519c774a52eab987654d8f88",
+    "docs/observability.md": "db9d53b95c1be5ff781ee3edae7915ff3a6ca2140a6fec473a56fb8b1c7bbd8b",
+    "docs/architecture.md": "205b7e7f977941b6a8e58aae62728672afeac7c62c0937cb53fb33f52fd2888b",
+    "docs/operations-runbook.md": "e2d974aadfdd36c998cbec88514715b03b2ff984c8f352e44636ba97341648da",
+    "docs/known-limitations.md": "bd97a947712f9afe28510a8b99936743627809afe94aa1252a8c7884a8faf70e",
+    "docs/security-review.md": "855f3709aacc7ca8de4dac3aebb412635c561d05ce5328078fc227ad9fd2a587"
+  },
+  "repositoryState": {
+    "stagedFileCount": 0,
+    "environmentFilePresent": false,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "The live PostgreSQL integration suite was not executed for this increment because no local .env is present.",
+    "The signal is at-most-once and can be lost after the review transaction commits.",
+    "The signal covers final reviewer approval, not reobservable automated supersession or the current unresolved exception queue.",
+    "No protected collector/backend, threshold, dashboard, alert-delivery, staging, production, or customer-data evidence exists."
+  ]
+}

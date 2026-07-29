@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-28T12:29:26Z",
+  "scope": "Next.js proxy discovery, per-request browser Content Security Policy delivery, strict production style policy, framework nonce propagation, configured OIDC logout form action, and rendered public/authenticated behavior",
+  "productionReadinessClaim": false,
+  "result": "local_production_csp_delivery_and_rendering_passed_deployed_edge_evidence_pending",
+  "environment": {
+    "node": "v24.15.0",
+    "pnpm": "11.9.0",
+    "next": "16.2.12",
+    "browser": "Chromium through Playwright CLI",
+    "transport": "local HTTP",
+    "tlsEdgeConfigured": false,
+    "productionRedisConfigured": false,
+    "productionOidcConfigured": false,
+    "syntheticProductionOidcConfigurationUsed": true,
+    "stagingTopologyAvailable": false
+  },
+  "priorDefect": {
+    "ruleId": "NEXT-CSP-STYLE-001",
+    "staticAssumption": "The root-level web proxy was believed to deliver a nonce-based CSP, with unsafe-inline retained only as a style compatibility gap.",
+    "observedRuntimeFailure": "The first local production request returned HTTP 200 without any Content-Security-Policy header because a project using src/app did not discover apps/web/proxy.ts at the package root.",
+    "secondaryWeakness": "The undiscovered policy also allowed unsafe-inline styles in every environment.",
+    "tenantOrFinancialIntegrityImpactObserved": false
+  },
+  "implementedControls": [
+    "move the Next.js proxy beside src/app at apps/web/src/proxy.ts so the framework discovers it",
+    "construct the policy in one typed pure function with bounded base64/base64url nonce validation before header assembly",
+    "generate a fresh random nonce for every discovered proxy request",
+    "set the same CSP on the forwarded rendering request and final browser response",
+    "use nonce-bound script-src with strict-dynamic and no unsafe-inline or unsafe-eval",
+    "use nonce-bound style-src and style-src-attr none in production",
+    "permit form actions only to self and the normalized origin of the validated configured OIDC issuer, rejecting malformed or non-HTTPS production issuers",
+    "retain unsafe-inline styles and unsafe-eval only in non-production development for framework compatibility",
+    "keep application and shared UI production source free of style attributes, raw style elements, and dangerouslySetInnerHTML",
+    "serve a same-origin application icon so the verified page has no unrelated browser console error"
+  ],
+  "verification": {
+    "focusedTests": {
+      "command": "./node_modules/.bin/vitest run apps/web/src/content-security-policy.test.ts apps/web/src/proxy.test.ts",
+      "status": "passed",
+      "testFiles": 2,
+      "tests": 9,
+      "covered": [
+        "strict production style nonce and style-attribute denial",
+        "development-only style and eval compatibility exceptions",
+        "absence of unsafe-eval in production",
+        "malformed and header-injection nonce rejection",
+        "malformed, credential-bearing, query-bearing, and non-HTTPS production OIDC issuer rejection",
+        "configured OIDC origin inclusion for the federated logout redirect",
+        "production UI source scan for inline style and raw HTML sinks",
+        "discovered proxy response and forwarded-request policy equality",
+        "fresh nonce generation across requests"
+      ]
+    },
+    "productionBuild": {
+      "command": "CI=true pnpm --filter @workspace/web build",
+      "status": "passed",
+      "observedRoutes": [
+        "dynamic public page",
+        "static icon.svg",
+        "Proxy (Middleware)"
+      ],
+      "interpretation": "The corrected bundle explicitly reports a discovered proxy; the preceding bundle did not."
+    },
+    "directProductionResponse": {
+      "status": "passed",
+      "httpStatus": 200,
+      "header": "default-src self; base-uri self; form-action self configured-OIDC-origin; frame-ancestors none; object-src none; script-src self nonce strict-dynamic; style-src self nonce; style-src-attr none; font-src self; img-src self data; connect-src self; upgrade-insecure-requests",
+      "unsafeInlinePresent": false,
+      "unsafeEvalPresent": false,
+      "formActionOidcOrigin": "https://identity.example",
+      "renderedNoncePropagation": [
+        "one external Next.js stylesheet link",
+        "framework and application script tags",
+        "inline framework data scripts"
+      ],
+      "nonceConsistency": "one matching per-response nonce was observed in the CSP and rendered tags"
+    },
+    "productionBrowser": {
+      "tool": "Playwright CLI",
+      "status": "passed",
+      "url": "http://127.0.0.1:3100/",
+      "title": "ReconAI — Reconciliation control desk",
+      "consoleErrors": 0,
+      "consoleWarnings": 0,
+      "stylesheetCount": 1,
+      "computedBodyFont": "\"Manrope Variable\", \"Avenir Next\", sans-serif",
+      "computedHeadingSize": "76.8px",
+      "iconRoutePresent": true,
+      "interpretation": "The local production page retained intended styling and emitted no CSP violation. This is not evidence of TLS-edge or authenticated production behavior."
+    },
+    "developmentBrowserRegression": {
+      "command": "pnpm --filter @workspace/web exec playwright test",
+      "status": "passed",
+      "tests": 31,
+      "covered": [
+        "public and authenticated page rendering with the discovered proxy active",
+        "OIDC identity-bearing synthetic session fixtures accepted by fail-closed session validation",
+        "invitation fragment removal after hydration",
+        "CSRF-validated federated logout through the configured OIDC form-action origin",
+        "ten automated accessibility scans"
+      ],
+      "interpretation": "Development-only unsafe-inline styles and unsafe-eval keep the Next.js/React development runtime operable; the production policy contains neither exception."
+    },
+    "repositoryGate": {
+      "command": "CI=true pnpm verify",
+      "status": "passed",
+      "testFiles": 59,
+      "tests": 316,
+      "migrationFiles": 40,
+      "migrationChainSha256": "75aaa78f514eda88526ea9dee14e894489cba2a40a91d6a9b8ad656417afe84c",
+      "productionBuild": "passed"
+    }
+  },
+  "operationalImpact": {
+    "databaseMigrationRequired": false,
+    "financialRuleVersionChanged": false,
+    "tenantAuthorityChanged": false,
+    "runtimeBrowserSecurityChanged": true,
+    "developmentBehavior": "Development retains unsafe-inline styles and unsafe-eval for Next.js/React compatibility; scripts remain nonce-bound, and neither exception is emitted in production.",
+    "rollback": "Do not restore the undiscovered root proxy or production unsafe-inline styles. If a framework-generated style regression appears, keep the discovered proxy and add a reviewed nonce-aware style path with browser evidence."
+  },
+  "limitations": [
+    "The browser exercise used local HTTP and the application production runtime, not the required TLS reverse proxy or staging topology.",
+    "No authenticated page was exercised with production Redis session revocation and production OIDC configuration.",
+    "No deployed edge/CDN header-preservation, CSP reporting endpoint, multi-page authenticated flow, or hosted browser result is claimed.",
+    "No production, staging, publication, or production-readiness result is claimed."
+  ],
+  "references": [
+    "https://nextjs.org/docs/app/guides/content-security-policy",
+    "docs/security-review.md",
+    "docs/architecture.md",
+    "docs/threat-model.md"
+  ]
+}

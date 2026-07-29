@@ -1,0 +1,358 @@
+{
+  "schemaVersion": "reconai-evidence-v1",
+  "evidenceType": "exception-queue-filtering-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T13:13:09Z",
+  "status": "local_pass_protected_runtime_gate_open",
+  "scope": "Local deterministic filter-contract, tenant-authorization, response-minimization, export, browser, accessibility, and fresh isolated PostgreSQL verification for the exception queue. Synthetic tenants, memberships, records, financial values, exceptions, evidence, and audit events only. No customer data, provider system, protected staging, compliance, reliability, accuracy, or production-readiness claim is included.",
+  "requirement": {
+    "prdQueueContract": [
+      "type",
+      "status",
+      "source",
+      "amount",
+      "confidence",
+      "assignee",
+      "age",
+      "search"
+    ],
+    "priorGap": "The queue supported exact ID/type, status, severity, search, and stable server-side pagination, but source, amount, confidence, assignee, and age filters were absent.",
+    "implementedMeaning": "bounded deterministic server-side queue, cursor, detail, export, audit, BFF, and operator-interface parity",
+    "decision": "ADR 0057",
+    "threatModelEntry": "TM-47",
+    "securityReviewControl": "REVIEW-QUEUE-FILTERING-002"
+  },
+  "decisions": {
+    "databaseMigrationAdded": false,
+    "cursorSchemaVersion": 2,
+    "csvSchemaVersion": "exception-queue-csv-v2",
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyNormalizationOrToleranceChanged": false,
+    "currencyConversionAdded": false,
+    "automaticFinancialAuthorityAdded": false,
+    "sourceSystemWriteOrProviderScopeAdded": false,
+    "aiAuthorityOrEnablementChanged": false
+  },
+  "filterContract": {
+    "search": {
+      "maximumCharacters": 200,
+      "matching": "literal case-insensitive substring over bounded queue text fields",
+      "wildcardSyntaxAccepted": false
+    },
+    "status": {
+      "values": [
+        "open",
+        "proposed",
+        "resolved",
+        "deferred"
+      ],
+      "matching": "exact"
+    },
+    "severity": {
+      "values": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "matching": "exact"
+    },
+    "exceptionIdAndType": {
+      "exceptionId": "exact UUID",
+      "exceptionType": "exact bounded string",
+      "matching": "server-side"
+    },
+    "source": {
+      "values": [
+        "shopify",
+        "stripe",
+        "accounting_csv",
+        "unclassified"
+      ],
+      "maximumExpandedRecordReferencesPerException": 500,
+      "resolution": "Parse exception-held record references and join current canonical records using both organization and record identifiers inside the tenant transaction.",
+      "unclassifiedWhen": [
+        "record references are absent or empty",
+        "record references are malformed",
+        "record references exceed the expansion ceiling",
+        "no referenced canonical record resolves in the same organization"
+      ],
+      "queueAndDetailProjectionShared": true,
+      "crossTenantReferenceCanClassifySource": false
+    },
+    "amount": {
+      "currency": "one exact uppercase ISO 4217 code",
+      "minimumAmountMinor": "optional signed base-10 integer string",
+      "maximumAmountMinor": "optional signed base-10 integer string",
+      "currencyRequiredWhenEitherBoundExists": true,
+      "minimumMustNotExceedMaximum": true,
+      "floatingPointUsed": false,
+      "crossCurrencyComparison": false,
+      "currencyConversion": false
+    },
+    "confidence": {
+      "values": [
+        "high",
+        "low",
+        "unclassified"
+      ],
+      "high": "stored rule evidence with result=fail",
+      "low": "stored rule evidence with result=ambiguous or result=defer",
+      "unclassified": "missing, malformed, or other stored evidence",
+      "probability": false,
+      "aiScore": false,
+      "measuredAccuracyClaim": false
+    },
+    "assignee": {
+      "values": [
+        "me",
+        "assigned",
+        "unassigned"
+      ],
+      "meResolution": "authenticated current membership",
+      "clientMembershipIdAccepted": false,
+      "clientOrganizationIdGrantsAuthority": false
+    },
+    "age": {
+      "values": [
+        "under_24h",
+        "one_to_seven_days",
+        "seven_to_thirty_days",
+        "over_30_days"
+      ],
+      "boundaries": "disjoint UTC intervals",
+      "anchor": "one PostgreSQL transaction_timestamp() value",
+      "anchorStableAcrossCursorPages": true
+    },
+    "cursor": {
+      "schemaVersion": 2,
+      "encoding": "canonical base64url JSON",
+      "carries": [
+        "severity rank",
+        "createdAt",
+        "exceptionId",
+        "asOf"
+      ],
+      "filterBinding": "SHA-256 over every normalized queue filter",
+      "cursorFromDifferentFilterRejected": true,
+      "cursorIsAuthorizationToken": false
+    },
+    "export": {
+      "permission": "exports:run",
+      "predicateParityWithQueue": true,
+      "csvSchemaVersion": "exception-queue-csv-v2",
+      "addedColumns": [
+        "sources",
+        "confidence",
+        "assignee"
+      ],
+      "rowLimit": 10000,
+      "byteLimit": 5242880,
+      "formulaInjectionProtection": true,
+      "auditIncludesNormalizedFilters": true,
+      "auditIncludesFilterAsOf": true
+    }
+  },
+  "confidenceReviewContract": {
+    "organizationDualControlMustBeEnabled": true,
+    "highConfidenceCanUseExistingSeverityAmountAndTypePolicy": true,
+    "lowConfidenceRequiredApprovals": 2,
+    "unclassifiedConfidenceRequiredApprovals": 2,
+    "reviewersMustBeIndependent": true,
+    "aiCanApproveOrOverride": false
+  },
+  "tenantSecurityContract": {
+    "tenantContextResolvedFromAuthenticatedMembership": true,
+    "everyQueueAndExportQueryRunsInTenantTransaction": true,
+    "rowLevelSecurityForced": true,
+    "sourceJoinHasExplicitOrganizationPredicate": true,
+    "foreignTenantQueryReturnsEmptyWithoutExistenceDisclosure": true,
+    "wrongSourceQueryReturnsEmpty": true,
+    "browserReceivesOnlyStrictWhitelistedQueueFields": true,
+    "malformedFilterFailsBeforeRepositoryExecution": true,
+    "backgroundJobAuthorityChanged": false
+  },
+  "sourceEvidenceLookupRepair": {
+    "defectObserved": "The pre-existing dynamic VALUES relation failed when exact source-version evidence was present.",
+    "replacement": "bounded typed jsonb_to_recordset relation",
+    "organizationJoinExplicit": true,
+    "providerAndRecordTypeNarrowedAtRuntime": true,
+    "verifiedByFreshPostgreSQLScenario": true,
+    "migrationRequired": false
+  },
+  "postgresqlVerification": {
+    "distribution": "PostgreSQL 17.10",
+    "officialSourceArchive": "https://ftp.postgresql.org/pub/source/v17.10/postgresql-17.10.tar.bz2",
+    "officialChecksumFile": "https://ftp.postgresql.org/pub/source/v17.10/postgresql-17.10.tar.bz2.sha256",
+    "sourceArchiveSha256": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+    "officialChecksumMatched": true,
+    "build": {
+      "sourceBuiltLocally": true,
+      "repositoryFilesUsedForInstallation": false,
+      "persistentServiceInstalled": false
+    },
+    "cluster": {
+      "freshForFinalRun": true,
+      "encoding": "UTF8",
+      "locale": "C",
+      "dataPageChecksumsEnabled": true,
+      "dataPageChecksumVersion": 1,
+      "networkBinding": "127.0.0.1 only",
+      "stoppedAfterVerification": true,
+      "repositoryEnvironmentFileWritten": false
+    },
+    "rolesExercised": [
+      "administrator",
+      "reconai_migrator",
+      "reconai_app",
+      "reconai_worker",
+      "reconai_maintenance"
+    ],
+    "finalGate": {
+      "command": "DATABASE_ADMIN_URL=[isolated local administrator URL] DATABASE_MIGRATION_URL=[isolated local migrator URL] DATABASE_URL=[isolated local application URL] pnpm exec vitest run --project integration apps/api/src/repository.integration.test.ts",
+      "status": "passed",
+      "testFilesPassed": 1,
+      "testsPassed": 5,
+      "testsFailed": 0,
+      "testsSkipped": 0,
+      "durationSeconds": 1.41,
+      "migrationsApplied": 55,
+      "queueAssertions": [
+        "combined status, severity, type, search, source, amount, confidence, assignee, and age filters return the intended exception",
+        "canonical source resolution uses exact same-organization references",
+        "exact source-version evidence is loaded through the bounded typed relation",
+        "foreign-tenant filtering returns no exception",
+        "wrong-source filtering returns no exception",
+        "queue and CSV export predicates agree",
+        "export audit records normalized filters and the shared time anchor"
+      ]
+    },
+    "customerOrProviderSystemContacted": false
+  },
+  "source": {
+    "implementationAndTestSha256": {
+      "packages/domain/src/review.ts": "64dca3b771f4fd5cc176b13bb07e86de8366fdf2257dac0a3fd4e05b28e8b014",
+      "packages/domain/src/review.test.ts": "8040606dfbcc14ba290e5b3f842d854971ee5ffc87476067d56f1ea167e4118c",
+      "apps/api/src/repository.ts": "79ab6a60f8fddae5f2316c406ff13bb0dd5ed86d7f881e8becb5285f5b3d8edf",
+      "apps/api/src/app.ts": "dccf02d37f3f15cbd4fb9e0afc671095a5ec963ab843851938ed156727009be9",
+      "apps/api/src/repository.cursor.test.ts": "97d08287a85a66d7a9b518d557e167f539a5093f84028879618b072d73b5de4f",
+      "apps/api/src/exception-export.test.ts": "946cc92890b945727d0bcb32fd56f580a7804cca9500ed2b7e1fdf21a0d30028",
+      "apps/api/src/app.tenant.test.ts": "6d7148413a743b809a87ec9e7c425ba224dda688e06ba81a164170df6b2735e8",
+      "apps/api/src/repository.integration.test.ts": "c9754dae0424202e831984ac77332a19b9adf4935742ac89c6cd310f3a59c565",
+      "apps/web/src/app/api/recon/route.ts": "47d794250e6d9fea3664b2a0b17abec456b79f2a0e77c20e5c74d644ad923f90",
+      "apps/web/src/app/api/recon/route.test.ts": "80e2de8fcc12979229c1159a8a27f600e901049422363c86b159b9f1f879adb1",
+      "apps/web/src/app/api/recon/exports/exceptions/route.ts": "9a780e116fd0e2d8ecbf500180882d54d047af35a9b5c9985e3e9c583cc539a6",
+      "apps/web/src/app/api/recon/exports/exceptions/route.test.ts": "848579f6a2d484dc484f24dbc868abd4c458e11b2dc887c1c2943b08b47789cf",
+      "apps/web/src/tenant-read-response.ts": "d20060050f3dc061ff63977848227dd4875b7b4265b1df18c6c6fb21d480939d",
+      "apps/web/src/tenant-read-response.test.ts": "514697bf2aaa1d336f11dc260013628cabc370b501b56c14ce3cb002d8e91d6a",
+      "apps/web/src/components/dashboard-client.tsx": "3e1f4740bd8dda587ffd5f85afe8211e64ab36e8b718dd21ddd7e47a1923c2ad",
+      "apps/web/src/app/globals.css": "020b80ab47f444e064b6cb890bfe65d3c70766c376c0845591fc014bd55accc6",
+      "apps/web/tests/exception-queue-workflow.spec.ts": "4103a4b8ac18392b7e1a4fc7ed3258b028e75df7cbb019256dc2367dd3ebf3b4"
+    },
+    "documentationSha256": {
+      "README.md": "cf33e5ef60e53d7c1a4892712fac316b73c4ccd9d7ac5b44ae78f8af13b472cb",
+      "PRD.md": "1d9ea702178950278cb7b21731d3625935d07d9d5c9ffa7af279f89f8578b84c",
+      "GOALS.md": "f6f788b658f93514827b49e14139c6e913ecd5880bd7f5299a5e0014edc96f65",
+      "docs/architecture.md": "d98639e1ac8d495b92505f16b3d96d65f4d3d58616ef827195ff433c28aeec07",
+      "docs/threat-model.md": "df3a98b1b4eabe9687b378cefcb0b4fbf24710db6d22c759a6db92a2398e0939",
+      "docs/security-review.md": "9625bf0681546185e8971b1a32ed9c8acba754e9056dbd1dc0d8a1c40061bcc8",
+      "docs/adr/0057-bounded-deterministic-exception-queue-filters.md": "90a2dc9fb3c71d840521ecb914710f218e00c28367902db575c60add5f5ef804",
+      "docs/adr/README.md": "2a0f31da1dfc20da7bb64018b171430095148538b5afd3e4a838ca398e05d743",
+      "docs/goals/goal-1-vertical-slice.md": "75a283f480ede73519ecffbd0a609b355a5c8bd2974a80c527154f0fbcd82c78",
+      "docs/goals/goal-1-audit-2026-07-29-11.md": "590c4d87833ad5c26cfae92468f3a1df99f2e73b77790a67e69205182fe3f9c3"
+    }
+  },
+  "verification": {
+    "focusedGate": {
+      "command": "pnpm exec vitest run --project unit packages/domain/src/review.test.ts apps/api/src/repository.cursor.test.ts apps/api/src/exception-export.test.ts apps/web/src/app/api/recon/route.test.ts apps/web/src/app/api/recon/exports/exceptions/route.test.ts apps/web/src/tenant-read-response.test.ts",
+      "status": "passed",
+      "testFilesPassed": 6,
+      "testsPassed": 41,
+      "testsFailed": 0
+    },
+    "tenantGate": {
+      "command": "pnpm exec vitest run --project tenant apps/api/src/app.tenant.test.ts",
+      "status": "passed",
+      "testFilesPassed": 1,
+      "testsPassed": 57,
+      "testsFailed": 0
+    },
+    "focusedBrowserGate": {
+      "command": "CI=true pnpm --filter @workspace/web exec playwright test tests/exception-queue-workflow.spec.ts",
+      "status": "passed",
+      "browser": "Chromium",
+      "testsPassed": 9,
+      "accessibilityScansWithinFocusedFile": 2,
+      "testsFailed": 0
+    },
+    "completeBrowserGate": {
+      "command": "CI=true pnpm test:e2e",
+      "status": "passed",
+      "browser": "Chromium",
+      "testsPassed": 43,
+      "testsFailed": 0
+    },
+    "accessibilityGate": {
+      "command": "CI=true pnpm test:accessibility",
+      "status": "passed",
+      "browser": "Chromium",
+      "testsPassed": 11,
+      "testsFailed": 0,
+      "automaticallyDetectedViolations": 0
+    },
+    "repositoryGate": {
+      "command": "CI=true pnpm verify",
+      "status": "passed",
+      "testFilesPassed": 83,
+      "testsPassed": 551,
+      "migrationsValidated": 55,
+      "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+      "contractEntrypointsValidated": 4,
+      "sourceFilesValidated": 536,
+      "sourceRootsValidated": 7,
+      "dockerfilesValidated": 3,
+      "composeImagesValidated": 5,
+      "workflowImagesValidated": 3,
+      "actionPinsValidated": 25,
+      "operationalAlertRulesValidated": 13,
+      "metricContractsValidated": 9,
+      "packageManifestsPolicyValidated": 20,
+      "productionLicensesValidated": 224,
+      "productionLockSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+      "productionBuildPassed": true,
+      "productionRoutesObserved": [
+        "/api/recon",
+        "/api/recon/exports/exceptions",
+        "/dashboard",
+        "/dashboard/exceptions/[exceptionId]"
+      ]
+    },
+    "secretGate": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "nodeVersion": "24.15.0",
+    "pnpmVersion": "11.9.0",
+    "gitVersion": "2.50.1"
+  },
+  "knownLimitations": [
+    "The record-reference source projection runs at read time. This local fixture does not establish representative-volume query plans, latency, or capacity.",
+    "Cursor v2 is a canonical opaque navigation token with filter binding, not an authorization token or independently signed capability. Every page still repeats authenticated membership resolution, tenant authorization, and forced-RLS access.",
+    "Source classification is based on at most 500 current canonical record references. A future denormalized projection would require a migration, deterministic backfill, tenant-negative tests, and replay/update semantics.",
+    "The operator amount control intentionally accepts exact integer minor units, not localized decimal currency entry. Product usability needs representative operator research.",
+    "This increment does not close provider sandbox, protected-staging, owner-policy, support-operations, authentication-stack, release-integrity, representative-load, or cursor-tamper findings.",
+    "One local workstation run is not CI, staging, reliability, capacity, compliance, legal-fulfillment, accuracy, or production-readiness evidence."
+  ],
+  "sourceControlState": {
+    "repositoryHasNoInitialCommit": true,
+    "filesStaged": false,
+    "commitCreated": false,
+    "pushOrPublishPerformed": false,
+    "deploymentPerformed": false,
+    "repositoryRuntimeEnvironmentFilesPresent": false,
+    "evidenceFilesBeforeThisOne": 96,
+    "evidenceFilesIncludingThisOne": 97,
+    "artifactCannotHashItself": true
+  },
+  "conclusion": "The complete bounded PRD exception-queue filter contract is implemented locally with tenant-scoped canonical source resolution, currency-safe integer amount bounds, deterministic non-AI confidence, membership-derived assignment, stable UTC age buckets, cursor-v2 filter binding, strict BFF minimization, queue/export parity, formula-safe CSV v2 output, and confidence-aware dual control. API, tenant, Chromium, accessibility, complete deterministic, production-build, and fresh PostgreSQL checks pass. Goal 1 remains active; provider, owner, representative distributed-runtime, maintained-authentication-stack, and protected-staging gates remain open."
+}

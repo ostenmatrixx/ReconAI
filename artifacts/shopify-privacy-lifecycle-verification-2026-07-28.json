@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-28T03:43:46Z",
+  "scope": "Shopify mandatory app-level privacy webhook intake, minimized request evidence, legal-hold-aware raw-object erasure, append-only deadline escalation, tenant-authorized operator review, and bounded customer-data evidence package preparation",
+  "productionReadinessClaim": false,
+  "result": "static_and_synthetic_verification_passed_live_shopify_postgresql_external_alert_merchant_delivery_and_independent_copy_evidence_pending",
+  "environment": {
+    "node": "v24.15.0",
+    "pnpm": "11.9.0",
+    "realShopifyCredentialsUsed": false,
+    "shopifySubscriptionDeliveryTested": false,
+    "externalAlertDeliveryTested": false,
+    "merchantPackageDeliveryTested": false,
+    "currentPostgresqlIntegrationConfigured": false,
+    "s3IntegrationConfigured": false
+  },
+  "implementedControls": [
+    "fixed /v1/webhooks/shopify/privacy route with no client tenant or connection identifier",
+    "exact raw-body Shopify app-secret HMAC verification before JSON parsing or tenant resolution",
+    "only customers/data_request, customers/redact, and shop/redact with the configured quarterly API version",
+    "canonical X-Shopify-Shop-Domain equality with the signed payload and strict shop-redact shape",
+    "1 MiB body ceiling, bounded safe numeric or exact-string identifiers, no duplicate order identifiers, and at most 10000 order identifiers",
+    "email, phone, and unknown customer fields discarded before persistence",
+    "narrow app-only canonical-shop resolver followed by an RLS tenant transaction",
+    "append-only minimized request evidence, exact 30-day due time, redacted audit metadata, and action-required connection state",
+    "Shopify normalizer 1.1.0 omits customerReference and a database trigger rejects it on new Shopify canonical rows",
+    "customer redaction scopes raw objects to supplied order identifiers; shop redaction scopes raw objects to the resolved connection; data requests never auto-delete",
+    "database-validated raw-object jobs with organization and job identity bound at finalize/fail",
+    "worker has no direct request/job/tombstone table access and uses narrowly granted security-definer functions",
+    "organization advisory lock serializes legal-hold changes with claim, conditional storage deletion, and finalization",
+    "checksum, ETag, and version-bound object deletion with confirmed absence and idempotent missing-object handling",
+    "bounded exponential retry capped at one hour, dead-letter after ten attempts, and immutable tenant tombstones",
+    "generic tenant-routed Shopify webhook ingress rejects the three mandatory privacy topics",
+    "owner/administrator-only retention:manage API establishes server-resolved tenant context before listing privacy operations",
+    "repository query selects bounded earliest deadlines and aggregate job states without customer, order, request, event, digest, object-key, checksum, or payload fields",
+    "tenant-bound keyset cursors retrieve every bounded deadline page and reject malformed or cross-tenant replay",
+    "forced-RLS append-only deadline ledger records at most one due_7_days, due_24_hours, or overdue signal per tenant request and stage",
+    "worker has no direct deadline-ledger access; fixed bounded discovery plus exact tenant-context creation recompute stage, due time, and clock authority",
+    "successful deadline creation appends a minimized hash-chained system audit event in the same tenant transaction",
+    "default-enabled monitor validates one-minute-to-one-day cadence and 1-500 batch size and emits aggregate-only warning/error logs",
+    "API repeats an explicit response allowlist and conceals unauthorized or foreign-tenant requests",
+    "signed-context BFF fixes the upstream path and 50-item page limit, validates optional cursors, and does not forward browser cookies",
+    "Security & retention operator view distinguishes merchant data-package work from raw redaction progress and never claims fulfillment",
+    "customers/data_request package preparation requires both retention:manage and data:export, an audit-visible reason, and explicit non-fulfillment confirmation",
+    "tenant repository selects only linked Shopify/Stripe provider evidence and excludes shared accounting CSV objects that could contain unrelated subjects",
+    "at most 100 source records are admitted; every raw object is SHA-256 verified with a one MiB ceiling and the complete JSON package is capped at five MiB",
+    "missing, corrupt, malformed, record-overflow, or package-overflow evidence fails the whole response without a partial package or success audit",
+    "package content omits object keys, digests, internal tenant/source/canonical identifiers and declares exact scope plus delivery/legal/independent-copy limitations",
+    "successful preparation appends counts, byte size, source counts, schema, reason, and not_delivered status only to the tenant audit chain",
+    "API and signed-context BFF buffer and validate the full JSON document/package identity, ignore upstream filenames, use fixed sandbox/nosniff/private headers, and never forward browser cookies",
+    "operator UI requires confirmation and produces a verified non-empty fixed-name download while leaving the request action-required"
+  ],
+  "verification": {
+    "repositoryGate": {
+      "command": "pnpm verify",
+      "status": "passed",
+      "checks": [
+        "Prettier format check",
+        "ESLint with zero warnings",
+        "TypeScript typecheck across 19 workspace projects",
+        "51 unit/tenant/reconciliation files with 270 passing tests",
+        "migration-chain validation",
+        "schema/config/dependency-policy validation",
+        "production builds across all applicable workspace projects, including Next.js"
+      ]
+    },
+    "migrationChain": {
+      "command": "pnpm migrations:check",
+      "status": "passed",
+      "migrationCount": 40,
+      "sha256": "75aaa78f514eda88526ea9dee14e894489cba2a40a91d6a9b8ad656417afe84c",
+      "newBoundary": [
+        "0036_provider_privacy_requests.sql",
+        "0037_provider_privacy_object_deletion.sql",
+        "0038_provider_privacy_deadline_alerts.sql"
+      ]
+    },
+    "browser": {
+      "command": "pnpm --filter @workspace/web exec playwright test",
+      "status": "passed",
+      "project": "chromium",
+      "testCount": 31,
+      "interpretation": "The complete Chromium operator regression passed, including minimized Shopify privacy deadlines across tenant-bound cursor pages, 24-hour and overdue escalation states, confirmed non-empty fixed-name customer-data evidence download, aggregate deletion progress, forbidden-field absence, and the Security & retention accessibility scan."
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "liveIntegrationAttempt": {
+      "command": "pnpm test:integration",
+      "status": "not_executed_missing_environment",
+      "processExitCode": 1,
+      "suiteCountAtSetup": 13,
+      "skippedTestCount": 37,
+      "missingConfiguration": [
+        "DATABASE_ADMIN_URL and related PostgreSQL role URLs",
+        "REDIS_URL",
+        "S3_ENDPOINT and related object-store configuration"
+      ],
+      "plannedPrivacyCoverage": [
+        "apply migrations through 0038",
+        "persist an authenticated minimized request",
+        "create implicated jobs without privacy_pending generic receipts",
+        "deny cross-tenant request/job reads",
+        "deny application claim and worker direct-table access",
+        "list minimized pending and terminal deletion progress under application-role tenant context",
+        "return zero operator rows under a different tenant context",
+        "create one overdue deadline signal and same-transaction audit event through the worker role",
+        "return no new signal on replay and deny application/worker direct-table mutation",
+        "expose only the highest escalation stage/time under the application-role tenant context",
+        "finalize deleted and already-missing outcomes",
+        "reject tombstone mutation",
+        "resolve an authenticated customers/data_request to only tenant-bound linked Shopify/Stripe source evidence",
+        "return no package authority under a different tenant context",
+        "verify raw objects and include linked sanitized normalized records",
+        "append exactly one metadata-only provider_privacy.data_package_prepared audit event after successful assembly"
+      ],
+      "interpretation": "No integration assertion ran. This is recorded as unavailable evidence, not a passing integration result."
+    }
+  },
+  "officialContractChecks": [
+    {
+      "provider": "Shopify",
+      "source": "https://shopify.dev/docs/apps/build/compliance/privacy-law-compliance",
+      "verified": [
+        "public App Store apps receive customers/data_request, customers/redact, and shop/redact",
+        "a 200-series response acknowledges receipt",
+        "requests require completion within 30 days unless retention is legally required",
+        "the app must provide requested customer data to the shop owner directly",
+        "shop redaction is delivered after the provider uninstall delay"
+      ]
+    },
+    {
+      "provider": "Shopify",
+      "source": "https://shopify.dev/docs/apps/build/webhooks/subscribe",
+      "verified": [
+        "app-specific subscriptions are configured at application scope",
+        "the compliance route must not derive tenant authority from a client URL"
+      ]
+    }
+  ],
+  "remainingEvidenceAndOperationalRisks": [
+    "Run migrations 0036-0038 from empty and the previous supported release through administrator, migrator, application, and worker roles.",
+    "Exercise all three deliveries from an authorized Shopify development app subscription and measure acknowledgement latency at the largest supported request.",
+    "Exercise secure merchant data-package delivery, recipient verification, acknowledgement, downloaded-copy expiry, and an approved over-limit export path; preparation alone remains not delivered.",
+    "Inventory and approve legacy and current canonical, provenance, reconciliation, review, and audit disposition without invalidating financial evidence silently.",
+    "Verify caches, search indexes, exports, telemetry, replicas, object noncurrent versions/delete markers, and backup expiry independently.",
+    "Exercise legal-hold concurrency against a real PostgreSQL transaction and conditional deletion against the pinned S3-compatible service.",
+    "Connect aggregate deadline signals to an approved external alert sink and exercise delivery, acknowledgement, worker silence, full-batch backlog, overdue response, retries, dead letters, and action-required ownership.",
+    "No production, staging, hosted CI, container-topology, backup/restore, provider-contract, or compliance result is claimed."
+  ],
+  "decisionsAndRunbooks": [
+    "docs/adr/0013-shopify-mandatory-privacy-webhook-boundary.md",
+    "docs/adr/0014-shopify-privacy-deadline-escalation.md",
+    "docs/adr/0015-bounded-shopify-customer-data-evidence-package.md",
+    "docs/privacy-and-retention.md",
+    "docs/connectors.md",
+    "docs/environment.md",
+    "docs/operations-runbook.md",
+    "docs/migrations.md",
+    "docs/upgrade-and-rollback.md",
+    "docs/security-review.md",
+    "docs/known-limitations.md"
+  ]
+}

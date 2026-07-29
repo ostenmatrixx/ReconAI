@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-27T12:37:12.959Z",
+  "provider": {
+    "name": "Keycloak",
+    "version": "26.7.0",
+    "realmData": "synthetic"
+  },
+  "runtime": {
+    "applicationOrigin": "http://localhost:3000",
+    "providerOrigin": "http://127.0.0.1:58080",
+    "transport": "loopback development HTTP",
+    "productionTlsClaim": false
+  },
+  "assertions": {
+    "authorizationCodePkceLoginCompleted": true,
+    "browserSessionStatus": 200,
+    "browserCredentialDisclosure": false,
+    "providerLogoutRequestObserved": true,
+    "providerLogoutIdTokenHintPresent": true,
+    "providerLogoutClientIdMatched": true,
+    "providerLogoutRedirectMatched": true,
+    "sessionCookieChunkCountBeforeLogout": 2,
+    "sessionCookieHttpOnlyBeforeLogout": true,
+    "sessionCookieSameSiteBeforeLogout": ["Lax"],
+    "sessionCookieCountAfterLogout": 0,
+    "localSessionCleared": true,
+    "providerLoginFormShownAfterLogout": true
+  },
+  "limitations": [
+    "This is one isolated local Keycloak exercise, not staging or production identity evidence.",
+    "The exercise proves browser SSO termination for one local realm session; it does not prove upstream identity-provider logout propagation.",
+    "No raw ID token, access token, refresh token, session cookie, authorization code, password, or client secret is recorded."
+  ]
+}

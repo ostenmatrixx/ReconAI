@@ -1,0 +1,203 @@
+{
+  "schemaVersion": "reconai-evidence-v1",
+  "evidenceType": "browser-mutation-response-boundary-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T11:44:33Z",
+  "status": "local_pass_protected_runtime_gate_open",
+  "scope": "Local source, unit/route tests, client typechecks, complete Chromium workflows, strict static checks, policy validators, and production-build evidence for the shared browser-facing tenant mutation BFF. Synthetic identifiers, tokens, credentials, diagnostics, and payloads only. No customer data, provider system, protected ingress, staging deployment, compliance, or production-readiness claim is included.",
+  "decisions": {
+    "threatModelEntry": "TM-42",
+    "securityReviewControl": "BFF-MUTATION-RESPONSE-001",
+    "apiRouteInventoryChanged": false,
+    "databaseMigrationAdded": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyNormalizationOrToleranceChanged": false,
+    "tenantOrFinancialAuthorityAdded": false,
+    "sourceSystemWriteOrProviderScopeAdded": false,
+    "aiAuthorityOrEnablementChanged": false
+  },
+  "boundary": {
+    "browserRoute": "/api/recon/actions",
+    "supportedActionCount": 17,
+    "maximumSuccessJsonBytes": 1048576,
+    "maximumInternalApiErrorBytes": 65536,
+    "successfulJsonDecoding": "fatal UTF-8",
+    "acceptedStatusPolicy": {
+      "create_proposal": [201],
+      "decide_proposal": [201],
+      "update_member": [200],
+      "create_invitation": [201],
+      "revoke_invitation": [200],
+      "rollback_import": [200],
+      "update_review_policy": [200],
+      "update_retention_policy": [200],
+      "approve_support_access": [201],
+      "revoke_support_access": [200],
+      "start_provider_sync": [202],
+      "rotate_connector_credential": [200, 201],
+      "disconnect_connector": [200],
+      "add_note": [201],
+      "update_exception": [200],
+      "start_run": [202],
+      "replay_run": [202]
+    },
+    "dataBearingActions": [
+      "create_invitation",
+      "rollback_import",
+      "update_review_policy",
+      "update_retention_policy",
+      "start_provider_sync",
+      "rotate_connector_credential",
+      "disconnect_connector",
+      "start_run"
+    ],
+    "acknowledgementOnlyActions": [
+      "create_proposal",
+      "decide_proposal",
+      "update_member",
+      "revoke_invitation",
+      "approve_support_access",
+      "revoke_support_access",
+      "add_note",
+      "update_exception",
+      "replay_run"
+    ],
+    "browserOutputs": {
+      "create_invitation": [
+        "data.acceptToken",
+        "meta.delivery.status",
+        "meta.delivery.auditRecorded"
+      ],
+      "rollback_import": ["data.status", "data.supersededRecordCount"],
+      "update_review_policy": [
+        "data.dualApprovalEnabled",
+        "data.dualApprovalThresholds",
+        "data.sensitiveResolutionTypes",
+        "data.updatedAt"
+      ],
+      "update_retention_policy": [
+        "data.rawImportRetentionDays",
+        "data.providerEventRetentionDays",
+        "data.legalHoldEnabled",
+        "data.legalHoldReason",
+        "data.updatedAt"
+      ],
+      "start_provider_sync": ["data.provider"],
+      "rotate_connector_credential": ["data.id", "data.keyVersion"],
+      "disconnect_connector": [
+        "data.status",
+        "data.revoked or data.providerActionUrl",
+        "data.providerConfirmation"
+      ],
+      "start_run": ["data.id", "data.status"],
+      "acknowledgementOnlyActions": ["data.accepted"]
+    },
+    "rejectedOrDiscardedConditions": [
+      "unexpected action-specific success status",
+      "malformed data-bearing response contract",
+      "unsafe Stripe provider-action URL",
+      "malformed JSON",
+      "invalid UTF-8",
+      "non-JSON content type",
+      "declared or streamed success body above 1 MiB",
+      "unknown or status-mismatched internal API error",
+      "additional internal API error field",
+      "declared or streamed error body above 64 KiB",
+      "successful response fields not named in the reconstructed browser contract"
+    ],
+    "rejectedOutcome": {
+      "status": 502,
+      "privateNoStore": true,
+      "upstreamStatusPreserved": false,
+      "upstreamBodyPreserved": false
+    },
+    "upstreamFetchContainment": {
+      "configuredFixedOrigin": true,
+      "enumeratedTenantRoutePaths": true,
+      "ambientCredentials": "omit",
+      "redirect": "error",
+      "timeoutMilliseconds": 15000
+    }
+  },
+  "source": {
+    "routeAndTestSha256": {
+      "apps/web/src/app/api/recon/actions/route.ts": "7a0c6d45ed221fabda16b56bdf88a86fa992c6ee52f08cf2dcada53f9531173e",
+      "apps/web/src/app/api/recon/actions/route.test.ts": "abde8e36d5a718be1e1dc89fc866421aac18ce2634b9323dc3fa63e2fdda1aaf",
+      "apps/web/src/upstream-api-error.ts": "9bb186a4fdb2775780f2a363547c55d7244f33dd40e4aeea799f602a7ffb4dee",
+      "apps/web/src/upstream-api-error.test.ts": "af3326b08d1281b59c265f9024e1cbbde9b827dadd092a15fec6308b0e1836e7"
+    },
+    "clientSha256": {
+      "apps/web/src/components/connector-credential-control.tsx": "68ed342bda7e1a2305a7a69be5836ccd1510f05cf02920aa23d3ca07c8880078",
+      "apps/web/src/components/connector-health.tsx": "0e335f8a7ef5ed4bf54ed06a31676f884be7bccbf2a97da42a027b6ddf9be0ca",
+      "apps/web/src/components/organization-invitations.tsx": "50a06352699f3cf20bcb40680296f14feb291f411b8c2d081024cb553bf3f44c",
+      "apps/web/src/components/reconciliation-runs.tsx": "16f8619d9f7a02e0538c817a24319de50c2817760c5354a361a14d6589334727"
+    },
+    "documentationSha256": {
+      "docs/architecture.md": "fa0d6a8acb63b3b2cc15cc39ff1447e9322cb83294cd273dcad01fa7c9c26997",
+      "docs/threat-model.md": "d5f690adf5619c2f3ac68b48713ee45f3d441f0a0c882314ef924539fe471d10",
+      "docs/security-review.md": "6390590a812cf3ecb14da72a8887aca23f854120bc31f99c6cf296fe4ae7b035",
+      "docs/goals/goal-1-vertical-slice.md": "4247679b392770e98d5a749fab32c1853e8cb583a18dc016125c8d18522cf004",
+      "docs/goals/goal-1-audit-2026-07-29-6.md": "dbec1b121d27795e6703c6e040de2c73da64f0ca3743ee25cca97550dbf980b6"
+    }
+  },
+  "verification": {
+    "focusedGate": {
+      "command": "pnpm exec vitest run apps/web/src/app/api/recon/actions/route.test.ts apps/web/src/upstream-api-error.test.ts",
+      "status": "passed",
+      "testFilesPassed": 2,
+      "testsPassed": 18,
+      "testsFailed": 0
+    },
+    "browserGate": {
+      "command": "CI=true pnpm test:e2e",
+      "status": "passed",
+      "browser": "Chromium",
+      "testsPassed": 42,
+      "accessibilityChecksPassed": 13,
+      "testsFailed": 0
+    },
+    "repositoryGate": {
+      "command": "RECONAI_PENDING_EVIDENCE_PATH=artifacts/browser-mutation-response-boundary-verification-2026-07-29.json CI=true pnpm verify",
+      "status": "passed",
+      "testFilesPassed": 82,
+      "testsPassed": 539,
+      "migrationsValidated": 55,
+      "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+      "contractEntrypointsValidated": 4,
+      "sourceFilesValidated": 527,
+      "sourceRootsValidated": 7,
+      "dockerfilesValidated": 3,
+      "composeImagesValidated": 5,
+      "workflowImagesValidated": 3,
+      "actionPinsValidated": 25,
+      "operationalAlertRulesValidated": 13,
+      "metricContractsValidated": 9,
+      "packageManifestsPolicyValidated": 20,
+      "productionLicensesValidated": 224,
+      "productionLockSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+      "productionBuildPassed": true,
+      "productionRouteObserved": "/api/recon/actions"
+    },
+    "nodeVersion": "24.15.0",
+    "pnpmVersion": "11.9.0",
+    "gitVersion": "2.50.1"
+  },
+  "knownLimitations": [
+    "The general tenant read BFF still relays successful upstream JSON for most views; support-access grants are the existing strict exception. View-specific schemas and negative tests remain required.",
+    "This local proof does not exercise a compromised web process, protected ingress, network fault, deployment proxy, or production internal API.",
+    "A safe Stripe provider-action URL remains browser-visible only when it matches the exact HTTPS dashboard origin and fixed settings-app path without credentials, query, or fragment.",
+    "The action success/error policies must be updated deliberately when a new browser action or browser-actionable internal API error is introduced; unknown contract drift fails closed.",
+    "This increment does not migrate the openid-client dependency path, close provider sandbox or release-integrity findings, or satisfy protected-staging evidence.",
+    "One local workstation run is not CI, staging, reliability, capacity, compliance, or production-readiness evidence."
+  ],
+  "sourceControlState": {
+    "repositoryHasNoInitialCommit": true,
+    "filesStaged": false,
+    "commitCreated": false,
+    "pushOrPublishPerformed": false,
+    "deploymentPerformed": false,
+    "repositoryEnvironmentFilesPresent": false,
+    "jsonEvidenceArtifactsIncludingThisOne": 92
+  },
+  "conclusion": "All 17 shared tenant mutation actions now enforce explicit success statuses and minimal reconstructed browser responses or fixed acknowledgements, while internal API errors use the strict shared allowlist. This closes BFF-MUTATION-RESPONSE-001 locally without expanding tenant, financial, provider, source-system, or AI authority. Goal 1 remains active; read-view minimization plus provider, owner, distributed-runtime, and protected-staging gates remain open."
+}

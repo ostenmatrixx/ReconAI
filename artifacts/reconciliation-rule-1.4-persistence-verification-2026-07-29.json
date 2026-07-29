@@ -1,0 +1,164 @@
+{
+  "evidenceType": "reconciliation-rule-1.4-persistence-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-28T18:12:56Z",
+  "scope": "Focused local PostgreSQL worker-execution evidence that engine 0.6.0 / rule set 1.4.0 refund, refund/accounting, and duplicate-processing-fee artifacts persist under the production schema and restricted worker role. This is not an API, browser, queue, staging, accuracy, or capacity result.",
+  "versions": {
+    "engine": "0.6.0",
+    "ruleSet": "1.4.0",
+    "rule": "1.4.0",
+    "postgresql": "17.10"
+  },
+  "postgresqlSource": {
+    "archive": "postgresql-17.10.tar.bz2",
+    "officialDirectory": "https://www.postgresql.org/ftp/source/v17.10/",
+    "officialChecksumFile": "https://ftp.postgresql.org/pub/source/v17.10/postgresql-17.10.tar.bz2.sha256",
+    "sha256": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+    "checksumVerifiedBeforeBuild": true,
+    "cluster": "fresh empty loopback-only disposable cluster using trust authentication for the local test",
+    "locale": "C",
+    "encoding": "UTF8"
+  },
+  "database": {
+    "freshDatabase": true,
+    "migrationsApplied": 43,
+    "migrationChainSha256": "c07ba83a547f14064d460f173f65cf2f5bf6218d55585dcef20c8990e2b6a3da",
+    "migrationRequiredForThisChange": false,
+    "reason": "The test exercises existing tenant-scoped run, match, exception, and occurrence storage. No table, constraint, policy, index, grant, or runtime read model changed.",
+    "workerUsesRestrictedRole": true,
+    "rowLevelSecurityEnabledForAssertions": true
+  },
+  "verification": {
+    "focusedPostgresql": {
+      "command": "pnpm exec vitest run --project integration apps/worker/src/reconciliation-run-execution.integration.test.ts",
+      "testFilesPassed": 1,
+      "testsPassed": 3,
+      "testsFailed": 0,
+      "durationMs": 855
+    },
+    "focusedStaticChecks": {
+      "commands": [
+        "pnpm --filter @workspace/worker typecheck",
+        "pnpm exec eslint apps/worker/src/reconciliation-run-execution.integration.test.ts"
+      ],
+      "passed": true
+    },
+    "fullVerify": {
+      "command": "CI=true pnpm verify",
+      "passed": true,
+      "testFilesPassed": 67,
+      "testsPassed": 395,
+      "format": "passed",
+      "lint": "passed",
+      "typecheck": "passed",
+      "build": "passed",
+      "migrationsValidated": 43,
+      "migrationChainSha256": "c07ba83a547f14064d460f173f65cf2f5bf6218d55585dcef20c8990e2b6a3da",
+      "contractEntrypointsValidated": 4,
+      "containerChecks": "3 Dockerfiles, 5 Compose images, 3 workflow images, 25 action pins, and non-publishing candidate controls passed",
+      "dependencyManifestsValidated": 20,
+      "productionLicensesValidated": 224,
+      "lockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94"
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "passed": true
+    },
+    "productionDependencyAudit": {
+      "command": "pnpm audit --prod --audit-level high",
+      "passed": true,
+      "result": "No known vulnerabilities found"
+    }
+  },
+  "ruleScenario": {
+    "inputRecords": 5,
+    "inputKinds": {
+      "refund": 2,
+      "accounting_entry": 1,
+      "processing_fee": 2
+    },
+    "expectedMatches": 2,
+    "expectedExceptions": 1,
+    "operationalStateApplied": true,
+    "persistedRun": {
+      "status": "succeeded",
+      "engineVersion": "0.6.0",
+      "ruleSetVersion": "1.4.0",
+      "matchCount": 2,
+      "exceptionCount": 1
+    },
+    "persistedMatches": [
+      {
+        "ruleId": "refund",
+        "ruleVersion": "1.4.0",
+        "reasonCode": "SHOPIFY_STRIPE_REFUND_MATCHED",
+        "recordReferences": 2
+      },
+      {
+        "ruleId": "refund-accounting",
+        "ruleVersion": "1.4.0",
+        "reasonCode": "REFUND_ACCOUNTING_ENTRY_MATCHED",
+        "recordReferences": 2
+      }
+    ],
+    "persistedExceptions": [
+      {
+        "type": "duplicate_processing_fee",
+        "severity": "high",
+        "ruleVersion": "1.4.0",
+        "reasonCode": "DUPLICATE_SOURCE_EXTERNAL_IDENTIFIER",
+        "recordReferences": 2
+      }
+    ],
+    "perRunOccurrenceCounts": {
+      "matches": 2,
+      "exceptions": 1
+    },
+    "exceptionObservationRelation": "exception_occurrences.run_id"
+  },
+  "replay": {
+    "firstExecutionAlreadyCompleted": false,
+    "secondExecutionAlreadyCompleted": true,
+    "stableRunIdentityReused": true,
+    "matchOccurrencesAfterReplay": 2,
+    "exceptionOccurrencesAfterReplay": 1,
+    "duplicateArtifactsObserved": false
+  },
+  "tenantIsolation": {
+    "foreignOrganizationVisibleRows": {
+      "reconciliationRuns": 0,
+      "matches": 0,
+      "exceptions": 0,
+      "matchOccurrences": 0,
+      "exceptionOccurrences": 0
+    },
+    "crossTenantResult": "passed"
+  },
+  "sourceSha256": {
+    "apps/worker/src/reconciliation-run-execution.integration.test.ts": "d4c48128ecbc2b4ddaab11396ab5ca25836db1822a40f72f4646a0fe025fc96b",
+    "apps/worker/src/reconciliation-run-execution.ts": "05a05ddd5ba20c9b2dd859ccb3af75013e71cbfc42f543e6afe1c7c2d7f07578",
+    "packages/reconciliation/src/index.ts": "3feca09626a04582ad196c0c3c05b7270289041f244587f6b9ba52b20a0ead02",
+    "packages/database/migrations/0007_reconciliation_history_security.sql": "78e8cf1445f51d1ddef30e70b865fd2b0d657f1e8d9ddf8ff0ede7d3f6d27dc3",
+    "packages/database/migrations/0020_reconciliation_execution_security.sql": "29b9c992560acac01b679fe2d79ce5c443df9204380749656db4c94a64724152",
+    "packages/database/migrations/0025_reconciliation_run_authority_security.sql": "24d98687d7679aca009048aadc2cd3f0d200ad42acf4806fab170dd476ed4288",
+    "pnpm-lock.yaml": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94"
+  },
+  "safety": {
+    "moneyUsesBinaryFloatingPoint": false,
+    "currencyConversionAdded": false,
+    "sourceSystemWritesAdded": false,
+    "financialApprovalAuthorityAdded": false,
+    "aiAuthorityChanged": false,
+    "productionDataUsed": false,
+    "externalMessagesSent": false,
+    "deploymentPerformed": false,
+    "gitStageCommitPushPerformed": false
+  },
+  "limitations": [
+    "The processor was invoked with a schema-validated reconciliation job envelope; this focused test did not traverse the API, transactional outbox relay, or BullMQ.",
+    "No API or browser operator read of the persisted rule 1.4 evidence was executed.",
+    "The seed is synthetic and does not establish representative provider/accounting distributions, staging load, concurrency behavior, accuracy, false-positive rate, operator outcomes, or alerts.",
+    "Split or aggregated accounting entries are not automatically summed and require a separately versioned conservation policy.",
+    "No protected staging rollout, mixed-image drain, rollback, or production deployment was authorized or performed."
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "artifactVersion": 1,
+  "recordedAt": "2026-07-28T16:30:28Z",
+  "scope": "identity-derived organization directory search, keyset pagination, and exact selection verification",
+  "sourceState": "uncommitted working tree; no repository commit exists",
+  "outcome": "passed with explicit live-runtime exclusions",
+  "contract": {
+    "authority": "verified OIDC issuer and subject intersected with active user, membership, and organization state",
+    "pageDefaultItems": 50,
+    "pageMaximumItems": 100,
+    "databaseLookaheadMaximumRows": 101,
+    "searchMaximumCharacters": 100,
+    "searchSqlWildcardsAreLiteral": true,
+    "ordering": "lower organization name under C collation, then organization UUID",
+    "cursor": {
+      "encoding": "canonical base64url JSON",
+      "schemaVersion": 1,
+      "boundToNormalizedSearch": true,
+      "authorizationCapability": false
+    },
+    "exactSelection": "organization UUID filters the verified identity relation and never grants access",
+    "browserAccumulationMaximumItems": 500,
+    "bffResponseMaximumBytes": 65536,
+    "downstreamAuthorization": "current membership and permissions are independently re-resolved for every tenant route",
+    "rollingCompatibility": "the prior two-argument directory function remains available"
+  },
+  "automatedEvidence": {
+    "focusedCommand": "pnpm exec vitest run apps/api/src/auth.test.ts apps/api/src/app.tenant.test.ts apps/web/src/organization-context.test.ts apps/web/src/app/api/recon/route.test.ts apps/web/src/app/api/recon/organization/route.test.ts packages/database/src/migration.tenant.test.ts",
+    "focusedResult": {
+      "testFilesPassed": 6,
+      "testsPassed": 88,
+      "testsFailed": 0
+    },
+    "coveredCases": [
+      "stable lookahead/keyset cursor construction",
+      "cursor canonical encoding, schema, and normalized-search binding",
+      "page, search, cursor, response-byte, and exact-lookup bounds",
+      "literal percent and underscore SQL escaping contract",
+      "application-role-only function grant with fixed search path and row security",
+      "exact organization filtering remains identity-derived",
+      "API query forwarding and opaque invalid-cursor containment",
+      "BFF search/cursor containment without browser credential forwarding",
+      "selected organization verification outside the visible page",
+      "cross-site, expired-session, and foreign-organization selection denial"
+    ],
+    "migrationValidation": {
+      "command": "pnpm migrations:check",
+      "migrationsValidated": 42,
+      "chainSha256": "0e3e6c220204648b46406f583d3e7e6c88289a9e49c4de8da2dbbb8ee2fc3b95"
+    },
+    "fullRepositoryVerification": {
+      "command": "CI=true pnpm verify",
+      "exitCode": 0,
+      "testFilesPassed": 66,
+      "testsPassed": 351,
+      "migrationsValidated": 42,
+      "checks": [
+        "format",
+        "lint",
+        "typecheck",
+        "unit",
+        "tenant",
+        "reconciliation",
+        "migration",
+        "schema",
+        "config",
+        "edge",
+        "oidc",
+        "container",
+        "dependency policy",
+        "license",
+        "build"
+      ]
+    }
+  },
+  "databaseRuntimeEvidence": {
+    "status": "not run in this verification slice",
+    "definedTests": [
+      "empty 42-migration chain",
+      "populated 0040-to-0041 upgrade preserving prior directory compatibility",
+      "application-role keyset page, literal wildcard, exact lookup, and cross-identity denial"
+    ],
+    "reason": "no authorized local PostgreSQL listener or container runtime was available",
+    "priorEvidence": "the earlier bounded directory has PostgreSQL 17.10 application-role evidence for two memberships under one identity"
+  },
+  "claimsExcluded": [
+    "No live identity with more than 100 memberships was exercised.",
+    "No PostgreSQL execution of migration 0041 or populated 0040-to-0041 upgrade is claimed.",
+    "No concurrent organization rename or membership mutation behavior was measured.",
+    "No representative query timing, protected staging, or prior/new-image rolling deployment is claimed.",
+    "The unsigned cursor is navigation state only; confidentiality against a user's own identity-authorized organization names is not claimed."
+  ],
+  "credentialsOrCustomerDataRecorded": false
+}

@@ -1,0 +1,278 @@
+{
+  "schemaVersion": "reconai-evidence-v1",
+  "evidenceType": "resolution-proposal-revision-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T12:38:53Z",
+  "status": "local_pass_protected_runtime_gate_open",
+  "scope": "Local source, authorization and browser-boundary tests, complete deterministic and Chromium suites, a fresh isolated checksum-enabled PostgreSQL exercise, strict policy validators, and production-build evidence for immutable revision of a pending resolution proposal. Synthetic tenants, identities, financial values, proposals, approvals, and audit events only. No customer data, provider system, protected staging, compliance, reliability, or production-readiness claim is included.",
+  "requirement": {
+    "prdAction": "edit proposal",
+    "priorGap": "The workflow protected proposal evidence from mutation but allowed a new version only after rejection or automatic supersession; an original proposer could not correct a pending proposal.",
+    "implementedMeaning": "original-proposer-only immutable replacement",
+    "decision": "ADR 0056",
+    "threatModelEntry": "TM-46",
+    "securityReviewControl": "REVIEW-PROPOSAL-REVISION-001"
+  },
+  "decisions": {
+    "databaseMigrationAdded": false,
+    "existingDatabaseAuthority": "Migration 0015 already permits the superseded lifecycle status, protects proposal evidence from update/delete, and makes approvals append-only and proposal-version-bound.",
+    "apiRouteInventoryChanged": false,
+    "existingMutationActionReused": "create_proposal",
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyNormalizationOrToleranceChanged": false,
+    "automaticFinancialAuthorityAdded": false,
+    "sourceSystemWriteOrProviderScopeAdded": false,
+    "aiAuthorityOrEnablementChanged": false
+  },
+  "revisionContract": {
+    "authorization": {
+      "tenantContextResolvedFromAuthenticatedMembership": true,
+      "requiredPermission": "exceptions:review",
+      "clientOrganizationIdGrantsNoAuthority": true,
+      "originalProposerOnly": true,
+      "otherReviewCapableActorCanRevise": false,
+      "crossTenantAndInsufficientAuthorityAreUniformlyConcealed": true,
+      "browserReceivesProposerIdentity": false,
+      "browserReceivesServerDerivedCanRevise": true
+    },
+    "preconditions": {
+      "exceptionStatus": "proposed",
+      "exactPendingProposalCount": 1,
+      "pendingProposalStatus": "pending",
+      "proposerMatchesCurrentActor": true
+    },
+    "atomicTransition": [
+      "lock the tenant-scoped exception authority row",
+      "lock the one pending proposal",
+      "change only the old proposal lifecycle status to superseded",
+      "compute max historical version plus one",
+      "insert a new proposal UUID/version with immutable evidence",
+      "recompute required approvals from the current organization review policy",
+      "retain the exception in proposed state",
+      "append one reasoned resolution.revised audit event before commit"
+    ],
+    "oldProposal": {
+      "evidenceMutated": false,
+      "deleted": false,
+      "finalLifecycleStatus": "superseded",
+      "approvalRowsDeletedOrUpdated": false,
+      "approvalRowsRemainHistorical": true,
+      "canReceiveAnotherDecisionAfterSupersession": false
+    },
+    "replacementProposal": {
+      "newUuid": true,
+      "monotonicallyIncreasingVersion": true,
+      "status": "pending",
+      "approvalCountBeginsAt": 0,
+      "priorApprovalAuthorityCopied": false,
+      "requiredApprovalCountReevaluated": true
+    },
+    "audit": {
+      "action": "resolution.revised",
+      "resource": "new resolution proposal",
+      "previousValueFields": [
+        "proposalId",
+        "proposalVersion",
+        "approvalCount",
+        "status"
+      ],
+      "newValueFields": [
+        "exceptionId",
+        "proposalType",
+        "version",
+        "requiredApprovals",
+        "supersedesProposalId",
+        "supersedesProposalVersion",
+        "supersededProposalStatus"
+      ]
+    },
+    "concurrency": {
+      "approvalLockOrder": [
+        "resolve proposal-to-exception relation",
+        "lock exception authority row",
+        "lock proposal row"
+      ],
+      "revisionLockOrder": [
+        "lock exception authority row",
+        "lock proposal row"
+      ],
+      "allowedConcurrentApprovalOutcome": "The approval either commits against the old version before supersession or is rejected after supersession.",
+      "forbiddenOutcome": "No approval can attach to or count toward the replacement version.",
+      "deadlockObserved": false
+    },
+    "browser": {
+      "supportedProposalTypes": [
+        "investigate_source_record",
+        "document_external_payment",
+        "manual_override",
+        "write_off"
+      ],
+      "explicitConfirmationRequired": true,
+      "confirmationExplainsHistoricalApprovalTreatment": true,
+      "approveRejectControlsHiddenFromOriginalProposerWhileRevisionEligible": true,
+      "replacementRendersNewVersionAndZeroApprovals": true
+    }
+  },
+  "postgresqlVerification": {
+    "distribution": "PostgreSQL 17.10",
+    "officialSourceArchive": "https://ftp.postgresql.org/pub/source/v17.10/postgresql-17.10.tar.bz2",
+    "officialChecksumFile": "https://ftp.postgresql.org/pub/source/v17.10/postgresql-17.10.tar.bz2.sha256",
+    "sourceArchiveSha256": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+    "officialChecksumMatched": true,
+    "build": {
+      "sourceBuiltLocally": true,
+      "repositoryFilesUsedForInstallation": false,
+      "persistentServiceInstalled": false
+    },
+    "cluster": {
+      "freshForFinalRun": true,
+      "encoding": "UTF8",
+      "locale": "C",
+      "dataPageChecksumsEnabled": true,
+      "dataPageChecksumVersion": 1,
+      "networkBinding": "127.0.0.1 only",
+      "stoppedAfterVerification": true,
+      "repositoryEnvironmentFileWritten": false
+    },
+    "rolesExercised": [
+      "administrator",
+      "reconai_migrator",
+      "reconai_app",
+      "reconai_worker",
+      "reconai_maintenance"
+    ],
+    "bootstrapDriftFoundAndFixed": {
+      "initialObservedFailure": "Migration 0051 correctly refused to apply because the API repository integration bootstrap had not created the required reconai_maintenance role.",
+      "fix": "The bootstrap now creates the bounded no-bypass-RLS maintenance login and grants only database connect and schema usage before migrations.",
+      "finalRunUsedPartiallyMigratedCluster": false
+    },
+    "finalGate": {
+      "command": "DATABASE_ADMIN_URL=[isolated local administrator URL] DATABASE_MIGRATION_URL=[isolated local migrator URL] DATABASE_URL=[isolated local application URL] pnpm exec vitest run --project integration apps/api/src/repository.integration.test.ts",
+      "status": "passed",
+      "testFilesPassed": 1,
+      "testsPassed": 5,
+      "testsFailed": 0,
+      "testsSkipped": 0,
+      "durationSeconds": 1.13,
+      "migrationsApplied": 55,
+      "revisionAssertions": [
+        "same proposer can revise",
+        "another review-capable actor cannot revise",
+        "old proposal becomes superseded",
+        "old approval remains version-bound historical evidence",
+        "replacement begins with zero approvals",
+        "superseded proposal rejects another decision",
+        "revision audit previous and new values match the transition",
+        "two distinct reviewers approve only the replacement version",
+        "simultaneous approval and revision preserve one pending replacement with zero transferred approvals",
+        "tenant-scoped exception detail derives canRevise per actor"
+      ]
+    },
+    "customerOrProviderSystemContacted": false
+  },
+  "source": {
+    "implementationAndTestSha256": {
+      "apps/api/src/repository.ts": "2e0cf2ef0759742612bdbba9ebff0d4e3a0c65391369b8d55e7345279c823361",
+      "apps/api/src/app.tenant.test.ts": "cd6a783924239b0cb767f9f99833e7e9e8e9ed3a0f08a60e5c9eda1c6c6bd5e1",
+      "apps/api/src/repository.integration.test.ts": "34bcee6a0dc4ba1ea120ebfd5f18de5c8a0bbfe95de405d306999d1e32e6d4de",
+      "apps/web/src/tenant-read-response.ts": "2d6ca433d0c892f0c99997a587bf600022d2775387d2d550435603b40b8ad8e9",
+      "apps/web/src/tenant-read-response.test.ts": "3925c4de668d3c56c0435267f1e35a4f8fc97c13c36ce38b08bc3172956022f6",
+      "apps/web/src/components/exception-workspace.tsx": "bd6fd0bc3993bf6e3ff59605bf15c43c6265fa06c207fe17e7e9a8f6446c0fbc",
+      "apps/web/tests/exception-queue-workflow.spec.ts": "4fa12e1a2184c8a1adcb87827408caa006adcf8337ab481a4f862238a974d60a"
+    },
+    "documentationSha256": {
+      "PRD.md": "5a241e5bfd351936db14cffe13145f9f5ca401390965c9dc37e08134531bd03b",
+      "GOALS.md": "cbb698f00671ddc57c3c9aa37e78494f4ef13fd32f42e8125271a900d19150c7",
+      "docs/architecture.md": "56b77cb8dc0151f2a06ac1538b3723f1ac06f41d7a2a36406edfea352a6fb623",
+      "docs/data-model.md": "fa6f9f641775538db8ad34729d4304083ed6a81eea3a3f0fcf017efc729384af",
+      "docs/threat-model.md": "c0ba373775b913cfba81d1867e0325231d6802a22636f4429381b0fbf6882d29",
+      "docs/security-review.md": "2ecaf4a714d69dfcf14b1fafea2b6e98ed24ddd49bcdeb3c8b9e0f691c933518",
+      "docs/adr/0056-immutable-resolution-proposal-revision.md": "5c59c87407a1f05bc8a0b08ba17026956ee64b9c7fc8c37b812b7a671a9e138d",
+      "docs/adr/README.md": "f7b5daea8da70e4f9e389e5c8ab4fc535e4ec39956b038efbaa1f5d49eb635f7",
+      "docs/goals/goal-1-vertical-slice.md": "b61b15e6d9b1109310112510de94b26656c742eb2135ca50a392c9666b54035f",
+      "docs/goals/goal-1-audit-2026-07-29-10.md": "a041ddae4d565f69bcf92d5ea2610b70319b399e4163ebbd4070a83b29040bab"
+    }
+  },
+  "verification": {
+    "focusedGate": {
+      "command": "pnpm exec vitest run apps/api/src/app.tenant.test.ts apps/web/src/tenant-read-response.test.ts apps/web/src/app/api/recon/actions/route.test.ts",
+      "status": "passed",
+      "testFilesPassed": 3,
+      "testsPassed": 70,
+      "testsFailed": 0
+    },
+    "focusedBrowserGate": {
+      "command": "pnpm --filter @workspace/web exec playwright test tests/exception-queue-workflow.spec.ts",
+      "status": "passed",
+      "browser": "Chromium",
+      "testsPassed": 9,
+      "revisionWorkflowTestsPassed": 1,
+      "accessibilityScansWithinFocusedFile": 2,
+      "testsFailed": 0
+    },
+    "completeBrowserGate": {
+      "command": "CI=true pnpm test:e2e",
+      "status": "passed",
+      "browser": "Chromium",
+      "testsPassed": 43,
+      "testsFailed": 0
+    },
+    "accessibilityGate": {
+      "command": "CI=true pnpm test:accessibility",
+      "status": "passed",
+      "browser": "Chromium",
+      "testsPassed": 11,
+      "testsFailed": 0,
+      "automaticallyDetectedViolations": 0
+    },
+    "repositoryGate": {
+      "command": "RECONAI_PENDING_EVIDENCE_PATH=artifacts/resolution-proposal-revision-verification-2026-07-29.json CI=true pnpm verify",
+      "status": "passed",
+      "testFilesPassed": 83,
+      "testsPassed": 548,
+      "migrationsValidated": 55,
+      "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+      "contractEntrypointsValidated": 4,
+      "sourceFilesValidated": 534,
+      "sourceRootsValidated": 7,
+      "dockerfilesValidated": 3,
+      "composeImagesValidated": 5,
+      "workflowImagesValidated": 3,
+      "actionPinsValidated": 25,
+      "operationalAlertRulesValidated": 13,
+      "metricContractsValidated": 9,
+      "packageManifestsPolicyValidated": 20,
+      "productionLicensesValidated": 224,
+      "productionLockSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+      "productionBuildPassed": true,
+      "productionRoutesObserved": [
+        "/api/recon",
+        "/api/recon/actions",
+        "/dashboard/exceptions/[exceptionId]"
+      ]
+    },
+    "nodeVersion": "24.15.0",
+    "pnpmVersion": "11.9.0",
+    "gitVersion": "2.50.1"
+  },
+  "knownLimitations": [
+    "This local proof does not establish representative multi-replica contention, managed PostgreSQL behavior, protected-ingress behavior, or staging review-race timing.",
+    "A revision reevaluates the current organization approval policy. Policy history and the exact required count remain recorded on each immutable proposal, but a policy change may intentionally make the replacement stricter or less strict than its predecessor.",
+    "The browser can revise only proposal types it explicitly supports; an unknown existing type remains visible and is preserved unless the operator deliberately selects a supported replacement type.",
+    "The strict browser read schema must be updated deliberately when proposal state or operator-visible fields change; unknown upstream fields remain discarded.",
+    "This increment does not close provider sandbox, protected-staging, owner-policy, support-operations, authentication-stack, or release-integrity findings.",
+    "One local workstation run is not CI, staging, reliability, capacity, compliance, legal-fulfillment, or production-readiness evidence."
+  ],
+  "sourceControlState": {
+    "repositoryHasNoInitialCommit": true,
+    "filesStaged": false,
+    "commitCreated": false,
+    "pushOrPublishPerformed": false,
+    "deploymentPerformed": false,
+    "repositoryRuntimeEnvironmentFilesPresent": false,
+    "evidenceFilesBeforeThisOne": 95,
+    "evidenceFilesIncludingThisOne": 96,
+    "artifactCannotHashItself": true
+  },
+  "conclusion": "The Milestone 1 proposal-edit requirement is now implemented locally as original-proposer-only immutable replacement. Old evidence and approvals remain historical and version-bound, the replacement starts with zero approval authority, approval/revision lock ordering is serialized, the BFF does not expose proposer identity, and API, Chromium, and fresh PostgreSQL race tests pass. Goal 1 remains active; provider, owner, distributed-runtime, maintained-authentication-stack, and protected-staging gates remain open."
+}

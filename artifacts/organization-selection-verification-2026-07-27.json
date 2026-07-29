@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-27T13:06:26Z",
+  "component": "multi-organization-selection",
+  "outcome": "passed",
+  "boundaries": {
+    "directoryAuthority": "verified OIDC issuer and subject",
+    "browserBusinessOrganizationInput": false,
+    "selectionCsrf": "exact Origin and same-origin fetch metadata",
+    "contextCookie": {
+      "httpOnly": true,
+      "sameSite": "Lax",
+      "secureInProduction": true,
+      "maximumAgeSeconds": 28800,
+      "hmacSigned": true,
+      "subjectBound": true,
+      "clearedOnLogout": true
+    },
+    "downstreamAuthorization": "active membership and permissions re-resolved by API"
+  },
+  "database": {
+    "serverVersion": "PostgreSQL 17.10",
+    "package": "@embedded-postgres/darwin-arm64@17.10.0-beta.17",
+    "binarySha256": "8776e8dfcc8fd7eaaf02db978d00f225a1905b6cbe9ecdd3cf5e86cf3a00e33f",
+    "freshDatabase": true,
+    "migrationCount": 29,
+    "migrationChainSha256": "f35f77fc2552ba673878b621dc883dbe8cfd4133cd701200f3c2a7527712a8c5",
+    "testFile": "packages/database/src/tenant.integration.test.ts",
+    "testsPassed": 6,
+    "verifiedIdentityOrganizationCount": 2,
+    "unknownIdentityOrganizationCount": 0,
+    "applicationRole": "reconai_app"
+  },
+  "automatedVerification": {
+    "deterministicTests": {
+      "files": 29,
+      "tests": 150,
+      "passed": true
+    },
+    "chromium": {
+      "tests": 23,
+      "passed": true
+    },
+    "axe": {
+      "tests": 8,
+      "passed": true,
+      "ignoredRules": 0
+    },
+    "productionBuild": true,
+    "dependencyAuditKnownVulnerabilities": 0,
+    "licenseAllowlist": true,
+    "secretScan": true
+  },
+  "limitations": [
+    "Browser and BFF selection journeys use synthetic API responses.",
+    "No real IdP account with multiple live memberships was exercised.",
+    "The active-organization directory is capped at 100 entries and has no pagination.",
+    "No protected staging environment was available."
+  ],
+  "credentialsRecorded": false
+}

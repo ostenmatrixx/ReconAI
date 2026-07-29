@@ -1,0 +1,341 @@
+{
+  "evidenceType": "provider-active-sync-age-observability-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T04:38:31.804Z",
+  "scope": "Local source, static migration/security, repository unit, worker lease, and loopback OTLP/HTTP protobuf evidence for an environment-wide oldest-active provider-sync indicator. No production, staging, live PostgreSQL integration run, provider sandbox, protected collector, customer data, or source-system write was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/unresolved-exception-queue-age-observability-verification-2026-07-29.json",
+      "sha256": "bbf09a5c9f74fac866d6d069483dfa14579f8f7b0883b7140f9c6fc2bf522033",
+      "purpose": "The immediately preceding 46-migration, 462-test unresolved-exception queue observability baseline."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "opentelemetryApi": "1.9.1",
+    "opentelemetryMetricsSdk": "2.10.0",
+    "opentelemetryOtlpProtoExporter": "0.221.0"
+  },
+  "decision": {
+    "governingAdr": "ADR 0044",
+    "securityReviewControl": "OBSERVABILITY-PROVIDER-ACTIVE-SYNC-001",
+    "databaseMigrationsRequired": [
+      "0046_provider_active_sync_observability_index.sql",
+      "0047_provider_active_sync_observability_authority.sql"
+    ],
+    "configurationChangeRequired": false,
+    "newCrossTenantRepositoryOrOperationalRoleAdded": false,
+    "fixedCrossTenantDatabaseFunctionAdded": true,
+    "publicApiResponseChanged": false,
+    "providerRequestOrSyncStateChanged": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencySourceWriteOrAiBehaviorChanged": false,
+    "telemetryAuthoritativeForProviderFinancialOrReviewBehavior": false,
+    "metricTemporality": "worker delta through the existing observability pipeline"
+  },
+  "activeSyncSemantics": {
+    "scope": "one deployment environment",
+    "providers": [
+      "shopify",
+      "stripe"
+    ],
+    "activeStatuses": [
+      "queued",
+      "running"
+    ],
+    "terminalStatusesExcluded": [
+      "partial",
+      "succeeded",
+      "failed"
+    ],
+    "ageOrigin": "immutable provider_sync_runs.created_at",
+    "queueDelayIncluded": true,
+    "executionTimeIncluded": true,
+    "pageProgressOrRetryResetsAge": false,
+    "stableOrder": [
+      "provider",
+      "created_at",
+      "id"
+    ],
+    "maximumRowsHydrated": 2,
+    "activeRunCountMeasured": false,
+    "pageProgressMeasured": false,
+    "tenantConnectionOrRunLocationMeasured": false
+  },
+  "migrationContract": {
+    "partialIndex": {
+      "name": "provider_sync_runs_active_oldest_idx",
+      "columns": [
+        "provider",
+        "created_at",
+        "id"
+      ],
+      "predicateMatchesActiveStatuses": true,
+      "creation": "CREATE INDEX CONCURRENTLY IF NOT EXISTS",
+      "transactional": false
+    },
+    "nonTransactionalDirective": "-- reconai:non-transactional",
+    "validatorRestriction": "Exactly one named CREATE INDEX CONCURRENTLY IF NOT EXISTS statement; block comments and additional statements are rejected.",
+    "runtimeRestrictionMatchesValidator": true,
+    "globalMigrationAdvisoryLockRetained": true,
+    "ledgerWrittenOnlyAfterCommand": true,
+    "catalogChecksRequiredBeforeLedger": [
+      "pg_index.indisready = true",
+      "pg_index.indisvalid = true"
+    ],
+    "validIndexCrashWindowRerunnable": true,
+    "invalidSameNamedIndexCanBeRecordedAsApplied": false,
+    "invalidBuildRepair": "Preserve evidence and use a reviewed forward repair to remove only the confirmed invalid index before retrying the unchanged migration.",
+    "automaticDestructiveRepairAdded": false,
+    "expectedImpact": "One O(N) concurrent scan of provider_sync_runs with I/O, CPU, temporary/final disk, WAL/replica load, brief start/finalization locks, and separate short function/grant catalog locks.",
+    "productionPrerequisites": [
+      "restorable backup",
+      "index disk headroom",
+      "representative active and terminal distribution",
+      "query plan and scan/replica timing",
+      "reviewed lock and statement timeouts",
+      "interruption and resumption exercise",
+      "prior/new-worker compatibility exercise"
+    ]
+  },
+  "databaseAuthorityContract": {
+    "function": "reconai_observe_provider_active_syncs()",
+    "language": "sql",
+    "stability": "STABLE",
+    "securityDefiner": true,
+    "rowSecurity": "on",
+    "searchPath": [
+      "pg_catalog",
+      "public"
+    ],
+    "fixedQuery": true,
+    "fixedProviders": [
+      "shopify",
+      "stripe"
+    ],
+    "returnFields": [
+      "provider",
+      "activity_state",
+      "sync_status",
+      "oldest_age_seconds"
+    ],
+    "returnStates": [
+      "empty",
+      "active"
+    ],
+    "maximumReturnedRows": 2,
+    "maximumHydratedActiveRows": 2,
+    "ageClock": "statement_timestamp()",
+    "publicExecuteRevoked": true,
+    "applicationExecuteRevoked": true,
+    "workerExecuteGranted": true,
+    "normalWorkerUnscopedTableReadStillRlsFiltered": true,
+    "organizationConnectionRunRequesterCorrelationWindowCursorExported": false,
+    "errorCountTimestampAccountShopObjectCredentialExported": false,
+    "amountCurrencyPaymentOrCustomerDataExported": false
+  },
+  "repositoryContract": {
+    "implementation": "PostgresProviderActiveSyncObservabilityRepository",
+    "queryCallsOnlyFixedFunction": true,
+    "exactlyTwoRowsRequired": true,
+    "requiredProviderOrder": [
+      "shopify",
+      "stripe"
+    ],
+    "strictDiscriminatedResultValidation": true,
+    "acceptedStates": [
+      {
+        "activityState": "empty"
+      },
+      {
+        "activityState": "active",
+        "syncStatus": "queued or running",
+        "oldestAgeSeconds": "number"
+      }
+    ],
+    "missingDuplicateReversedInconsistentDynamicNonFiniteAndWrongRowCountResultsRejected": true,
+    "customerIdentifierCrossesRepositoryBoundary": false
+  },
+  "leaseAndFailureContract": {
+    "leaseReused": "existing environment/queue-scoped durable queue Redis lease",
+    "leaderDatabaseRead": true,
+    "followerDatabaseRead": false,
+    "singleFlightExecution": true,
+    "snapshotAtomicAcrossBothProviders": true,
+    "snapshotTtl": "same bounded lease TTL: max(5 seconds, min(15 minutes, 3 x monitor interval))",
+    "snapshotClearedOn": [
+      "follower result",
+      "lease or Redis failure",
+      "durable queue inspection failure",
+      "exception queue observation failure",
+      "provider active-sync observation failure",
+      "missing, duplicate, or reversed provider result",
+      "malformed result",
+      "future age",
+      "invalid age",
+      "TTL expiry",
+      "clean shutdown"
+    ],
+    "failurePublishesPartialProviderView": false,
+    "failurePublishesFabricatedHealthyZero": false,
+    "telemetryFailureChangesProviderQueueReviewOrFinancialAuthority": false
+  },
+  "metricContract": {
+    "pollCounter": {
+      "name": "reconai.provider.sync.active.monitor.polls",
+      "kind": "counter",
+      "unit": "{poll}",
+      "attributes": [
+        "reconai.outcome"
+      ],
+      "outcomes": [
+        "empty",
+        "observed",
+        "future_timestamp",
+        "invalid_age",
+        "failed"
+      ],
+      "maximumDefensiveSeries": 5
+    },
+    "presenceGauge": {
+      "name": "reconai.provider.sync.active.has_active",
+      "kind": "observable gauge",
+      "unit": "{sync}",
+      "attributes": [
+        "reconai.provider"
+      ],
+      "emptyValue": 0,
+      "activeValue": 1,
+      "maximumDefensiveSeries": 2
+    },
+    "oldestAgeGauge": {
+      "name": "reconai.provider.sync.active.oldest_age",
+      "kind": "observable gauge",
+      "unit": "s",
+      "attributes": [
+        "reconai.provider",
+        "reconai.sync.status"
+      ],
+      "emittedForEmptyProvider": false,
+      "minimumActiveSeconds": 0,
+      "maximumDefensiveSeries": 4
+    },
+    "futureOrInvalidValueClampedIntoGauge": false,
+    "failureOrExpiryEmitsZero": false,
+    "environmentTenantConnectionRunOrCredentialAttributeAdded": false
+  },
+  "focusedVerification": [
+    {
+      "command": "affected database, observability, and worker package typechecks plus focused ESLint",
+      "packagesPassed": 3,
+      "lintStatus": "passed"
+    },
+    {
+      "command": "pnpm exec vitest run packages/database/src/provider-active-sync-observability.test.ts packages/database/src/migration.tenant.test.ts packages/observability/src/observability.test.ts apps/worker/src/queue-observability.test.ts",
+      "testFilesPassed": 4,
+      "testsPassed": 52,
+      "testsFailed": 0,
+      "strictRepositoryResultValidationCovered": true,
+      "leaseOwnerAndFollowerBehaviorCovered": true,
+      "databaseFailureClearingCovered": true,
+      "allThreeInstrumentsCaptured": true,
+      "allFiveFixedPollOutcomesExercised": true,
+      "bothProvidersAndActiveStatusesCovered": true,
+      "dynamicValueSuppressionCovered": true
+    }
+  ],
+  "livePostgresqlIntegrationContract": {
+    "sourceAssertionsAdded": true,
+    "freshMigrationCountExpected": 48,
+    "populatedUpgradeTransitionExpected": "0041 to 0047",
+    "applicationRoleFunctionCallExpected": "42501",
+    "workerFunctionBeforeActiveSyncExpected": "two empty provider rows",
+    "workerFunctionAfterRunCreationExpected": "Stripe queued with nonnegative numeric age",
+    "workerFunctionAfterRunStartExpected": "Stripe running with nonnegative numeric age",
+    "workerFunctionAfterCompletionExpected": "two empty provider rows",
+    "workerDirectUnscopedProviderSyncReadExpectedRows": 0,
+    "livePostgresqlIntegrationExecutedForThisIncrement": false,
+    "reasonNotExecuted": "No local .env, Docker, PostgreSQL CLI, or PostgreSQL server is available; CI=true pnpm verify does not execute the integration project."
+  },
+  "otlpVerification": {
+    "transport": "HTTP protobuf",
+    "captureAddress": "ephemeral loopback HTTP server",
+    "standardMetricsPath": "/v1/metrics",
+    "contentType": "application/x-protobuf",
+    "pollInstrumentPresent": true,
+    "presenceInstrumentPresent": true,
+    "oldestAgeInstrumentPresent": true,
+    "allFixedPollOutcomesExercised": true,
+    "shopifyQueuedAndStripeRunningSeriesPresent": true,
+    "secretLikeDynamicValuesAbsent": true,
+    "externalCollectorAccessed": false
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 72,
+    "testsPassed": 468,
+    "testsFailed": 0,
+    "migrationsValidated": 48,
+    "migrationChainSha256": "3644ff0abda7ca82a7b758283834581ba620b70a5c8c75291f3fa0a65481e536",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "productionDependencyAuditAtHighSeverity": {
+      "command": "pnpm audit --prod --audit-level high",
+      "status": "no known vulnerabilities found"
+    }
+  },
+  "sourceSha256": {
+    "packages/database/src/migrate.ts": "5b60e0a5320c611fdae3a2cefa9da906a9a01a3abe565de05eb18e615e6a4dae",
+    "scripts/validate-migrations.mjs": "290201fda7e6ad92f8abc1654f3d40079e3866c277c35dbdca62d697c0fe2478",
+    "packages/database/migrations/0046_provider_active_sync_observability_index.sql": "9266e632608ce4bd7ea43d8bbcd57b51de289fb5089270601c30d1a924eabfda",
+    "packages/database/migrations/0047_provider_active_sync_observability_authority.sql": "6eac28abb371895acf5494c80f00cac810fe72b21cce13be00354339c98bd326",
+    "packages/database/src/schema.ts": "328596f74edb460c1343087933207834d0141f97341b77cbb27ed2afc8c4de67",
+    "packages/database/src/provider-active-sync-observability.ts": "cdec4a4df97121f3b25b0333b79fdebbe2710928bf99c5017a1fdedbdcdb61d7",
+    "packages/database/src/provider-active-sync-observability.test.ts": "5c7ddfc2866eb2e59a00a3d54b805ae0a785fad0cd00cee9efd0176a0c9008f7",
+    "packages/database/src/index.ts": "0b4e08b23d41bffbeb4f0489b5ebe26522b7f1ddc433de8690237306ff367aac",
+    "packages/database/src/migration.tenant.test.ts": "c9168d5807d67780e9868e2b76b777d9baa9f2e6d4fabedd5d5ca0e908003333",
+    "packages/database/src/upgrade.integration.test.ts": "034c89a8d6c109766707a1af15280555d515e70c5b34a92cec02580c3a90ddff",
+    "packages/database/src/provider-sync.integration.test.ts": "470f3dc86e5988cb9922b0e4a3452d764d9defb10ea57c3d374266950b4e273e",
+    "packages/observability/src/telemetry.ts": "13663bf40411f1bc9e966a1396d75439095b4c1f40f74d333d24c00b64334280",
+    "packages/observability/src/index.ts": "a336c17855298ec9a3099c551b8352f6472c70b62a465b26939585228c10471f",
+    "packages/observability/src/observability.test.ts": "28a6efca439ef94747f20297fe854ecd000e8c3bbe3d7e76ca2ce04e4296015e",
+    "apps/worker/src/queue-observability.ts": "ac8d8e4b814fc28065351f5607191eeb02242474d65effc80f6e62f2715912fa",
+    "apps/worker/src/queue-observability.test.ts": "bded99b2a2b0ca2e68842952820c9e3c32b71cd8cec9fe5ad65553125d921ebf",
+    "apps/worker/src/main.ts": "d08627d46716f20b5e12bf61761fd185304dde71fb8c902d6de6fad249d11718",
+    "docs/adr/0044-lease-owned-provider-active-sync-age.md": "69e43b18054ec849e05c1a10b99f10c2ad783d32c329983f706c3209d798a963",
+    "docs/adr/README.md": "a3a9f45ed4ba7a778ebb2623e2e0ec3b7a522d76d03057732df7f32a1744e1f6",
+    "docs/observability.md": "4a2897a50e7933b1a4daf327df422c2407418b26d776015f36a7401cd3559fb7",
+    "docs/architecture.md": "654e95354b1bccbb60fff9eb7fa374ffbac6c3a26949943c8e2edab040c213ad",
+    "docs/operations-runbook.md": "322791b3df442989228b0c7dbe55374f61bd0b35b9bf519d5e83c9949b4d8e22",
+    "docs/migrations.md": "02d4fac2f88f933dd6198ff07294fdeefa74503e20619d9509cc004c051351ba",
+    "docs/upgrade-and-rollback.md": "f0efb4ff0c554960d16faa35a3c90f3e2537fbf40edcd45410c6a0244e1bb9f4",
+    "docs/known-limitations.md": "6fc6078ec1f46801309e5faf5a46370ab23bf9b5910f422ba1d338e7241df988",
+    "docs/security-review.md": "2317e00ed549cd7844166ec4b87c4d6ba7a7affdcb28751ea9e04b06fe9d6d7a",
+    "docs/data-model.md": "d096f4da37c83a432eafef84dd24807ddbf64609051d92c7bdd911483a0a2e92",
+    "GOALS.md": "cac8ac8d485ad919616498345c193f3525176e205bef600d99ee626c8f20e2de",
+    "docs/goals/goal-1-vertical-slice.md": "48d50584b48646cd4abf26b710603cb20bfff2ed47e480cd97fc860a05273f92",
+    "README.md": "0a47fb3d1aad0db7fc4f56b196d03fa47464c1eff730ef32bb83c6318743496f"
+  },
+  "repositoryState": {
+    "stagedFileCount": 0,
+    "environmentFilePresent": false,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "The live PostgreSQL integration suite was not executed because no local database runtime or .env is available.",
+    "The online index build, invalid-index interruption/recovery path, restricted role grants, and populated 0041-to-0047 upgrade remain source-defined rather than live-verified.",
+    "The signal is environment-wide and deliberately cannot identify a tenant, connection, or run; authorized investigation must use tenant-scoped views.",
+    "The signal does not count active runs, show page progress, prove provider delivery or per-object completeness, establish recovery success, or change sync behavior.",
+    "No provider sandbox, protected collector/backend, threshold, dashboard, silence behavior, alert delivery, representative-volume index timing, staging, production, or customer-data evidence exists."
+  ]
+}

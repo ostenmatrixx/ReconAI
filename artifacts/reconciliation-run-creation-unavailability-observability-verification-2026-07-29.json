@@ -1,0 +1,141 @@
+{
+  "evidenceType": "reconciliation-run-creation-unavailability-observability-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T01:54:19.248Z",
+  "scope": "Local source, unit, tenant/API, and loopback OTLP/HTTP protobuf contract evidence for retry-safe reconciliation run-creation unavailability telemetry. No database, rule execution, production, staging, or external collector was used for this increment.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/reconciliation-run-creation-admission-pressure-verification-2026-07-29.json",
+      "sha256": "fba91218ea39b802189dcfd1e3813d0571f0c8b6896617faf2086f25ec4d4b23",
+      "purpose": "Exact-source fresh PostgreSQL 17.10 proof of the admission cap, public deadline settlement, hidden-operation lease retention, zero partial authority, process loss, retry, and contention before this telemetry-only increment."
+    },
+    {
+      "path": "artifacts/observability-runtime-verification-2026-07-28.json",
+      "purpose": "Earlier provider-neutral OTLP runtime, bounded exporter, and general API/worker/reconciliation/outbox signal evidence."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "opentelemetryApi": "1.9.1",
+    "opentelemetryOtlpProtoExporter": "0.221.0",
+    "opentelemetryMetricsSdk": "2.10.0"
+  },
+  "design": {
+    "threat": "TM-34",
+    "securityReviewControl": "RECONCILIATION-RUN-CREATION-007",
+    "instrument": "reconai.reconciliation.run_creation.unavailable",
+    "instrumentType": "counter",
+    "unit": "{request}",
+    "attributeName": "reconai.reason",
+    "closedReasonVocabulary": [
+      "admission_saturated",
+      "interrupted"
+    ],
+    "reasonCardinality": 2,
+    "admissionSaturatedMeaning": "The per-process run-transaction admission cap rejected the request before its database operation was constructed.",
+    "interruptedMeaning": "An admitted operation reached its authority deadline, received a client abort signal, or encountered the bounded database interruption class.",
+    "publicStatus": 503,
+    "publicCode": "RECONCILIATION_RUN_CREATION_UNAVAILABLE",
+    "publicMessage": "reconciliation run creation was interrupted; retry safely",
+    "internalReasonSerializedToClient": false,
+    "tenantOrFinancialMetricAttributes": false,
+    "schemaMigrationRequired": false,
+    "moneyOrRuleBehaviorChanged": false
+  },
+  "repositoryVerification": {
+    "admissionRejectionReason": "admission_saturated",
+    "interruptedSettlementReason": "interrupted",
+    "admissionRejectionInvokesDatabaseFactory": false,
+    "hiddenOperationRetainsLeaseAfterPublicInterruption": true,
+    "publicResponseRemainsIdenticalAcrossReasons": true,
+    "focusedCommand": "pnpm lint && pnpm typecheck && pnpm exec vitest run --project unit --project tenant apps/api/src/repository.batch.test.ts apps/api/src/app.tenant.test.ts packages/observability/src/observability.test.ts",
+    "focusedTestFilesPassed": 3,
+    "focusedTestsPassed": 62,
+    "focusedTestsFailed": 0
+  },
+  "otlpProtobufVerification": {
+    "transport": "OTLP/HTTP protobuf",
+    "captureAddress": "ephemeral loopback HTTP server",
+    "path": "/v1/metrics",
+    "contentTypeContains": "application/x-protobuf",
+    "payloadNonEmpty": true,
+    "instrumentFoundInCapturedBytes": true,
+    "fixedReasonValuesFoundInCapturedBytes": [
+      "admission_saturated",
+      "interrupted"
+    ],
+    "attemptedForbiddenSentinelsAbsentFromCapturedTraceAndMetricBytes": [
+      "organization-secret-value",
+      "customer-payload-value",
+      "credential-token-value",
+      "payment-payload-value"
+    ],
+    "registeredApiRouteTemplateUsedByRuntime": true,
+    "queryBearingRawRouteCollapsesTo": "unmatched",
+    "unknownHttpMethodCollapsesTo": "OTHER",
+    "organizationUserConnectorJobCorrelationObjectPaymentCustomerIdentifiersUsedAsMetricAttributes": false
+  },
+  "apiVerification": {
+    "repositoryErrorReasonUsedByTest": "admission_saturated",
+    "responseStatus": 503,
+    "responseCode": "RECONCILIATION_RUN_CREATION_UNAVAILABLE",
+    "responseContainsInternalReason": false,
+    "responseContainsDatabaseSqlState": false,
+    "responseContainsTransactionTimeoutDetail": false,
+    "correlationIdRemainsOpaqueUuid": true
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 69,
+    "testsPassed": 441,
+    "testsFailed": 0,
+    "migrationsValidated": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "secretScan": "passed",
+    "productionDependencyAuditAtHighSeverity": "no known vulnerabilities found"
+  },
+  "sourceSha256": {
+    "apps/api/src/repository.ts": "cf0b2052bd11aa88c469dd104cbb6de83e7a0351c7e780e2ca0af7cb4931d1eb",
+    "apps/api/src/repository.batch.test.ts": "603353a38d70a25dc30d6d3c0ca31758ed7b484cc283d4120cc15ff025309ea5",
+    "apps/api/src/app.ts": "8f30a0cdd5f9959750cf8bae9bb35350b294f18963378497a3372212aacf9df0",
+    "apps/api/src/app.tenant.test.ts": "471b2f62e6e8c4eee7b5be3431a0336d208d018718558743f8849f70426e500f",
+    "packages/observability/src/telemetry.ts": "1188c773cbc49dcc37929769491297b4f9869170d95ed9765f818af8fa55cab3",
+    "packages/observability/src/index.ts": "b7bb39209cc717737d5487d41dbf5f538c851940fcdc97a80212418d879c60e3",
+    "packages/observability/src/observability.test.ts": "a1ee65263d74e51c09a4f2c8722b80435ccf4562e2157d78cf371915e41c8491",
+    "docs/observability.md": "9b21ffcf0021dffbe96a98a16d6fd1714325487bfc6a5bc8bd3d99ee768e79ee",
+    "docs/threat-model.md": "bac2ab2497ff68ef639b1ba1249700fa201a4704587bf630f0d83cf07b3abd9d",
+    "docs/security-review.md": "4fe23d2a760da543bffe2f5387204f9cea8f6c00031ea8d5418f97d84695602e",
+    "docs/reconciliation-engine.md": "e5d53a0e03b035acc57bae627ee9b06ddbc3744c639db3967768a6a59561dbfc",
+    "docs/known-limitations.md": "dc60f6445baf1e70264974ef312a66bb779158a07c4d60fbaaffd7d9fe6645f9",
+    "docs/goals/goal-1-vertical-slice.md": "d60c0f13ddfc2f7f9fa29ab4e581bdfe7a561cafa13e460662090638f0300eb8",
+    "README.md": "608e4aea4c58d1772fb831725d22371a37fdb66e36055df47552645ea379ca6d",
+    "GOALS.md": "55351fe71a0f5386db8287d62818edd6de982269a341fb64f753c7bf73180b3a",
+    "CHANGELOG.md": "83b51282ae2ed46b628ce6c9fb08f5716319d008ee64bd4df327e899faf80d48"
+  },
+  "safety": {
+    "loopbackOnly": true,
+    "productionDataUsed": false,
+    "productionOrStagingAccessed": false,
+    "externalMessagesOrWritesPerformed": false,
+    "databaseOrFinancialAuthorityChanged": false,
+    "environmentFileCreated": false,
+    "repositoryFilesStaged": 0,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "The loopback OTLP test calls the typed metric recorder directly, while the tenant/API test separately exercises the HTTP error handler. This is not one saturated HTTP request traced through a deployed collector and backend.",
+    "No protected collector, backend, authentication/egress control, retention/access policy, dashboard, alert rule, notification delivery, acknowledgement, or on-call response was exercised.",
+    "The counter is process-local until export. Exporter outage or process loss may drop bounded telemetry and must never alter financial work.",
+    "The two reasons are intentionally aggregate and cannot identify an affected tenant, customer, payment, request, replica, or database backend.",
+    "No representative failure rate, sustained load, multi-replica cardinality, capacity threshold, alert threshold, or API SLO was measured.",
+    "Outside a configured observability runtime the process-global instruments are no-ops, as designed for isolated local development and tests.",
+    "This telemetry-only increment does not repeat the prior fresh PostgreSQL authority exercise; its exact predecessor is hash-linked above."
+  ]
+}

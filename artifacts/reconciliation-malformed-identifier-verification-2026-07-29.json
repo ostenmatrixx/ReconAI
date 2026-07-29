@@ -1,0 +1,148 @@
+{
+  "evidenceType": "reconciliation-malformed-identifier-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-28T17:22:46Z",
+  "scope": "Local source, deterministic test, evaluator, static security, and build evidence for malformed-identifier quarantine. This is not staging or production-readiness evidence.",
+  "versions": {
+    "engine": "0.5.0",
+    "ruleSet": "1.3.0",
+    "rule": "1.3.0"
+  },
+  "rule": {
+    "exceptionType": "malformed_identifier",
+    "ruleId": "record-identifier-format",
+    "reasonCode": "IDENTIFIER_CONTAINS_UNSAFE_FORMAT",
+    "severity": "high",
+    "quarantineScope": [
+      "duplicate grouping",
+      "exact matching",
+      "composite candidate ranking",
+      "processing-fee linkage",
+      "refund linkage",
+      "accounting-entry linkage"
+    ],
+    "identityFields": [
+      "provenance.externalObjectId",
+      "externalId",
+      "orderReference",
+      "customerReference",
+      "providerOrderReference",
+      "paymentReference",
+      "refundReference",
+      "transactionReference"
+    ],
+    "unsafeCategories": [
+      "surrounding Unicode whitespace",
+      "C0/C1 control characters",
+      "Unicode line/paragraph separators",
+      "bidirectional controls",
+      "selected invisible formatting characters",
+      "Unicode replacement character",
+      "unpaired UTF-16 surrogate"
+    ],
+    "negativeControls": [
+      "visible Unicode",
+      "ordinary interior spaces",
+      "ZWNJ/ZWJ",
+      "provider-neutral reference formats"
+    ],
+    "evidenceEncoding": "Unsafe code points and boundary whitespace are escaped; source and reference-normalized field representations plus ordered issue codes are recorded without substituting money evidence."
+  },
+  "taxonomyBoundary": {
+    "invalidCsvRow": "pre-canonical bounded import validation outcome",
+    "unsupportedCsvRow": "pre-canonical bounded import validation outcome",
+    "reconciliationExceptionCreatedForRejectedCsvRow": false
+  },
+  "verification": {
+    "focusedReconciliation": {
+      "command": "pnpm test:reconciliation",
+      "testFilesPassed": 1,
+      "testsPassed": 33
+    },
+    "fullVerify": {
+      "command": "CI=true pnpm verify",
+      "passed": true,
+      "testFilesPassed": 67,
+      "testsPassed": 382,
+      "format": "passed",
+      "lint": "passed",
+      "typecheck": "passed",
+      "build": "passed",
+      "migrationsValidated": 43,
+      "migrationChainSha256": "c07ba83a547f14064d460f173f65cf2f5bf6218d55585dcef20c8990e2b6a3da",
+      "contractEntrypointsValidated": 4,
+      "containerChecks": "3 Dockerfiles, 5 Compose images, 3 workflow images, 25 action pins, and non-publishing candidate controls passed",
+      "dependencyManifestsValidated": 20,
+      "productionLicensesValidated": 224,
+      "lockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94"
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "passed": true
+    },
+    "productionDependencyAudit": {
+      "command": "pnpm audit --prod --audit-level high",
+      "passed": true,
+      "result": "No known vulnerabilities found"
+    }
+  },
+  "evaluations": {
+    "completeDataset": {
+      "artifact": "artifacts/reconciliation-benchmark-2026-07-29.json",
+      "inputRecords": 99999,
+      "matches": 33333,
+      "exceptions": 0,
+      "durationMs": 1196.27,
+      "rssDeltaBytes": 243548160
+    },
+    "ambiguousCollisions": {
+      "artifact": "artifacts/reconciliation-collision-evaluation-2026-07-29.json",
+      "eligiblePopulations": [
+        500,
+        501,
+        10000
+      ],
+      "completeAtOrBelowLimit": true,
+      "noPartialShortlistAboveLimit": true,
+      "permutationReplayEquivalent": true
+    },
+    "identifierSafety": {
+      "artifact": "artifacts/reconciliation-malformed-identifier-evaluation-2026-07-29.json",
+      "unsafeCategoriesPassed": 7,
+      "trimmedExactLinkMatches": 0,
+      "safeCounterpartException": "payment_missing_order",
+      "visibleUnicodeAccepted": true,
+      "permutationReplayEquivalent": true
+    }
+  },
+  "sourceSha256": {
+    "packages/reconciliation/src/index.ts": "3ae94d25cfccf3f5657023eff48f815e8fbcc863ba86f1bd796c89990d94b471",
+    "packages/reconciliation/src/reconciliation.test.ts": "0fd5bb451b11cf7cf58c3037993b0506c74e71bd8a7e773014d9d1bfcb473a14",
+    "packages/reconciliation/src/identifier-evaluation.ts": "54fa25b6635e9520d6ae64670a3c46bf82928c4f3e92097dbb4b0814fb913830",
+    "docs/adr/0026-fail-closed-malformed-identifier-quarantine.md": "e1674824ec32ac07851a234f403332a2d0079c015696c536753c9aa4f067681f",
+    "PRD.md": "37d2ba8ff70895a58140ca0d59018cf98d01eb9cda5384bf0e67c7d81b60c5ec"
+  },
+  "database": {
+    "migrationRequired": false,
+    "reason": "Exception type is tenant-scoped text and evidence is JSON under existing RLS; no table, constraint, policy, index, or grant changes are needed.",
+    "liveDatabaseExecutedForThisRule": false
+  },
+  "safety": {
+    "tenantIsolationChanged": false,
+    "moneyArithmeticChanged": false,
+    "currencyConversionAdded": false,
+    "sourceSystemWritesAdded": false,
+    "aiAuthorityChanged": false,
+    "productionDataUsed": false,
+    "externalMessagesSent": false,
+    "deploymentPerformed": false,
+    "gitStageCommitPushPerformed": false
+  },
+  "limitations": [
+    "No real provider or accounting source containing malformed identifiers was ingested.",
+    "No PostgreSQL-backed worker persistence or exception-queue operator journey for this new type was executed.",
+    "No representative malformed-source prevalence, false-positive, concurrency, alert, or operator-outcome measurement exists.",
+    "No protected staging rollout, mixed-image drain, or rollback exercise was authorized or performed.",
+    "Benchmark and evaluator timings are single local synthetic regression data, not SLO, accuracy, or capacity evidence."
+  ]
+}

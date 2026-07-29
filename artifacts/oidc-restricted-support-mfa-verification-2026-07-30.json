@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "reconai-verification-v1",
+  "verification": "live-keycloak-restricted-support-mfa",
+  "result": "passed",
+  "generatedAt": "2026-07-29T18:38:37.903Z",
+  "scope": {
+    "customerDataUsed": false,
+    "providerSystemsContacted": false,
+    "productionSystemsContacted": false,
+    "topology": "isolated loopback host processes"
+  },
+  "runtime": {
+    "keycloakVersion": "26.7.0",
+    "javaRuntime": "Eclipse Temurin OpenJDK 21.0.11+10",
+    "postgresqlVersion": "PostgreSQL 17.10",
+    "browserVersion": "151.0.7922.34",
+    "appliedMigrations": 55,
+    "sourceHashes": {
+      "verifierSha256": "67ff8ae36c772a6802bc7fe689422f4dfd7a134ec0063f7a6be6896ee27abd59",
+      "apiHarnessSha256": "30fcda6a72c027309372f13110f7b32c47cb92f7a441c81f2122e2023948fd3c"
+    }
+  },
+  "identityAssurance": {
+    "supportGroup": "/reconai-support",
+    "acceptedAuthenticationContext": "2",
+    "supportPasswordChallengeCompleted": true,
+    "supportTotpChallengeCompleted": true,
+    "wrongTotpDeniedBeforeApplicationSession": true,
+    "preTotpApplicationSessionAbsent": true,
+    "nonSupportGroupIdentityDenied": true,
+    "nonSupportDenialCreatedDurableRequest": false,
+    "supportIdentityHadTenantMembership": false,
+    "authenticationContextMapper": "Keycloak native acr loa level mapper emitted the achieved LoA 2"
+  },
+  "productJourney": {
+    "ownerBootstrapStatus": 201,
+    "supportRequestStatus": 201,
+    "ownerApprovalStatus": 201,
+    "diagnosticsStatus": 200,
+    "ownerRevocationStatus": 200,
+    "revokedDiagnosticsStatus": 404,
+    "outsiderRequestStatus": 404,
+    "fixedDiagnosticSections": 5,
+    "organizationNameDisclosedToSupportConsole": false,
+    "browserReadableProviderCredentialDisclosed": false,
+    "supportSessionCookieHttpOnly": true
+  },
+  "persistence": {
+    "organizations": 1,
+    "tenantMemberships": 1,
+    "supportRequests": 1,
+    "supportGrants": 1,
+    "requestClaimedExactlyOnce": true,
+    "terminalGrantStatus": "revoked",
+    "identityAndRequestValuesPersistedAsDigests": true,
+    "rawSupportIdentityColumnsPresent": false,
+    "supportAuditActions": [
+      "support.access.approved",
+      "support.diagnostics.viewed",
+      "support.access.revoked"
+    ],
+    "supportAuditHashVersion": 2,
+    "supportAuditLinearChain": true,
+    "tenantlessApplicationRoleCounts": {
+      "organizations": 0,
+      "memberships": 0,
+      "auditEvents": 0
+    }
+  },
+  "controlsExercised": [
+    "real RS256 Keycloak token verification with exact issuer and audience",
+    "real Keycloak group claim and exact authentication-context authorization",
+    "password-plus-TOTP support authentication with wrong-code negative path",
+    "organization-blind request creation and owner-controlled one-time approval",
+    "fixed aggregate-only diagnostics and immediate revocation",
+    "digest-only support identity persistence and v2 append-only audit chain",
+    "tenantless restricted-role RLS checks"
+  ],
+  "limitations": [
+    "This is one isolated local Keycloak, PostgreSQL, API, web, and Chromium exercise over loopback HTTP; it is not staging or production identity evidence.",
+    "The verifier configures Keycloak's native LoA 2 browser flow and requests acr_values=2. The API independently requires the exact signed acr, but this local run does not prove production IdP policy governance, recovery flows, administrator-bypass resistance, or configuration drift detection.",
+    "The run does not exercise TLS ingress, multiple application replicas, hosted ticket-system integration, support offboarding, device binding, WebAuthn, recovery codes, alert delivery, or managed infrastructure.",
+    "No raw password, TOTP secret, client secret, provider token, session token, request code, database credential, identity digest, customer payload, or production identifier is recorded."
+  ],
+  "credentialsRecorded": false
+}

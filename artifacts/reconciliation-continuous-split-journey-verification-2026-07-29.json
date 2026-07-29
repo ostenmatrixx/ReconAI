@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-28T22:25:10.104Z",
+  "component": "continuous-reconciliation-split-operator-evidence-journey",
+  "outcome": "local_isolated_continuous_split_journey_passed",
+  "productionReadinessClaim": false,
+  "checkedInVerifier": "pnpm verify:live-reconciliation",
+  "scope": {
+    "boundaries": [
+      "Chromium operator interface",
+      "encrypted HttpOnly NextAuth session",
+      "same-origin state-changing BFF",
+      "RS256 API bearer verification through loopback JWKS",
+      "tenant membership and permission resolution",
+      "transactional PostgreSQL run/input/outbox persistence",
+      "outbox relay and Redis/BullMQ delivery",
+      "restricted worker execution",
+      "immutable match and exception occurrence snapshots",
+      "bounded browser-visible exact split evidence"
+    ],
+    "customerDataUsed": false,
+    "providerSystemsContacted": false
+  },
+  "runtime": {
+    "topology": "isolated host processes over loopback",
+    "host": {
+      "operatingSystem": "macOS 26.5.2",
+      "build": "25F84",
+      "architecture": "arm64",
+      "node": "v24.15.0",
+      "pnpm": "11.9.0"
+    },
+    "webOrigin": "http://127.0.0.1:3000",
+    "apiOrigin": "http://127.0.0.1:4000",
+    "oidcAuthority": "minimal in-process JWKS authority",
+    "oidcAlgorithm": "RS256",
+    "postgresqlVersion": "17.10",
+    "redisVersion": "8.2.8",
+    "objectStorageVersion": "RELEASE.2025-07-23T15-54-02Z",
+    "objectStorageEndpointLoopback": true,
+    "objectStorageBucketCreatedByVerifier": true
+  },
+  "runtimeSourceVerification": {
+    "postgresql": {
+      "officialSourceArchive": "https://ftp.postgresql.org/pub/source/v17.10/postgresql-17.10.tar.bz2",
+      "sourceArchiveSha256Observed": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+      "serverBinarySha256Observed": "8c5eec2f2da34b18a119b29b4d59ac18d7ec73ec5ff8264b8f872d5b1c050c77"
+    },
+    "redis": {
+      "officialSourceArchive": "https://download.redis.io/releases/redis-8.2.8.tar.gz",
+      "sourceArchiveSha256Published": "01354ee4449e758e6e45d056fe5802abd9ccde4d669b79c9d5e9f6d730a80759",
+      "sourceArchiveSha256Observed": "01354ee4449e758e6e45d056fe5802abd9ccde4d669b79c9d5e9f6d730a80759",
+      "sourceHashMatched": true,
+      "build": "BUILD_TLS=no MALLOC=libc",
+      "serverBinarySha256Observed": "286044729f75847d455bf3c2e4e9641afce8b99e58944a44b3edb2f2cad315b7"
+    },
+    "minio": {
+      "officialBinary": "https://dl.min.io/server/minio/release/darwin-arm64/archive/minio.RELEASE.2025-07-23T15-54-02Z",
+      "binarySha256Published": "0939ce5553ce9e6451b69e049fbf399794368276b61da8166f84cbd8c7f2d641",
+      "binarySha256Observed": "0939ce5553ce9e6451b69e049fbf399794368276b61da8166f84cbd8c7f2d641",
+      "binaryHashMatched": true
+    }
+  },
+  "fixture": {
+    "canonicalRecords": 8,
+    "sourceEvents": 8,
+    "fieldProvenanceEntries": 54,
+    "completedImports": 1,
+    "duplicateFeeRecords": 2,
+    "accountingRefundRecords": 2,
+    "accountingRefundAmountsMinor": ["1000", "1500"],
+    "accountingRefundTotalMinor": "2500",
+    "foreignOrganizations": 1,
+    "foreignActiveMemberships": 1,
+    "shopifyCustomerReferencePersisted": false
+  },
+  "browserJourney": {
+    "startStatus": 202,
+    "runId": "0f7f7ff2-705d-45f5-8886-5872221a4e68",
+    "correlationId": "1d7d3a60-de6c-4161-9071-cbdcfc4a1cfd",
+    "terminalStatus": "succeeded",
+    "queueAuthority": "live_queue",
+    "inputCount": 8,
+    "matchCount": 3,
+    "exceptionCount": 1,
+    "exactEvidenceMarkers": 4,
+    "legacyEvidenceWarnings": 0,
+    "matchedRules": [
+      "order-payment",
+      "refund",
+      "refund-accounting-split"
+    ],
+    "splitRuleVersion": "1.5.0",
+    "splitReasonCode": "REFUND_ACCOUNTING_SPLIT_TOTAL_MATCHED",
+    "splitRecordReferenceCount": 3,
+    "exceptionType": "duplicate_processing_fee",
+    "exceptionReasonCode": "DUPLICATE_SOURCE_EXTERNAL_IDENTIFIER",
+    "exceptionDetailLinkPresent": true,
+    "rawSessionOrProviderCredentialRecorded": false
+  },
+  "authorization": {
+    "jwksRequests": 1,
+    "verifiedSubjectBoundToFixtureMembership": true,
+    "foreignOrganizationExisted": true,
+    "crossTenantRunDiscoveryStatus": 404,
+    "crossTenantExistenceDisclosed": false
+  },
+  "persistence": {
+    "appliedMigrations": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "run": {
+      "status": "succeeded",
+      "policyVersion": "finance-close-v1",
+      "ruleSetVersion": "1.5.0",
+      "engineVersion": "0.7.0",
+      "dispatchCount": 1,
+      "errorCount": 0,
+      "stableRunKeySha256Present": true,
+      "inputSnapshotSha256Present": true,
+      "policySnapshotSha256Present": true
+    },
+    "occurrenceCounts": {
+      "match_occurrences": 3,
+      "match_snapshots": 3,
+      "exception_occurrences": 1,
+      "exception_snapshots": 1
+    },
+    "occurrenceSnapshotVersion": "artifact-occurrence-v1",
+    "matchSnapshotRules": [
+      {
+        "ruleId": "order-payment",
+        "ruleVersion": "1.5.0",
+        "reasonCode": "ORDER_PAYMENT_TOTAL_MATCHED",
+        "recordCount": 2
+      },
+      {
+        "ruleId": "refund",
+        "ruleVersion": "1.5.0",
+        "reasonCode": "SHOPIFY_STRIPE_REFUND_MATCHED",
+        "recordCount": 2
+      },
+      {
+        "ruleId": "refund-accounting-split",
+        "ruleVersion": "1.5.0",
+        "reasonCode": "REFUND_ACCOUNTING_SPLIT_TOTAL_MATCHED",
+        "recordCount": 3
+      }
+    ],
+    "exceptionSnapshot": {
+      "type": "duplicate_processing_fee",
+      "observedStatus": "open",
+      "severity": "high",
+      "reasonCode": "DUPLICATE_SOURCE_EXTERNAL_IDENTIFIER"
+    },
+    "auditActions": [
+      "reconciliation.run.requested",
+      "reconciliation.run.completed"
+    ],
+    "auditReasonMatched": true,
+    "auditHashesPresent": true
+  },
+  "durableDelivery": {
+    "outboxEventType": "reconciliation.run.requested",
+    "outboxSchemaVersion": 1,
+    "executionTrackingVersion": 1,
+    "outboxPublished": true,
+    "queueName": "reconai-live-verification-connector-v1",
+    "bullmqState": "completed",
+    "executionStatus": "succeeded",
+    "executionAttempts": 1,
+    "maximumAttempts": 6,
+    "terminalErrorCode": null
+  },
+  "repositorySourceHashes": {
+    "packageManifestSha256": "2dd5555482c03ef941ea975fa3dc26a9d3461e7aa52e0746fc0ddfc1a668ed31",
+    "lockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "testSupportFixtureSha256": "eca89e59e1e3d7864ebbe53a4d9c47bdb5819ca8873e2b44f2e79b4a9ae4dc61",
+    "fixtureLoaderSha256": "df78b9bd2360339607d3aa341f07a0e4d6f8def6b63e3f4caab28e40d203e895",
+    "reconciliationTestSha256": "bd26a911b20240c07eea14ef35303ff6eaf8979c5d8d901fa8fb966b00be5d3a",
+    "liveVerifierSha256": "32cbe4c37f682d035a0ddf0fa96d14202811a88e7865bcb21fbf24d61e3b08a9",
+    "reconciliationEngineSha256": "ccf2308380002b74685cf7c2fd3d222255f88a9f0bf058c5f5c9078c06bfd04f",
+    "workerExecutionSha256": "1b59eb2e87c81d20b171b612958f418f4cbd55fe735f8cf33d2f53f9d1c81cf5",
+    "operatorComponentSha256": "1153c140973aa180e6b1c3be899d0888d5eeac9602e0f9522e2a218480965cba"
+  },
+  "repositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFiles": 68,
+    "tests": 414,
+    "migrationFiles": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "productionPackageLicenses": 224,
+    "lockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "format": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "schemaConfigEdgeOidcContainerDependencyChecks": "passed",
+    "browser": {
+      "command": "CI=true pnpm test:e2e",
+      "status": "passed",
+      "tests": 33,
+      "axeScansWithinSuite": 11
+    },
+    "accessibility": {
+      "command": "CI=true pnpm test:accessibility",
+      "status": "passed",
+      "tests": 10
+    },
+    "secretScan": "passed",
+    "dependencyAudit": "no known vulnerabilities"
+  },
+  "failClosedPreflight": [
+    {
+      "boundary": "object-storage process supervision",
+      "outcome": "The first attempt stopped at a loopback connection refusal before fixture loading; MinIO was restarted in a managed terminal session."
+    },
+    {
+      "boundary": "explicit optional local configuration",
+      "outcome": "The next attempt stopped during fixture configuration before fixture loading because three required empty-value settings were absent; the successful run supplied explicit empty local values."
+    }
+  ],
+  "cleanup": {
+    "apiStoppedByVerifier": true,
+    "workerStoppedByVerifier": true,
+    "webStoppedByVerifier": true,
+    "jwksAuthorityStoppedByVerifier": true,
+    "browserClosedByVerifier": true,
+    "externalIsolatedInfrastructureStoppedAfterEvidenceCapture": true,
+    "portsClosed": [3000, 4000, 8180, 55461, 56380, 59010, 59011],
+    "temporaryStateMovedToTrash": true,
+    "trashPath": "<local-home>/.Trash/reconai-live-split.6NyAgV-20260729"
+  },
+  "limitations": [
+    "The OIDC authority is a minimal local RS256/JWKS verifier fixture, not Keycloak, staging, or a production identity provider.",
+    "The journey uses loopback HTTP and isolated host processes; it does not exercise TLS, ingress, containers, multi-host scheduling, or managed infrastructure.",
+    "The evidence covers one bounded eight-record synthetic run and is not a capacity, latency, reliability, accuracy, or production-readiness claim.",
+    "No provider sandbox, customer payload, production credential, staging deployment, external alert, hosted CI run, representative accounting distribution, or concurrent-run workload is included."
+  ],
+  "credentialsRecorded": false
+}

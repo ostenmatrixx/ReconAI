@@ -1,0 +1,277 @@
+{
+  "schemaVersion": 2,
+  "recordedAt": "2026-07-29T17:14:20.911Z",
+  "component": "oidc-organization-directory-browser-accumulation-ceiling",
+  "outcome": "local_isolated_real_oidc_501_membership_browser_ceiling_journey_passed",
+  "productionReadinessClaim": false,
+  "sourceState": "uncommitted working tree; no repository commit exists",
+  "checkedInVerifier": "pnpm verify:live-organization-directory-ceiling",
+  "scope": {
+    "boundaries": [
+      "Keycloak authorization-code flow with S256 PKCE for two distinct provider-verified synthetic identities",
+      "identity-derived organization directory authority through a restricted PostgreSQL application role",
+      "complete keyset traversal through 501 active memberships in ten 50-item pages and one 1-item page",
+      "browser accumulation capped at exactly 500 unique memberships while a 501st result remains",
+      "removal of further browser paging and explicit refine-search guidance at the accumulation ceiling",
+      "exact browser search and server-intersected selection of membership 501",
+      "cross-identity organization enumeration and selection denial",
+      "membership and permission re-resolution after deactivation and immediate reactivation",
+      "tenant-complete synthetic fixtures with independent active owners and canonical append-only audit evidence"
+    ],
+    "customerDataUsed": false,
+    "providerSystemsContacted": [
+      "isolated local Keycloak only"
+    ],
+    "externalIdentityFederationExercised": false,
+    "thirdPartyEmailDeliveryExercised": false,
+    "objectStorageExercised": false
+  },
+  "runtime": {
+    "topology": "isolated host processes over loopback",
+    "host": {
+      "operatingSystemKernel": "Darwin 25.5.0",
+      "architecture": "arm64",
+      "node": "v24.15.0",
+      "pnpm": "11.9.0"
+    },
+    "web": {
+      "origin": "http://localhost:3000",
+      "server": "Next.js 16.2.12 development server using webpack",
+      "productionTlsClaim": false
+    },
+    "api": {
+      "origin": "http://127.0.0.1:4000",
+      "applicationRole": "reconai_app"
+    },
+    "identityProvider": {
+      "product": "Keycloak",
+      "version": "26.7.0",
+      "issuer": "http://127.0.0.1:58081/realms/reconai-development",
+      "java": "Eclipse Temurin 21.0.11+10 LTS",
+      "realmFixture": "infra/keycloak/reconai-development-realm.json",
+      "syntheticVerifiedIdentities": 2
+    },
+    "postgresql": {
+      "version": "17.10",
+      "listenAddress": "127.0.0.1",
+      "port": 55465,
+      "dataChecksums": "on",
+      "authentication": "isolated loopback trust at the server boundary; migrator and application URLs used separate non-superuser roles",
+      "applicationDatabaseResetBeforeSuccessfulRun": true
+    },
+    "unusedReservedDependencies": {
+      "redisStarted": false,
+      "objectStorageStarted": false
+    }
+  },
+  "runtimeSourceVerification": {
+    "keycloak": {
+      "officialArchive": "https://github.com/keycloak/keycloak/releases/download/26.7.0/keycloak-26.7.0.tar.gz",
+      "archiveSha256Observed": "f771df0aa1e4820f57d56f7d6d015beb6415487b43f8de7e5a6d48f8a7fe118a",
+      "runtimeVersionCommand": "Keycloak 26.7.0"
+    },
+    "java": {
+      "distribution": "Eclipse Temurin",
+      "archiveSha256Observed": "6ebcf221c9b41507b14c098e93c6ead6440b8d9bd154f8ec666c4c73abbdb201",
+      "runtimeVersion": "21.0.11+10 LTS"
+    },
+    "postgresql": {
+      "officialSourceVersion": "17.10",
+      "sourceArchiveSha256Observed": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+      "serverBinarySha256Observed": "232bc48cf24de7c346715fe4c2e2a9fd2ed3f856597f5e1703959be5dfd1fecf",
+      "initdbBinarySha256Observed": "301a003c63600360b3685a86ffc1e693010235ad0f7f4c0b5157f1b3240bc5f6"
+    },
+    "realmFixtureSha256": "4fbfc8a1ed62288b56f4719275ac25a3e342eeeb865d407940fcc3b31c3f6c8b",
+    "verifierSha256": "ef25bd0dd2113d5d4b9f875420afa0a6ab6495bc0dbdcb1339c3c78b2d25d871",
+    "browserCeilingRegressionSha256": "639869371ce87182b837fe7fac9c0c392e28152dee3a71f877420ac053dc1f65",
+    "browserOrganizationSwitcherSha256": "77277b748234f1e2bf4976b79f1fed3440fc2594507b1240aee412ead9f0bc11",
+    "sameOriginBffSha256": "47d794250e6d9fea3664b2a0b17abec456b79f2a0e77c20e5c74d644ad923f90",
+    "apiOrganizationDirectoryAuthoritySha256": "27938b5c0565a6b93d97409d09f24e59aa5b442f213ad7c06cfb2973126af7e8",
+    "apiRouteCompositionSha256": "dccf02d37f3f15cbd4fb9e0afc671095a5ec963ab843851938ed156727009be9",
+    "databaseDirectoryMigrationSha256": "8027b6f9c204cddaa841029a425471bb8ab88c8d541eb52372a0d6b39a0552ee",
+    "lockfileSha256": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0"
+  },
+  "browserJourney": {
+    "authorizationCodePkceLoginsCompleted": 2,
+    "temporaryPasswordRequiredActionsCompleted": 2,
+    "providerVerifiedReviewerMemberships": 501,
+    "reviewerDirectoryPageSizes": [
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      1
+    ],
+    "reviewerDirectoryDuplicateCount": 0,
+    "reviewerRoleOnEveryScaleMembership": "reviewer",
+    "browserInitialOptionCount": 50,
+    "browserAccumulatedOptionCount": 500,
+    "browserAccumulationLimit": 500,
+    "browserAccumulationLimitReached": true,
+    "terminalMoreActionCount": 0,
+    "refineSearchGuidanceVisible": true,
+    "membership501AbsentBeforeSearch": true,
+    "exactSearchUsedToReachMembership501": true,
+    "exactSearchResultCount": 1,
+    "selectedMembership501": true,
+    "selectedBeyondPageReloadOptionCount": 51,
+    "selectedSummaryStatus": 200,
+    "reviewerForeignExactSelectionStatus": 404,
+    "ownerCrossIdentityExactSelectionStatus": 404,
+    "foreignIdentityDirectoryCount": 1,
+    "literalWildcardSearchCount": 0,
+    "searchBoundCursorStatus": 400,
+    "malformedCursorStatus": 400,
+    "deactivatedSummaryStatus": 404,
+    "deactivatedDirectoryPageSizes": [
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50
+    ],
+    "deactivatedDirectoryCount": 500,
+    "reactivatedSummaryStatus": 200,
+    "reactivatedDirectoryPageSizes": [
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      50,
+      1
+    ],
+    "reactivatedDirectoryCount": 501,
+    "expectedUnselectedContextResponses": 2,
+    "unexpectedBrowserErrors": 0
+  },
+  "databaseAuthority": {
+    "appliedMigrations": 55,
+    "restrictedApplicationRoleBoundedPrefixCount": 101,
+    "restrictedApplicationRoleForeignExactCount": 0,
+    "applicationRoleTenantlessDirectRowCount": 0,
+    "terminalCounts": {
+      "users": 3,
+      "organizations": 502,
+      "memberships": 1003,
+      "auditEvents": 1005
+    },
+    "fixtureOwnership": {
+      "scaleOrganizations": 501,
+      "reviewerMemberships": 501,
+      "independentActiveOwnerMemberships": 501,
+      "foreignOrganizations": 1,
+      "foreignActiveOwnerMemberships": 1
+    },
+    "canonicalAuditIntegrity": {
+      "hashVersion": 2,
+      "events": 1005,
+      "genesisEvents": 502,
+      "missingPredecessors": 0
+    }
+  },
+  "browserSecurity": {
+    "browserReadableProviderCredentialDisclosure": false,
+    "sessionCookieIssued": true,
+    "allSessionCookieChunksHttpOnly": true,
+    "organizationContextCookieHttpOnly": true,
+    "organizationContextCookieSameSite": "Lax",
+    "authorizationCodeRecorded": false,
+    "oidcStateRecorded": false,
+    "sessionCookieValueRecorded": false,
+    "passwordRecorded": false,
+    "clientSecretRecorded": false,
+    "databaseCredentialRecorded": false
+  },
+  "timings": {
+    "classification": "single-host local regression observations only",
+    "firstElevenPageTraversalMilliseconds": 100.21,
+    "reactivatedElevenPageTraversalMilliseconds": 78.14,
+    "sloOrCapacityClaim": false
+  },
+  "verificationImprovements": [
+    {
+      "boundary": "bounded scale modes",
+      "resolution": "The verifier accepts only 101 or 501 memberships, preserving the default run while making the browser-ceiling exercise explicit and preventing accidental unbounded fixture creation."
+    },
+    {
+      "boundary": "validated application environment label",
+      "observed": "The first ceiling attempt seeded its fixture but stopped before API startup because a diagnostic environment label exceeded the runtime schema's 32-character maximum.",
+      "resolution": "The label was shortened, static validation passed, and the application database was dropped and recreated empty before the successful run; no provider login occurred during the stopped attempt."
+    }
+  ],
+  "limitations": [
+    "The identity provider, database, users, tenant-complete scale fixtures, and application processes are isolated local fixtures, not staging or production evidence.",
+    "The 501 reviewer memberships are seeded solely to exercise directory authority and each organization retains an independent active fixture owner plus canonical audit evidence; no product organization-creation or invitation lifecycle claim follows.",
+    "The exercise uses loopback HTTP and does not prove production TLS, ingress, external identity federation, multi-host behavior, managed PostgreSQL, provider availability, or alerting.",
+    "Single-host timings are regression observations only, not an SLO, capacity guarantee, or production projection.",
+    "It proves the 500-item browser accumulation ceiling with exactly one additional membership; it does not prove substantially larger directories, concurrent organization rename or membership mutation, representative query distributions, or prior/new-image rolling deployment.",
+    "No access token, refresh token, ID token, session cookie, authorization code, state, password, client secret, database credential, or customer data is recorded."
+  ],
+  "repositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFiles": 85,
+    "tests": 561,
+    "focusedAuthorizationTestFiles": 5,
+    "focusedAuthorizationTests": 81,
+    "focusedBrowserTests": 3,
+    "focusedBrowserAccessibilityTests": 1,
+    "migrationFiles": 55,
+    "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+    "contractEntrypoints": 4,
+    "sourceBoundaryFiles": 555,
+    "evidenceFiles": 106,
+    "evidenceBytesAtFullGateBeforeResultAnnotation": 1204612,
+    "productionPackageLicenses": 224,
+    "format": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "schemaConfigEdgeOidcContainerAlertSourceEvidenceDependencyLicenseChecks": "passed",
+    "secretScan": "passed",
+    "productionDependencyAudit": "no known vulnerabilities"
+  },
+  "cleanup": {
+    "apiStoppedByVerifier": true,
+    "webStoppedByVerifier": true,
+    "browserClosedByVerifier": true,
+    "keycloakStoppedAfterEvidenceCapture": true,
+    "postgresqlStoppedAfterEvidenceCapture": true,
+    "redisStarted": false,
+    "objectStorageStarted": false,
+    "runtimeEnvironmentFileCreated": false,
+    "postgresqlOfflineChecksum": {
+      "filesScanned": 1504,
+      "blocksScanned": 4280,
+      "badChecksums": 0,
+      "dataChecksumVersion": 1
+    },
+    "closedPorts": [
+      3000,
+      4000,
+      55465,
+      56383,
+      58081,
+      59001
+    ],
+    "isolatedRuntimeMovedToTrash": true,
+    "trashLocationRecorded": false
+  },
+  "credentialsOrCustomerDataRecorded": false
+}

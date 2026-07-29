@@ -1,0 +1,85 @@
+{
+  "artifactVersion": 1,
+  "evidenceType": "clean-source-export-verification",
+  "startedAt": "2026-07-29T11:14:44.564Z",
+  "completedAt": "2026-07-29T11:16:09.611Z",
+  "sourceBoundary": {
+    "selection": "git ls-files --cached --others --exclude-standard",
+    "fileCount": 646,
+    "totalBytes": 8687407,
+    "sha256": "1baed4f69528e14dfa7f1ed23249ead19b2941956c6e5368547437a1016e058d",
+    "runtimeEnvironmentCopiedFrom": ".env.example",
+    "generatedEvidenceExcludedFromSnapshot": "artifacts/clean-source-export-verification-2026-07-29.json"
+  },
+  "environment": {
+    "platform": "darwin",
+    "architecture": "arm64",
+    "nodeVersion": "v24.15.0",
+    "pnpmVersion": "11.9.0",
+    "gitVersion": "git version 2.50.1 (Apple Git-155)"
+  },
+  "checks": [
+    {
+      "command": "node scripts/validate-source-boundary.mjs",
+      "durationMs": 36,
+      "exitCode": 0,
+      "signal": null,
+      "stdout": ""
+    },
+    {
+      "command": "corepack pnpm install --frozen-lockfile",
+      "durationMs": 3778,
+      "exitCode": 0,
+      "signal": null,
+      "stdout": ""
+    },
+    {
+      "command": "corepack pnpm secret:scan",
+      "durationMs": 2787,
+      "exitCode": 0,
+      "signal": null,
+      "stdout": ""
+    },
+    {
+      "command": "corepack pnpm audit --prod --audit-level high",
+      "durationMs": 576,
+      "exitCode": 0,
+      "signal": null,
+      "stdout": ""
+    },
+    {
+      "command": "corepack pnpm test:e2e",
+      "durationMs": 19384,
+      "exitCode": 0,
+      "signal": null,
+      "stdout": ""
+    },
+    {
+      "command": "corepack pnpm verify",
+      "durationMs": 57805,
+      "exitCode": 0,
+      "signal": null,
+      "stdout": ""
+    }
+  ],
+  "outcomes": {
+    "frozenInstallPassed": true,
+    "secretScanPassed": true,
+    "highSeverityProductionAuditPassed": true,
+    "staticVerificationAndProductionBuildPassed": true,
+    "chromiumBrowserSuitePassed": true,
+    "publishableSourceUnchanged": true,
+    "unexpectedPublishableFilesCreated": false,
+    "temporarySourceRemoved": true,
+    "nextDevelopmentTypePathRestoredByProductionBuild": true
+  },
+  "limitations": [
+    "This is an export of the current Git-ignore-clean candidate source because the repository has no initial commit; it is not evidence of a remote clone.",
+    "A temporary Git repository was initialized only so the documented prepare hook had the same repository boundary available after a clone.",
+    "The synthetic .env was copied from .env.example; no customer, production, or provider system was contacted.",
+    "Docker and Compose were unavailable, so container startup, migration, fixtures, live service smoke, and network boundaries were not exercised.",
+    "The generated evidence file is necessarily outside the hashed source snapshot that produced it.",
+    "Next.js rewrites apps/web/next-env.d.ts for development; only that exact interim browser-test change is allowed, and the final production build must restore the original manifest.",
+    "One local workstation run is not CI, staging, production-readiness, reliability, capacity, or compliance evidence."
+  ]
+}

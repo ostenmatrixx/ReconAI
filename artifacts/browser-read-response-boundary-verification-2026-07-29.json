@@ -1,0 +1,208 @@
+{
+  "schemaVersion": "reconai-evidence-v1",
+  "evidenceType": "browser-read-response-boundary-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T11:58:03Z",
+  "status": "local_pass_protected_runtime_gate_open",
+  "scope": "Local source, exhaustive schema/route tests, client typechecks, complete Chromium workflows, strict static checks, policy validators, and production-build evidence for every browser-facing read mode on /api/recon. Synthetic identifiers, tokens, credentials, diagnostics, financial values, and evidence only. No customer data, provider system, protected ingress, staging deployment, compliance, or production-readiness claim is included.",
+  "decisions": {
+    "threatModelEntry": "TM-43",
+    "securityReviewControl": "BFF-READ-RESPONSE-001",
+    "apiRouteInventoryChanged": false,
+    "databaseMigrationAdded": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyNormalizationOrToleranceChanged": false,
+    "tenantOrFinancialAuthorityAdded": false,
+    "sourceSystemWriteOrProviderScopeAdded": false,
+    "aiAuthorityOrEnablementChanged": false
+  },
+  "boundary": {
+    "browserRoute": "/api/recon",
+    "validatedReadModeCount": 18,
+    "newGeneralTenantViewSchemaCount": 16,
+    "existingDedicatedStrictViewCount": 2,
+    "requiredTenantSuccessStatus": 200,
+    "maximumTenantSuccessJsonBytes": 5242880,
+    "maximumOrganizationDirectoryJsonBytes": 65536,
+    "maximumInternalApiErrorBytes": 65536,
+    "successfulJsonDecoding": "fatal UTF-8",
+    "newlySchemaMinimizedViews": [
+      "summary",
+      "exception",
+      "connections",
+      "connector_credentials",
+      "members",
+      "invitations",
+      "imports",
+      "review_policy",
+      "retention_policy",
+      "privacy_requests",
+      "provider_sync_runs",
+      "audit",
+      "runs",
+      "run",
+      "run_artifacts",
+      "run_inputs"
+    ],
+    "dedicatedStrictViews": ["organizations", "support_access_grants"],
+    "fixedListAndPageCeilings": {
+      "summary": 50,
+      "exceptionSourceRecords": 100,
+      "exceptionNotes": 100,
+      "exceptionTimeline": 100,
+      "connections": 100,
+      "connectorCredentials": 100,
+      "members": 1000,
+      "invitations": 1000,
+      "imports": 50,
+      "privacyRequests": 50,
+      "providerSyncRuns": 50,
+      "auditEvents": 100,
+      "runSummaries": 50,
+      "runInputPreview": 100,
+      "runMatchPreview": 10,
+      "runExceptionPreview": 10,
+      "runArtifactPage": 25,
+      "runInputPage": 100,
+      "organizationsPerPage": 100,
+      "supportAccessGrants": 50
+    },
+    "acceptedSelectedTenantReadErrors": {
+      "AUTHENTICATION_REQUIRED": 401,
+      "RESOURCE_NOT_FOUND": 404,
+      "INVALID_CURSOR": 400,
+      "RATE_LIMITED": 429
+    },
+    "fixedBrowserMetadata": [
+      "exception queue filtered count, export permission, summary, and optional cursor",
+      "privacy request optional cursor",
+      "run artifact optional cursor",
+      "run input optional cursor",
+      "organization directory optional cursor"
+    ],
+    "explicitOperatorEvidenceJson": [
+      "exception recordReferences",
+      "exception deterministic evidence",
+      "source-record normalizedData",
+      "field-provenance normalizedValue",
+      "run policySnapshot",
+      "run artifact recordReferences",
+      "run artifact deterministic evidence"
+    ],
+    "removedApiOnlyExamples": [
+      "organization membership identifiers not used by the browser selector",
+      "upstream correlation, truncation, and maximum-item metadata not used by the view",
+      "connector credential creator, rotation, update, and internal reference fields",
+      "invitation creator, accepting-user, accepting-membership, and update fields",
+      "CSV template, mapping, validity, and internal failure fields not used by the history view",
+      "provider sync organization identifiers",
+      "audit previousValue, newValue, and versionContext",
+      "unknown root, item, and declared nested-object fields"
+    ],
+    "rejectedOrDiscardedConditions": [
+      "unexpected selected-tenant success status",
+      "malformed view-specific response contract",
+      "missing required JSON evidence field",
+      "invalid identifier, hash, timestamp, money, currency, status, role, or cursor",
+      "view-specific list or page above its ceiling",
+      "malformed JSON",
+      "invalid UTF-8",
+      "non-JSON content type",
+      "declared or streamed selected-tenant success body above 5 MiB",
+      "unknown or status-mismatched internal API error",
+      "additional internal API error field",
+      "declared or streamed internal API error body above 64 KiB",
+      "successful response fields not named by the selected view contract"
+    ],
+    "rejectedOutcome": {
+      "status": 502,
+      "privateNoStore": true,
+      "upstreamStatusPreserved": false,
+      "upstreamBodyPreserved": false
+    },
+    "upstreamFetchContainment": {
+      "configuredFixedOrigin": true,
+      "enumeratedTenantRoutePaths": true,
+      "ambientCredentials": "omit",
+      "redirect": "error",
+      "timeoutMilliseconds": 8000
+    }
+  },
+  "source": {
+    "parserAndTestsSha256": {
+      "apps/web/src/tenant-read-response.ts": "67cd3f2ed88c828401739c22c6b644327cac9cfabae88abfc1582de7443d3e32",
+      "apps/web/src/tenant-read-response.test.ts": "ab40ab8dd6f7a4da9935e030cc316142f18b18409451954bd61ef8be21356fe6",
+      "apps/web/src/app/api/recon/route.ts": "a8e2165338006f72b96f952230dd444414631611b18d46b64a8d1c4dc79aa71d",
+      "apps/web/src/app/api/recon/route.test.ts": "0e4b9a9feed94af4415a391a3ab08f762d4b821da9497fc752496e21faf547c9",
+      "apps/web/src/upstream-api-error.ts": "9bb186a4fdb2775780f2a363547c55d7244f33dd40e4aeea799f602a7ffb4dee",
+      "apps/web/src/upstream-api-error.test.ts": "af3326b08d1281b59c265f9024e1cbbde9b827dadd092a15fec6308b0e1836e7"
+    },
+    "documentationSha256": {
+      "docs/architecture.md": "12f649544cf293ffeff2c0836020740367581f3b81d61151c442d4f747e0c107",
+      "docs/threat-model.md": "783bbb7ae374f8d7d1e0aaec8303bcc2bcbd85eb049283770ea2f79d31708c5f",
+      "docs/security-review.md": "25f8011e92dba43626ec52b9c97f45e1fb3a7988ea6f3494f123be3088a07e1d",
+      "docs/goals/goal-1-vertical-slice.md": "f07d9b414cba09fdd40553d65d3b1d5f3467de3b47a5512463370f0e74385590",
+      "docs/goals/goal-1-audit-2026-07-29-7.md": "183906e1a374c9c622a1f958114d8dfefdea4a55dc1ce64c4d109bad76ff83fa"
+    }
+  },
+  "verification": {
+    "focusedGate": {
+      "command": "pnpm exec vitest run apps/web/src/tenant-read-response.test.ts apps/web/src/app/api/recon/route.test.ts apps/web/src/upstream-api-error.test.ts",
+      "status": "passed",
+      "testFilesPassed": 3,
+      "testsPassed": 21,
+      "testsFailed": 0
+    },
+    "browserGate": {
+      "command": "CI=true pnpm test:e2e",
+      "status": "passed",
+      "browser": "Chromium",
+      "testsPassed": 42,
+      "accessibilityChecksPassed": 13,
+      "testsFailed": 0
+    },
+    "repositoryGate": {
+      "command": "RECONAI_PENDING_EVIDENCE_PATH=artifacts/browser-read-response-boundary-verification-2026-07-29.json CI=true pnpm verify",
+      "status": "passed",
+      "testFilesPassed": 83,
+      "testsPassed": 544,
+      "migrationsValidated": 55,
+      "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+      "contractEntrypointsValidated": 4,
+      "sourceFilesValidated": 530,
+      "sourceRootsValidated": 7,
+      "dockerfilesValidated": 3,
+      "composeImagesValidated": 5,
+      "workflowImagesValidated": 3,
+      "actionPinsValidated": 25,
+      "operationalAlertRulesValidated": 13,
+      "metricContractsValidated": 9,
+      "packageManifestsPolicyValidated": 20,
+      "productionLicensesValidated": 224,
+      "productionLockSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+      "productionBuildPassed": true,
+      "productionRouteObserved": "/api/recon"
+    },
+    "nodeVersion": "24.15.0",
+    "pnpmVersion": "11.9.0",
+    "gitVersion": "2.50.1"
+  },
+  "knownLimitations": [
+    "Named deterministic evidence, record-reference, normalized-value, and policy-snapshot fields remain intentionally browser-visible JSON; the BFF validates their presence and total size but the API remains responsible for minimizing their contents.",
+    "This local proof does not exercise a compromised web process, protected ingress, network fault, deployment proxy, or production internal API.",
+    "The view and error policies must be updated deliberately when a new read mode, browser field, or browser-actionable internal API error is introduced; unknown contract drift fails closed.",
+    "The 5 MiB selected-tenant ceiling is a transport maximum across materially different evidence views, not a claim that every view requires or should routinely approach that size.",
+    "This increment does not migrate the openid-client dependency path, close provider sandbox or release-integrity findings, or satisfy protected-staging evidence.",
+    "One local workstation run is not CI, staging, reliability, capacity, compliance, or production-readiness evidence."
+  ],
+  "sourceControlState": {
+    "repositoryHasNoInitialCommit": true,
+    "filesStaged": false,
+    "commitCreated": false,
+    "pushOrPublishPerformed": false,
+    "deploymentPerformed": false,
+    "repositoryEnvironmentFilesPresent": false,
+    "jsonEvidenceArtifactsIncludingThisOne": 93
+  },
+  "conclusion": "All 18 browser-facing read modes on /api/recon now use bounded, validated, minimized successful-response contracts and fixed error treatment. This closes BFF-READ-RESPONSE-001 locally without expanding tenant, financial, provider, source-system, or AI authority. Goal 1 remains active; API evidence-content review plus provider, owner, distributed-runtime, and protected-staging gates remain open."
+}

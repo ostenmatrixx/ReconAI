@@ -1,0 +1,204 @@
+{
+  "evidenceType": "production-disabled-operational-alert-policy-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T07:32:19.000Z",
+  "scope": "Local source, schema, low-cardinality vocabulary, instrument-binding, negative-unit, runbook-link, formatting, lint, typecheck, build, and policy-gate evidence for a backend-neutral operational alert policy. No collector, monitoring backend, dashboard, notification integration, on-call recipient, protected environment, customer data, provider credential, production payload, deployment, or alert delivery was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/privacy-package-browser-receipt-verification-2026-07-29.json",
+      "sha256": "7220fd7bfef64ce4c62f92994e54bd930029a9fd610ca5670e697ca581abdffc",
+      "purpose": "The immediately preceding immutable 79-artifact, 51-migration, 492-test privacy-package browser-receipt evidence. This increment does not modify its accepted ADR or artifact."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "typescript": "6.0.3",
+    "opentelemetryApi": "1.9.1",
+    "opentelemetrySdkMetrics": "2.10.0"
+  },
+  "decision": {
+    "governingAdr": "ADR 0050",
+    "governingAdrStatus": "Accepted",
+    "governingAdrSha256": "ed779bbeebd098a201ec40e644da180681b4d63fe189067017d2d728c8f366af",
+    "extends": [
+      "ADR 0037",
+      "ADR 0043",
+      "ADR 0044"
+    ],
+    "securityReviewControl": "OBSERVABILITY-ALERT-POLICY-001",
+    "threatModelEntry": "TM-40",
+    "databaseMigrationRequired": false,
+    "runtimeConfigurationChanged": false,
+    "publicApiOrBrowserSurfaceChanged": false,
+    "sourceSystemWriteAdded": false,
+    "providerPermissionChanged": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyTenantPermissionAiOrRetentionBehaviorChanged": false
+  },
+  "policyContract": {
+    "path": "infra/observability/operational-alert-policy.yaml",
+    "apiVersion": "reconai.io/operational-alert-policy/v1",
+    "status": "proposed",
+    "productionEnabled": false,
+    "scope": "leased-operational-monitor-v1",
+    "rules": 13,
+    "metricContracts": 9,
+    "maximumRulesAccepted": 50,
+    "evaluationIntervalSeconds": 60,
+    "thresholdNoDataState": "normal",
+    "evaluationErrorState": "alerting",
+    "ownerApprovalRequired": true,
+    "backendTranslationValidated": false,
+    "deliveryPathValidated": false,
+    "protectedEnvironmentExerciseValidated": false,
+    "installedBackendSyntax": false,
+    "productionAlertClaimed": false
+  },
+  "lowCardinalityAndSafetyContract": {
+    "sharedMetricContractBindsInstrumentCreationAndPolicy": true,
+    "instrumentKindsAccepted": [
+      "counter",
+      "observable_gauge"
+    ],
+    "counterReducer": "rate only",
+    "observableGaugeReducers": [
+      "last",
+      "max"
+    ],
+    "thresholdOperator": "greater_than only",
+    "dynamicMetricsAttributesOrValuesAccepted": false,
+    "unknownPolicyFieldsAccepted": false,
+    "duplicateRuleIdsAccepted": false,
+    "maximumGroupByDimensions": 2,
+    "activeSyncGroupBy": [
+      "reconai.provider",
+      "reconai.provider.sync.status"
+    ],
+    "tenantCustomerUserMembershipConnectionRecordEventPaymentJobRequestTokenCredentialEmailOrRawErrorDimensionsAccepted": false,
+    "alertGrantsFinancialSourceWriteRuleOverridePermissionRetentionOrAiAuthority": false
+  },
+  "ruleInventory": {
+    "durableQueue": {
+      "monitorFailureCritical": true,
+      "monitorSilenceCriticalSeconds": 1200,
+      "failedJobsCriticalThreshold": 0,
+      "readyHeadWarningSeconds": 300,
+      "readyHeadCriticalSeconds": 900
+    },
+    "unresolvedExceptionQueue": {
+      "invalidFutureOrFailedPollCritical": true,
+      "monitorSilenceCriticalSeconds": 1200,
+      "oldestWarningSeconds": 86400,
+      "oldestCriticalSeconds": 259200
+    },
+    "providerActiveSync": {
+      "providers": [
+        "shopify",
+        "stripe"
+      ],
+      "statuses": [
+        "queued",
+        "running"
+      ],
+      "invalidFutureOrFailedPollCritical": true,
+      "monitorSilenceCriticalSeconds": 1200,
+      "oldestWarningSeconds": 1800,
+      "oldestCriticalSeconds": 7200
+    },
+    "thresholdsAreProposedOperatingDefaults": true,
+    "thresholdsAreMeasuredSlosOrCustomerCommitments": false,
+    "thresholdNoDataIsNormalBecauseActiveSyncAgeCanBeLegitimatelyAbsent": true,
+    "monitorCounterAbsenceAlerts": 3,
+    "silenceDerivation": "Twenty minutes covers two complete cycles at the maximum configured five-minute durable monitor interval plus maximum five-minute metric-export interval.",
+    "warningToCriticalThresholdsMonotonic": true
+  },
+  "focusedVerification": {
+    "policyUnitTests": {
+      "command": "pnpm exec vitest run scripts/operational-alert-policy.test.mjs",
+      "testFilesPassed": 1,
+      "testsPassed": 7,
+      "testsFailed": 0,
+      "productionEnablementRejectionCovered": true,
+      "legitimatelyAbsentThresholdGaugeHandlingCovered": true,
+      "highCardinalityDimensionRejectionCovered": true,
+      "dynamicValueRejectionCovered": true,
+      "counterGaugeReducerMismatchCovered": true,
+      "unknownFieldAndDuplicateIdentityRejectionCovered": true
+    },
+    "policyValidator": {
+      "command": "pnpm alerts:check",
+      "status": "passed",
+      "rulesValidated": 13,
+      "metricContractsValidated": 9,
+      "instrumentCreationBindingCovered": true,
+      "requiredRuleInventoryCovered": true,
+      "silenceFloorCovered": true,
+      "warningCriticalMonotonicityCovered": true,
+      "runbookAnchorExistenceCovered": true
+    }
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 75,
+    "testsPassed": 499,
+    "testsFailed": 0,
+    "migrationsValidated": 51,
+    "migrationChainSha256": "65f50eb6d241c9e5b510cdfdb90277c41a401f4d803357c1752f762de3e1d7d1",
+    "schemasValidated": 4,
+    "operationalAlertRulesValidated": 13,
+    "operationalAlertMetricContractsValidated": 9,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "browserSuiteRerun": false,
+    "browserSuiteReason": "No web, BFF, API route, browser, session, permission, or rendered UI behavior changed in this increment.",
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "productionDependencyAuditAtHighSeverity": {
+      "command": "pnpm audit --prod --audit-level=high",
+      "status": "no known vulnerabilities found"
+    }
+  },
+  "externalGatesNotClaimed": {
+    "collectorOrBackendSelected": false,
+    "backendMetricNameUnitOrTemporalityTranslationValidated": false,
+    "dashboardInstalledOrExercised": false,
+    "warningCriticalFailureOrSilenceAlertInjected": false,
+    "workerOrCollectorOutageExercised": false,
+    "notificationDeliveredAcknowledgedEscalatedOrRecovered": false,
+    "cardinalityLoadFalsePositiveOrThresholdSuitabilityMeasured": false,
+    "maintenanceSilenceOrRollbackExercised": false,
+    "ownerApprovalRecorded": false,
+    "protectedStagingOrProductionUsed": false
+  },
+  "sourceSha256": {
+    "docs/adr/0050-production-disabled-operational-alert-policy.md": "ed779bbeebd098a201ec40e644da180681b4d63fe189067017d2d728c8f366af",
+    "package.json": "38a0953d0ca8f4b3ed684d6c398a05c482800e8e35b25c9c5f3c0e0e2aa5d06c",
+    "packages/observability/src/metric-contract.ts": "8b3462c57af6c655417ae6045876e1f794a88413a85be0e279fa4ae6f775cd1f",
+    "packages/observability/src/alert-policy.ts": "6c239deb0b3d92b8e27e07f713be7037f34df034bd4334343a365a214ab67113",
+    "packages/observability/src/telemetry.ts": "d081da30c259f0b08ead1007f4ed38a45db19df6870886d7f3e86594253a2454",
+    "packages/observability/src/index.ts": "c4472553bfeb321e7a9107ff27d2bafa7e29b11377a4926d0a3f7bed2d294c9d",
+    "infra/observability/operational-alert-policy.yaml": "16de6e48f6b7b35de76ef2411e3a17d303f6868614f39298f14d86089a0d8df7",
+    "scripts/validate-operational-alert-policy.mjs": "3b61627039b2b0a407d148513110b777057b4e9db7a4d177d7d2874b5244e1e7",
+    "scripts/operational-alert-policy.test.mjs": "bcd1aeaa26e12573674cf13b35e0c37d733fcf1b74878b08c4e6a23958f2afe2",
+    "docs/operations-runbook.md": "65ba52b4582075379d1449e954e75a0d0977cf467559136cbd434f3c0c5798e8",
+    "docs/observability.md": "a1fde85b034450eb409e1ab7aa9bdee276ed600e7cbc2251c3d02edaa7a3a8b0",
+    "docs/threat-model.md": "5b100b0c2e2ead1b296cf18c765e6696757feb04eb233a2c8ef30d6ea8c1910e",
+    "docs/security-review.md": "a6cd7e708d4bb1bd919c7091928c800a726fe57bfe284a0893a0c1520c4150ce",
+    "docs/adr/README.md": "1c6b338343bb10bb2256796ef95c6d3aeda88718ed2006a52d220df539c822a2",
+    "GOALS.md": "99c3ef33ccf790e825c71368521607bcbae73d03770405b210a160f0e0e804ee"
+  },
+  "repositoryState": {
+    "jsonEvidenceArtifactsAfterThisIncrement": 80,
+    "migrationFiles": 51,
+    "publicApiRouteInventory": 48,
+    "stagedFiles": 0,
+    "environmentFilesPresent": false
+  },
+  "claimBoundary": "This artifact proves a production-disabled source policy contract and local validation only. It does not prove that any alert is installed, evaluated, delivered, acknowledged, escalated, recovered, silenced, or suitable for production."
+}

@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-29T22:48:58.958Z",
+  "startedAt": "2026-07-29T22:46:42.130Z",
+  "component": "local-native-oci-release-candidate-integrity",
+  "outcome": "local_native_candidate_passed",
+  "productionReadinessClaim": false,
+  "scope": {
+    "customerDataUsed": false,
+    "providerSystemsContacted": false,
+    "publishedOrDeployed": false,
+    "signedAttestationCreated": false,
+    "platform": "linux/arm64"
+  },
+  "source": {
+    "selection": "Git-ignore-clean files included by the checked-in Docker build context",
+    "fileCount": 606,
+    "totalBytes": 8640542,
+    "sha256": "e3809556a05a9401828ce8b5fbd9f870be3579f5a509a83ed94956974a6b2d7e",
+    "gitHeadPresent": false,
+    "gitCommit": null
+  },
+  "tools": {
+    "podmanClientVersion": "5.8.2",
+    "podmanServerVersion": "5.8.5",
+    "trivyVersion": "0.72.0",
+    "vulnerabilityDatabase": {
+      "schemaVersion": 2,
+      "updatedAt": "2026-07-29T19:07:59.535063129Z",
+      "nextUpdate": "2026-07-30T19:07:59.535062829Z",
+      "downloadedAt": "2026-07-29T22:48:28.124032Z"
+    },
+    "trivyBinarySha256": "7f8266768e8ba12d17800c67725613855737e9afcfb681ce11f55d7b86632672"
+  },
+  "candidates": {
+    "api": {
+      "imageId": "8a05de6897aaf00ae3072e381fc36d15330aec318d9249b343b172a120c829bd",
+      "sizeBytes": 358057994,
+      "architecture": "arm64",
+      "operatingSystem": "linux",
+      "declaredUser": "node",
+      "forbiddenBakedEnvironmentNames": [],
+      "platform": "linux/arm64",
+      "buildDurationMs": 7935,
+      "archive": {
+        "format": "OCI image layout archive",
+        "sizeBytes": 99405824,
+        "sha256": "b1de5efe198250a0311691b797a86234e1a7afc7d715a334f9d8582e8c4280c3"
+      },
+      "vulnerabilityGate": {
+        "schemaVersion": 2,
+        "artifactType": "container_image",
+        "resultCount": 2,
+        "highCount": 0,
+        "criticalCount": 0,
+        "fixedFindingCount": 0,
+        "ignoredUnfixed": true,
+        "severities": [
+          "HIGH",
+          "CRITICAL"
+        ],
+        "packageTypes": [
+          "os",
+          "library"
+        ],
+        "scanDurationMs": 935,
+        "passed": true
+      },
+      "cyclonedx": {
+        "bomFormat": "CycloneDX",
+        "specVersion": "1.7",
+        "componentCount": 254,
+        "dependencyCount": 255,
+        "vulnerabilityCount": 0,
+        "sizeBytes": 390900,
+        "sha256": "6a8c607108d14597bd98e1d8f9ce54958a5578728934ae9373771a2b5d07045e",
+        "generationDurationMs": 61
+      }
+    },
+    "worker": {
+      "imageId": "4f1fdf9db555265ca0bb43da9c060b7f47d73ca8cf5fbc58f576cc0b1b25baca",
+      "sizeBytes": 345891773,
+      "architecture": "arm64",
+      "operatingSystem": "linux",
+      "declaredUser": "node",
+      "forbiddenBakedEnvironmentNames": [],
+      "platform": "linux/arm64",
+      "buildDurationMs": 6708,
+      "archive": {
+        "format": "OCI image layout archive",
+        "sizeBytes": 97395200,
+        "sha256": "b135ec72c8b66fb748a8709b4880960efcb9e2cc25d2d9573c28faea047b3d18"
+      },
+      "vulnerabilityGate": {
+        "schemaVersion": 2,
+        "artifactType": "container_image",
+        "resultCount": 2,
+        "highCount": 0,
+        "criticalCount": 0,
+        "fixedFindingCount": 0,
+        "ignoredUnfixed": true,
+        "severities": [
+          "HIGH",
+          "CRITICAL"
+        ],
+        "packageTypes": [
+          "os",
+          "library"
+        ],
+        "scanDurationMs": 857,
+        "passed": true
+      },
+      "cyclonedx": {
+        "bomFormat": "CycloneDX",
+        "specVersion": "1.7",
+        "componentCount": 185,
+        "dependencyCount": 186,
+        "vulnerabilityCount": 0,
+        "sizeBytes": 310734,
+        "sha256": "db6c5868621207232d1f1b9fb8a879b098142030930c91576ed4edb4e8409a44",
+        "generationDurationMs": 59
+      }
+    },
+    "web": {
+      "imageId": "012de53c4e2ce39fca45df4606818b094c72cf0d17c1549efbcd59164eeaa27a",
+      "sizeBytes": 276846989,
+      "architecture": "arm64",
+      "operatingSystem": "linux",
+      "declaredUser": "node",
+      "forbiddenBakedEnvironmentNames": [],
+      "platform": "linux/arm64",
+      "buildDurationMs": 5690,
+      "archive": {
+        "format": "OCI image layout archive",
+        "sizeBytes": 88786432,
+        "sha256": "60fd3a5cac3fa51b8451851abb9076a8dc3942a7254c670569edb31cc1c98d29"
+      },
+      "vulnerabilityGate": {
+        "schemaVersion": 2,
+        "artifactType": "container_image",
+        "resultCount": 2,
+        "highCount": 0,
+        "criticalCount": 0,
+        "fixedFindingCount": 0,
+        "ignoredUnfixed": true,
+        "severities": [
+          "HIGH",
+          "CRITICAL"
+        ],
+        "packageTypes": [
+          "os",
+          "library"
+        ],
+        "scanDurationMs": 155,
+        "passed": true
+      },
+      "cyclonedx": {
+        "bomFormat": "CycloneDX",
+        "specVersion": "1.7",
+        "componentCount": 111,
+        "dependencyCount": 112,
+        "vulnerabilityCount": 0,
+        "sizeBytes": 219682,
+        "sha256": "b3ac428414a77dace4af7e63b1ffcdec62f89777dec307f990ff5b9aec5a71fe",
+        "generationDurationMs": 69
+      }
+    }
+  },
+  "cleanup": {
+    "candidateTagsRemaining": 0,
+    "temporaryDirectoryRemoved": true,
+    "intermediateImageCacheRetained": true
+  },
+  "limitations": [
+    "This is a native Linux ARM64 rootless-Podman exercise, not the hosted BuildKit linux/amd64 candidate workflow.",
+    "The repository has no Git HEAD, so the source is bound by a deterministic build-context manifest rather than a commit identity.",
+    "OCI archives and generated SBOMs were hashed and then removed; only the bounded credential-free summary is retained.",
+    "No GitHub OIDC identity, Sigstore bundle, embedded BuildKit provenance/SBOM, registry digest, publication, deployment, or admission policy was exercised.",
+    "The High/Critical gate ignores unfixed findings to match the checked-in candidate workflow and is only as current as the recorded Trivy databases.",
+    "A passing vulnerability scan is not proof that the images are vulnerability-free or production-ready."
+  ],
+  "credentialsRecorded": false
+}

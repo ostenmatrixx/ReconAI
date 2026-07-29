@@ -1,0 +1,14 @@
+{
+  "benchmark": "reconciliation-complete-order-payment-fee-v1",
+  "engineVersion": "0.4.0",
+  "ruleSetVersion": "1.2.0",
+  "inputRecords": 99999,
+  "matches": 33333,
+  "exceptions": 0,
+  "durationMs": 1222.33,
+  "rssDeltaBytes": 205324288,
+  "measuredAt": "2026-07-28T03:36:41.818Z",
+  "runtime": "v24.15.0",
+  "platform": "darwin-arm64",
+  "note": "Single local synthetic run; not an SLO or production capacity claim."
+}

@@ -1,0 +1,266 @@
+{
+  "schemaVersion": "reconai-evidence-v1",
+  "evidenceType": "restricted-support-access-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T10:13:45Z",
+  "status": "local_pass_external_gates_open",
+  "scope": "Local source, configuration, domain, API authorization, migration, repository, fresh and populated PostgreSQL 17.10, restricted-role, audit, full repository verification, secret scan, and production dependency audit evidence for default-disabled tenant-approved restricted support diagnostics. No customer data, provider credential or request, source-system write, real support identity, real IdP/MFA enforcement, ticket-system integration, customer notification, protected staging, production deployment, legal approval, compliance, or production-readiness claim is included.",
+  "decision": {
+    "governingAdr": "ADR 0053",
+    "governingAdrStatus": "Accepted",
+    "governingAdrSha256": "b6198a79404ae0e171ec4f11d3423ddf6845368fb3483a5e9151f3e49bf4bee9",
+    "threatModelEntry": "TM-17",
+    "securityReviewControl": "RESTRICTED-SUPPORT-ACCESS-001",
+    "routeInventoryCount": 53,
+    "databaseMigrations": [
+      {
+        "version": "0053_restricted_support_access.sql",
+        "sha256": "778f30a0e37500374d8f9d1c40d3be87eb459c727bc79a8a21d5d65456d5e37f"
+      },
+      {
+        "version": "0054_support_access_request_grant_integrity.sql",
+        "sha256": "c76903740a40dffd5efceffbab27c6891c9e56358a6f211e786f91b52b4cbbe6"
+      }
+    ],
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyNormalizationOrToleranceChanged": false,
+    "financialApprovalAuthorityAdded": false,
+    "sourceSystemWriteOrProviderScopeAdded": false,
+    "aiAuthorityOrEnablementChanged": false,
+    "supportTenantMembershipOrImpersonationAdded": false
+  },
+  "identityBoundary": {
+    "enabledByDefault": false,
+    "disabledConfigurationRejectsDormantAuthority": true,
+    "enabledConfigurationRequiresCompleteTrio": [
+      "exact OIDC group",
+      "exact OIDC authentication-context claim",
+      "dedicated canonical 32-64-byte base64url HMAC key"
+    ],
+    "groupComparison": "exact constant-time comparison",
+    "authenticationContextComparison": "exact constant-time comparison",
+    "mfaAssuranceSource": "configured exact OIDC acr value",
+    "rawIssuerOrSubjectPersisted": false,
+    "durableIdentity": "HMAC-SHA-256 over issuer, NUL separator, and subject",
+    "dedicatedKeySeparateFromRateLimitOrSessionKeys": true,
+    "supportIdentityBecomesTenantMember": false,
+    "supportIdentityCanEnumerateOrganizations": false,
+    "sourceFileSha256": "c7a6b1a19fd6146733595dbc658cb214cfb61bd23110812a6d2504ee3ac78aeb"
+  },
+  "authorityWorkflow": {
+    "requestOrganizationBoundAtCreation": false,
+    "requestRawCodeEntropyBits": 256,
+    "requestRawCodePersisted": false,
+    "requestStoredLocator": "SHA-256 digest",
+    "requestLifetimeMinutes": 15,
+    "requestSingleUse": true,
+    "approver": "active membership with owner role and explicit support:manage permission",
+    "nonOwnerApprovalAllowed": false,
+    "ownerRolePermissionsExplicitlyEnumerated": true,
+    "futurePermissionSchemaValuesAutoInheritedByOwner": false,
+    "grantCapability": "diagnostics:view",
+    "grantMinimumMinutes": 5,
+    "grantMaximumMinutes": 60,
+    "grantOrganizationBoundByServerTenantContext": true,
+    "grantIdentityBound": true,
+    "grantRevocable": true,
+    "expiredOrRevokedGrantAccepted": false,
+    "wrongIdentityOrOrganizationDistinguishable": false,
+    "apiConcealmentResponse": "404 RESOURCE_NOT_FOUND",
+    "supportRequestRateLimitPerMinute": 10,
+    "supportDiagnosticsRateLimitPerMinute": 30
+  },
+  "diagnosticContract": {
+    "schemaVersion": "support-diagnostics-v1",
+    "readOnly": true,
+    "countsCappedAtSigned32BitMaximum": true,
+    "allowedEvidence": {
+      "connections": [
+        "total count",
+        "non-healthy count",
+        "latest successful sync timestamp"
+      ],
+      "providerSyncs": [
+        "active count",
+        "failed count",
+        "latest completion timestamp"
+      ],
+      "reconciliations": [
+        "active count",
+        "failed or partial count",
+        "latest completion timestamp"
+      ],
+      "exceptions": [
+        "unresolved count",
+        "oldest unresolved timestamp"
+      ],
+      "outbox": [
+        "unpublished count",
+        "dead-lettered count",
+        "oldest unpublished timestamp"
+      ]
+    },
+    "tenantDirectoryExposed": false,
+    "impersonationExposed": false,
+    "financialAmountsOrCurrenciesExposed": false,
+    "normalizedOrCanonicalRecordsExposed": false,
+    "rawPayloadsObjectKeysOrDigestsExposed": false,
+    "providerAccountsCustomerIdentifiersOrCredentialsExposed": false,
+    "exportsNotesOrReviewActionsExposed": false,
+    "tenantOrSourceSystemWritesExposed": false
+  },
+  "databaseContract": {
+    "requestLedger": "support_access_requests",
+    "grantLedger": "support_access_grants",
+    "requestLedgerForcedRls": true,
+    "grantLedgerForcedRls": true,
+    "runtimeTablePolicies": false,
+    "migratorOnlyTablePolicies": true,
+    "applicationDirectTablePrivilege": false,
+    "workerDirectTablePrivilege": false,
+    "applicationAuthority": "EXECUTE on five fixed SECURITY DEFINER functions only",
+    "workerFunctionAuthority": false,
+    "securityDefinerSearchPath": "pg_catalog, public",
+    "rowSecurityForcedOnFunctions": true,
+    "requestGrantTenantCompositeForeignKey": true,
+    "requestMutation": "pending to claimed only",
+    "grantMutation": "active to revoked only",
+    "normalDeleteAllowed": false,
+    "approvalAuditActor": "tenant owner user",
+    "diagnosticAuditActor": "support keyed identity digest",
+    "revocationAuditActor": "tenant owner user",
+    "auditActions": [
+      "support.access.approved",
+      "support.diagnostics.viewed",
+      "support.access.revoked"
+    ],
+    "repositorySourceSha256": "cbea4dcace4e19bb706db33ff1213f2d01ca7599e6deb0490cc965dc9c614dac"
+  },
+  "livePostgreSqlVerification": {
+    "runtime": {
+      "product": "PostgreSQL",
+      "version": "17.10",
+      "platform": "aarch64-apple-darwin25.5.0",
+      "compiler": "Apple clang 21.0.0",
+      "databaseSystemIdentifier": "7667853522249928433",
+      "networkBinding": "loopback port 5432",
+      "dataChecksums": true,
+      "temporaryRuntimeOutsideRepository": true,
+      "repositoryEnvironmentFilesCreated": false,
+      "customerOrProviderDataUsed": false
+    },
+    "databaseSuite": {
+      "command": "pnpm exec vitest run --project integration packages/database/src/*.integration.test.ts --no-file-parallelism (local-only database URLs supplied through environment and omitted from evidence)",
+      "status": "passed",
+      "testFilesPassed": 11,
+      "testsPassed": 39,
+      "testsSkipped": 0,
+      "elapsedSeconds": 5.56
+    },
+    "supportAccessTestsIncluded": 2,
+    "migrationLedger": {
+      "appliedMigrations": 55,
+      "firstVersion": "0000_broken_shriek.sql",
+      "lastVersion": "0054_support_access_request_grant_integrity.sql",
+      "sourceChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1"
+    },
+    "populatedUpgrade": {
+      "fromLastVersion": "0041_paginated_organization_access_directory.sql",
+      "throughLastVersion": "0054_support_access_request_grant_integrity.sql",
+      "status": "passed",
+      "membershipSnapshotPreserved": true,
+      "auditSnapshotPreserved": true,
+      "supportTablesForcedRls": true,
+      "requestGrantForeignKeyPresent": true,
+      "applicationFunctionOnlyAuthority": true,
+      "workerSupportAuthority": false
+    },
+    "supportAssertions": [
+      "raw request code is not persisted and the durable request expires at exactly 15 minutes",
+      "an analyst cannot approve a request",
+      "an active owner creates exactly one 30-minute tenant grant from the one-time request",
+      "request replay creates no second grant",
+      "owner list returns the tenant grant while an analyst receives no rows",
+      "diagnostics return only the fixed aggregate schema",
+      "wrong support identity, foreign organization, and foreign owner are concealed",
+      "approval and diagnostic use append the expected tenant audit events",
+      "revocation is audited and exact revocation replay is idempotent",
+      "revoked and expired grants cannot read diagnostics",
+      "expired unclaimed requests cannot be approved",
+      "application and worker cannot read support tables directly",
+      "worker cannot execute support authority functions",
+      "direct request or grant mutation is rejected"
+    ]
+  },
+  "repositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 80,
+    "testsPassed": 519,
+    "migrationsValidated": 55,
+    "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+    "contractEntrypointsValidated": 4,
+    "routeInventoryCount": 53,
+    "oidcValidatorIncludesSupportBoundary": true,
+    "dockerfilesValidated": 3,
+    "composeImagesValidated": 5,
+    "workflowImagesValidated": 3,
+    "actionPinsValidated": 25,
+    "operationalAlertRulesValidated": 13,
+    "metricContractsValidated": 9,
+    "packageManifestsPolicyValidated": 20,
+    "productionLicensesValidated": 224,
+    "productionLockSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "productionBuildPassed": true,
+    "secretScanPassed": true,
+    "productionDependencyAuditHighSeverityOrGreater": 0,
+    "productionDependencyAuditResult": "No known vulnerabilities found",
+    "nodeVersion": "24.15.0",
+    "pnpmVersion": "11.9.0"
+  },
+  "verificationCorrections": [
+    {
+      "problemObserved": "The prior owner role was derived from every permission schema value, so a future platform-only permission could silently become tenant-owner authority.",
+      "correction": "Enumerate owner permissions explicitly, replace the unused support:access value with owner-only support:manage, and fail closed if a non-owner membership carries it.",
+      "controlWeakened": false,
+      "postCorrectionResult": "Domain and tenant tests prove only an active owner can manage grants and future permission additions are not automatically inherited."
+    },
+    {
+      "problemObserved": "The first complete database sweep applied migrations 0053 and 0054 successfully but found the exact populated-upgrade expectation still ended at migration 0052.",
+      "correction": "Extend the expected upgrade list and ledger count, then assert support forced RLS, function-only application authority, worker denial, and the tenant-composite request-to-grant foreign key.",
+      "controlWeakened": false,
+      "postCorrectionResult": "The isolated populated 0041-to-0054 upgrade and all 39 database tests pass."
+    },
+    {
+      "problemObserved": "A repeat of stateful integration files against an already-populated temporary database replayed fixed bootstrap fixtures and collided with earlier synthetic provider accounts.",
+      "correction": "Confirm the exact temporary cluster data directory, recreate only its explicitly named synthetic reconai database, restore the restricted test-role grants, and rerun once from empty.",
+      "controlWeakened": false,
+      "postCorrectionResult": "All 11 files and 39 tests pass from the documented clean-database boundary."
+    },
+    {
+      "problemObserved": "The first full repository gate found five lint issues and the first narrow correction exposed one generic return-type error.",
+      "correction": "Replace control-character regexes with explicit code-point validation, use Record-style timestamp properties, narrow the test row through the existing database string validator, and rerun lint/typecheck/support integration.",
+      "controlWeakened": false,
+      "postCorrectionResult": "The focused support test and complete repository verification pass."
+    }
+  ],
+  "knownLimitations": [
+    "No real IdP group, acr mapping, MFA challenge, bypass negative, recovery flow, or support offboarding was exercised.",
+    "The ticket reference is supplied by the approving owner and is not validated against a ticket system.",
+    "There is no support UI or customer notification workflow.",
+    "The 12-hex support identity reference is display-only; authorization uses the full keyed digest.",
+    "Expired unclaimed request rows are retained because no approved purge policy exists.",
+    "HMAC-key rotation has no overlap window; the documented procedure disables access, revokes or drains grants, waits the maximum lifetime, then rotates.",
+    "Multi-replica key consistency, response timing, periodic access review, incident response, protected staging, and production alerting are unverified."
+  ],
+  "sourceControlState": {
+    "repositoryHasNoInitialCommit": true,
+    "filesStaged": false,
+    "commitCreated": false,
+    "pushOrPublishPerformed": false,
+    "deploymentPerformed": false,
+    "repositoryEnvironmentFilesPresent": false,
+    "jsonEvidenceArtifactsIncludingThisOne": 85
+  },
+  "conclusion": "The default-disabled restricted-support source boundary and its fresh local PostgreSQL path pass the checked-in acceptance surface. This is local technical evidence only. Goal 1 remains active and restricted support must not be enabled in production until the stated identity, ticketing, notification, access-review, rotation, incident, timing, and protected-staging gates are satisfied."
+}

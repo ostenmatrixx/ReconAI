@@ -1,0 +1,329 @@
+{
+  "evidenceType": "reconciliation-run-creation-process-loss-contention-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T00:53:09.358Z",
+  "scope": "Fresh loopback PostgreSQL 17.10 synthetic process-loss atomicity, identical-retry convergence, and two-independent-process contention evidence at the configured 100,000-record ceiling through the actual restricted-role reconciliation repository. No rule execution, production, or staging system was used.",
+  "priorEvidence": [
+    "artifacts/reconciliation-run-creation-maximum-volume-verification-2026-07-29.json",
+    "artifacts/reconciliation-run-creation-atomic-rollback-verification-2026-07-29.json",
+    "artifacts/reconciliation-run-creation-interruption-verification-2026-07-29.json"
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "postgresql": "17.10",
+    "postgresClient": "3.4.9",
+    "vitest": "4.1.10"
+  },
+  "design": {
+    "decision": "ADR 0033",
+    "threat": "TM-34",
+    "processLossContract": "Abrupt loss may leave zero authority or one fully complete authority. A partial run/input/outbox/audit authority is forbidden, and an identical stable-key retry must converge on exactly one complete authority.",
+    "processLossAlwaysRollsBackClaimed": false,
+    "sameHostIndependentProcesses": true,
+    "uniquePostgresqlApplicationNamePerCreator": true,
+    "liveAdvisoryWaitRequired": true,
+    "atomicAuthorityRows": [
+      "reconciliation run",
+      "all pinned inputs",
+      "first dispatch outbox event",
+      "request audit event"
+    ],
+    "schemaMigrationRequired": false,
+    "moneyOrRuleBehaviorChanged": false
+  },
+  "harnessCorrectionDiagnostic": {
+    "issue": "The first draft invoked the tsx CLI, which launches a grandchild. The spawned wrapper PID was not the database-client PID, so killing the wrapper did not terminate the creator.",
+    "observedSafeOutcome": "PostgreSQL completed one fully atomic 100,000-input authority before the database client exited.",
+    "countedAsProcessLossEvidence": false,
+    "correction": "Launch Node directly with the tsx import hook so spawned PID, reported PID, PostgreSQL application identity, and SIGKILL target are the same process.",
+    "correctedHarnessPassedBeforeFreshEvidenceRun": true,
+    "diagnosticRuntimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-run-creation-process-loss-pg.mZp4ez-harness-diagnostic-20260729"
+  },
+  "verifier": {
+    "command": "RECONAI_ALLOW_LOCAL_VERIFICATION_WRITES=1 RECONAI_RUN_CREATION_RECORDS=100000 DATABASE_ADMIN_URL=[fresh-loopback] DATABASE_URL=[restricted-loopback] pnpm verify:reconciliation-run-creation",
+    "recordedAt": "2026-07-29T00:48:21.807Z",
+    "loopbackOnlyEnforced": true,
+    "productionEnvironmentRejected": true,
+    "explicitSyntheticWriteOptInRequired": true,
+    "disposableDatabaseNameRequired": true,
+    "applicationRoleRequired": "reconai_app",
+    "applicationRoleSuperuser": false,
+    "applicationRoleBypassesRls": false,
+    "childLaunch": "node --conditions=development --import [tsx-loader] scripts/reconciliation-run-creation-child.mjs",
+    "routineVerifyGateIncludesHeavyVerifier": false,
+    "verifierOutputSha256": "3d11d755ae79ba01b34f7dd345f8a83cf4eca2c5d0db3359d7fc8e6ec686a4bd"
+  },
+  "postgresqlSource": {
+    "archive": "postgresql-17.10.tar.bz2",
+    "officialDirectory": "https://www.postgresql.org/ftp/source/v17.10/",
+    "sha256": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+    "checksumVerifiedBeforeBuild": true,
+    "cluster": "fresh empty loopback-only disposable data-checksummed cluster using SCRAM host authentication",
+    "locale": "C",
+    "encoding": "UTF8",
+    "listenPort": 55465,
+    "migrationsApplied": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32"
+  },
+  "fixture": {
+    "schemaValidSyntheticCanonicalOrders": 100000,
+    "contentHashesMatchCanonicalJson": true,
+    "customerReferencesIncluded": false,
+    "fieldProvenanceRowsInserted": false,
+    "seedBatchSize": 1000,
+    "seedDurationMilliseconds": 4996.82
+  },
+  "regressionControlsReplayed": {
+    "deterministicSecondBatchFailure": {
+      "sqlState": "23514",
+      "inputExecuteBlocks": 2,
+      "runRowsAfterRollback": 0,
+      "inputRowsAfterRollback": 0,
+      "outboxEventsAfterRollback": 0,
+      "auditEventsAfterRollback": 0
+    },
+    "authorityDeadline": {
+      "configuredMilliseconds": 5000,
+      "durationMilliseconds": 5004.99,
+      "inputExecuteBlocks": 2,
+      "repositoryErrorName": "RepositoryRunCreationUnavailableError",
+      "runRowsAfterRollback": 0,
+      "inputRowsAfterRollback": 0,
+      "outboxEventsAfterRollback": 0,
+      "auditEventsAfterRollback": 0
+    },
+    "directClientCancellation": {
+      "durationMilliseconds": 1256.2,
+      "delayedBackendObserved": true,
+      "inputExecuteBlocks": 2,
+      "repositoryErrorName": "RepositoryRunCreationUnavailableError",
+      "runRowsAfterRollback": 0,
+      "inputRowsAfterRollback": 0,
+      "outboxEventsAfterRollback": 0,
+      "auditEventsAfterRollback": 0
+    }
+  },
+  "processLossAtomicity": {
+    "policyVersion": "maximum-run-creation-process-loss-verifier-v1",
+    "processId": 76538,
+    "postgresqlBackendPid": 76539,
+    "postgresqlApplicationName": "reconai-run-creator:76538",
+    "spawnedReportedAndKilledProcessIdsMatch": true,
+    "signal": "SIGKILL",
+    "verifierDelaySeconds": 5,
+    "interruptedOrdinal": 1000,
+    "firstBatchExecutedBeforeTermination": true,
+    "postgresqlInputExecuteBlocks": 2,
+    "postgresqlUnexpectedEofWithOpenTransaction": true,
+    "postgresqlBackendRemoved": true,
+    "backendRemovalDurationMilliseconds": 5030.21,
+    "outcomeBeforeRetry": "rolled-back",
+    "authorityBeforeRetry": {
+      "runRows": 0,
+      "declaredInputRows": 0,
+      "persistedInputRows": 0,
+      "uniqueOrdinals": 0,
+      "outboxEvents": 0,
+      "auditEvents": 0,
+      "partialAuthorityObserved": false
+    },
+    "identicalRetry": {
+      "processId": 76551,
+      "postgresqlBackendPid": 76552,
+      "durationMilliseconds": 2735.31,
+      "runId": "34326767-a6c5-4d38-871c-aacbabe10080",
+      "status": "queued",
+      "declaredInputRows": 100000,
+      "persistedInputRows": 100000,
+      "uniqueOrdinals": 100000,
+      "minimumOrdinal": 0,
+      "maximumOrdinal": 99999,
+      "postgresqlInputExecuteBlocks": 100,
+      "outboxEvents": 1,
+      "auditEvents": 1,
+      "exactlyOnceAfterRetry": true
+    }
+  },
+  "independentProcessContention": {
+    "policyVersion": "maximum-run-creation-contention-verifier-v1",
+    "processes": [
+      {
+        "processId": 76557,
+        "postgresqlBackendPid": 76562,
+        "durationMilliseconds": 3581.59,
+        "residentSetGrowthBytes": 235601920,
+        "postgresqlInputExecuteBlocks": 0,
+        "postgresqlOutboxExecuteBlocks": 0,
+        "postgresqlAuditExecuteBlocks": 0
+      },
+      {
+        "processId": 76558,
+        "postgresqlBackendPid": 76563,
+        "durationMilliseconds": 2609.5,
+        "residentSetGrowthBytes": 239534080,
+        "postgresqlInputExecuteBlocks": 100,
+        "postgresqlOutboxExecuteBlocks": 1,
+        "postgresqlAuditExecuteBlocks": 1
+      }
+    ],
+    "livePostgresqlObservation": {
+      "creatorBackends": 2,
+      "advisoryWaiters": 1,
+      "waitEventType": "Lock",
+      "waitEvent": "advisory",
+      "waiterState": "active"
+    },
+    "bothProcessesExitedSuccessfully": true,
+    "bothReturnedSameRun": true,
+    "wallDurationMilliseconds": 3972.28,
+    "runId": "a31f0024-5780-491e-b218-cbea166a8f4c",
+    "status": "queued",
+    "runRows": 1,
+    "declaredInputRows": 100000,
+    "persistedInputRows": 100000,
+    "uniqueOrdinals": 100000,
+    "minimumOrdinal": 0,
+    "maximumOrdinal": 99999,
+    "outboxEvents": 1,
+    "auditEvents": 1,
+    "singleAuthorityObserved": true
+  },
+  "database": {
+    "freshDatabase": true,
+    "dataChecksumsEnabled": true,
+    "restrictedRoles": {
+      "reconai_app": {
+        "superuser": false,
+        "bypassesRls": false
+      },
+      "reconai_migrator": {
+        "superuser": false,
+        "bypassesRls": false
+      },
+      "reconai_worker": {
+        "superuser": false,
+        "bypassesRls": false
+      }
+    },
+    "forcedRowLevelSecurity": {
+      "audit_events": true,
+      "canonical_records": true,
+      "outbox_events": true,
+      "reconciliation_run_inputs": true,
+      "reconciliation_runs": true
+    },
+    "organizationAuthorityTotalsAfterRecoveryAndContention": {
+      "runRows": 2,
+      "inputRows": 200000,
+      "outboxEvents": 2,
+      "auditEvents": 2
+    },
+    "postgresqlExecuteBlocks": {
+      "allInputAttempts": 208,
+      "allRunAttempts": 6,
+      "successfulOutbox": 2,
+      "successfulAudit": 2
+    },
+    "postgresqlCancellationErrors": 2,
+    "postgresqlUnexpectedOpenTransactionEofEvents": 1,
+    "postgresqlFatalEvents": 0,
+    "postgresqlLogLinesAfterShutdown": 9432,
+    "postgresqlLogBytesAfterShutdown": 29532384,
+    "postgresqlLogSha256AfterShutdown": "42e9afd39d4de7510ccc062394fda62559d5c46503da5d5dd07902fc9cff111e"
+  },
+  "paginationBoundary": {
+    "firstPageOrdinals": [
+      0,
+      99
+    ],
+    "lastPageOrdinals": [
+      99900,
+      99999
+    ],
+    "lastPageHasNextCursor": false
+  },
+  "tenantIsolation": {
+    "foreignRunRepositoryResult": "undefined",
+    "foreignInputRepositoryResult": "undefined",
+    "forcedRlsForeignTenantConcealment": true
+  },
+  "integrity": {
+    "offlineDataChecksums": {
+      "filesScanned": 1473,
+      "blocksScanned": 37290,
+      "badChecksums": 0,
+      "dataChecksumVersion": 1
+    }
+  },
+  "repositoryVerification": {
+    "fullVerify": {
+      "command": "CI=true pnpm verify",
+      "status": "passed",
+      "testFilesPassed": 69,
+      "testsPassed": 434,
+      "testsFailed": 0,
+      "migrationsValidated": 44,
+      "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+      "schemasValidated": 4,
+      "productionLicensesValidated": 224,
+      "formatLintTypecheckBuildAndPolicyGates": "passed"
+    },
+    "secretScan": "passed",
+    "productionDependencyAuditAtHighSeverity": "no known vulnerabilities found"
+  },
+  "cleanup": {
+    "postgresqlStopped": true,
+    "listenPortClosed": true,
+    "runtimeMovedRecoverablyToTrash": "<local-home>/.Trash/reconai-run-creation-process-loss-pg.Bhy9qC-verified-20260729",
+    "applicationAndDatabasePortsClosed": [
+      3000,
+      4000,
+      55462,
+      55463,
+      55464,
+      55465,
+      56380,
+      58080,
+      58100,
+      59010,
+      59011,
+      8180
+    ]
+  },
+  "sourceSha256": {
+    "scripts/reconciliation-run-creation-child.mjs": "85633e2e339ab9a1ca041a9f617c6af67695f9762148b086bd62a83a6f13dc79",
+    "scripts/verify-reconciliation-run-creation.mjs": "7e5bbf3026b1c818bfa449f5e70b3c65af5131a0ada282d34fa98ce233c22483",
+    "apps/api/src/repository.ts": "f40683e7a8d9f360b5e0d78d3a67bf46793b745848935745d46b251d00fba28e",
+    "apps/api/src/app.ts": "26d48bb47e3ce956873607c767e5bd2b8b8e7d5d6bda1320beb9550c14ba863f",
+    "apps/api/src/main.ts": "69e313b5d0c9f145beeaaef9055fadab3fafd39d22d413a70532a0a0c59ff09d",
+    "apps/api/src/repository.batch.test.ts": "18b81f1a624fa070a859c84a8eb9ba8f85967d04b7a43039fa7c736ff5201a1a",
+    "apps/api/src/app.tenant.test.ts": "70f4b2b21140ba7a3c4d0a25475f2a16788432795b61cba7756448f6629abb45",
+    "packages/config/src/index.ts": "0f73ca5cffe2021c79f633a499d7997352e9e624ecbe2c948aa05c5d34e0aa8b",
+    "packages/config/src/config.test.ts": "707f5fad55079f5d07cf4f6a11be209209ebbaff0e0ba71cac7a41f2360b9c5c",
+    ".env.example": "5a1453ab390a0874d9f3d2237eec330e9ecd204363d37b7130b67c788ac76c75",
+    "docs/threat-model.md": "3c4229462bd28dab3715f8d3ebf02d73e166aad576685402a9c9157130169b21",
+    "docs/security-review.md": "d45f428beba7696f6e9e0d6d1d538620d474c1cfc46df54a68372e02e23b83d6",
+    "docs/reconciliation-engine.md": "0d092b2bc9ac1cbdc4b02ba47600a7814e868d698239b456f41fcb3891615bfd"
+  },
+  "safety": {
+    "loopbackOnly": true,
+    "explicitSyntheticWriteOptIn": true,
+    "moneyOrRuleBehaviorChanged": false,
+    "workerOrRuleExecutionPerformed": false,
+    "productionDataUsed": false,
+    "productionOrStagingAccessed": false,
+    "environmentFileCreated": false,
+    "repositoryFilesStaged": 0,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "The synthetic fixture contains valid canonical order JSON and matching content hashes but omits field-provenance rows because this verifier isolates run authority creation.",
+    "Timing and RSS are single local workstation observations and are not an API SLO, capacity guarantee, constant-memory claim, or production projection.",
+    "The passing SIGKILL run rolled back, but abrupt client loss is inherently an ambiguous-commit boundary: PostgreSQL may instead complete one fully atomic authority before detecting loss. The accepted invariant is zero or one complete authority followed by idempotent retry.",
+    "The process-loss backend remained in its verifier-only five-second sleep until PostgreSQL detected the closed client; this is not a production disconnect-detection bound.",
+    "Independent-process contention is exercised on one host and one PostgreSQL instance. Real ingress/proxy disconnect, pool saturation, process-supervisor recovery, multi-host partitions, protected staging, end-to-end API latency, and external alert delivery remain unverified.",
+    "Both resulting runs remain queued; this artifact does not execute the worker or reconciliation rules."
+  ]
+}

@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-29T23:10:56.084Z",
+  "component": "deterministic-reconciliation-representative-load",
+  "outcome": "local_representative_load_passed",
+  "productionReadinessClaim": false,
+  "scope": {
+    "customerDataUsed": false,
+    "providerSystemsContacted": false,
+    "stagingEnvironmentUsed": false,
+    "measuredBoundary": "pure in-process deterministic reconciliation only; dataset construction and persistence are excluded from duration"
+  },
+  "source": {
+    "gitCommit": null,
+    "engineVersion": "0.7.0",
+    "ruleSetVersion": "1.5.0",
+    "scenarioVersion": "1.0.0",
+    "files": {
+      "packages/reconciliation/src/index.ts": "0efe0de47374490144f8dda49566106f7435e664de16eb4b7feea4740b310034",
+      "packages/reconciliation/src/load-profile.ts": "563df73f15d7966ef62072430b25f57e6c053e9d0109994734da45027c3f7c4f",
+      "packages/reconciliation/src/load-verification.ts": "6a44a88b2f1c9cf6c022d91ddc9ff50aad5251dee817ec43611a4dafc0d35fee"
+    }
+  },
+  "runtime": {
+    "node": "v24.15.0",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "cpuModel": "Apple M5",
+    "logicalCpuCount": 10,
+    "totalMemoryBytes": 17179869184,
+    "isolation": "five sequential fresh Node child processes with explicit pre-measurement GC"
+  },
+  "dataset": {
+    "totalRecords": 100000,
+    "distribution": {
+      "orders": 28000,
+      "payments": 24000,
+      "processingFees": 24000,
+      "refunds": 16000,
+      "accountingEntries": 8000
+    },
+    "scenarios": {
+      "exactOrderPaymentFeeGroups": 20000,
+      "refundTriples": 8000,
+      "missingPaymentOrders": 4000,
+      "unmatchedPaymentFeePairs": 4000,
+      "malformedIdentifierOrders": 4000
+    },
+    "expected": {
+      "input": 100000,
+      "matches": 36000,
+      "exceptions": 12000,
+      "ambiguousCandidates": 0,
+      "matchRuleCounts": {
+        "order-payment": 20000,
+        "refund": 8000,
+        "refund-accounting": 8000
+      },
+      "exceptionTypeCounts": {
+        "malformed_identifier": 4000,
+        "paid_order_missing_payment": 4000,
+        "payment_missing_order": 4000
+      }
+    },
+    "moneyConservation": {
+      "currency": "USD",
+      "matchedOrderMinor": "299990000",
+      "matchedPaymentMinor": "299990000",
+      "shopifyRefundMinor": "21996000",
+      "stripeRefundMinor": "21996000",
+      "accountingRefundMinor": "21996000"
+    },
+    "syntheticOnly": true,
+    "deterministicConstruction": true
+  },
+  "samples": [
+    {
+      "sampleOrder": "canonical",
+      "engineVersion": "0.7.0",
+      "ruleSetVersion": "1.5.0",
+      "inputSnapshotHash": "4a97303916eb03e228b9058fbaa06010986b775b93a6926c9eeb9cec56610609",
+      "policySnapshotHash": "095f6eff27744431216dbc2911790c8df0197419c963ccc45701d96911722c93",
+      "runKey": "7214740d3f9b436ca03359dec2cbe0a92b39e025a14ce08eda697a12ea92d4ad",
+      "resultSha256": "1861bc87300a50219b07e5b2f2ffbe19fc5269051cc41937df58b8fa1b68decb",
+      "counts": {
+        "input": 100000,
+        "matches": 36000,
+        "exceptions": 12000,
+        "ambiguousCandidates": 0
+      },
+      "matchRuleCounts": {
+        "order-payment": 20000,
+        "refund": 8000,
+        "refund-accounting": 8000
+      },
+      "exceptionTypeCounts": {
+        "malformed_identifier": 4000,
+        "paid_order_missing_payment": 4000,
+        "payment_missing_order": 4000
+      },
+      "durationMs": 1677.02,
+      "rssBeforeBytes": 225476608,
+      "rssAfterBytes": 521650176,
+      "maxRssBytes": 521650176
+    },
+    {
+      "sampleOrder": "reverse",
+      "engineVersion": "0.7.0",
+      "ruleSetVersion": "1.5.0",
+      "inputSnapshotHash": "4a97303916eb03e228b9058fbaa06010986b775b93a6926c9eeb9cec56610609",
+      "policySnapshotHash": "095f6eff27744431216dbc2911790c8df0197419c963ccc45701d96911722c93",
+      "runKey": "7214740d3f9b436ca03359dec2cbe0a92b39e025a14ce08eda697a12ea92d4ad",
+      "resultSha256": "1861bc87300a50219b07e5b2f2ffbe19fc5269051cc41937df58b8fa1b68decb",
+      "counts": {
+        "input": 100000,
+        "matches": 36000,
+        "exceptions": 12000,
+        "ambiguousCandidates": 0
+      },
+      "matchRuleCounts": {
+        "order-payment": 20000,
+        "refund": 8000,
+        "refund-accounting": 8000
+      },
+      "exceptionTypeCounts": {
+        "malformed_identifier": 4000,
+        "paid_order_missing_payment": 4000,
+        "payment_missing_order": 4000
+      },
+      "durationMs": 1664.48,
+      "rssBeforeBytes": 213549056,
+      "rssAfterBytes": 508526592,
+      "maxRssBytes": 508526592
+    },
+    {
+      "sampleOrder": "rotate_one_third",
+      "engineVersion": "0.7.0",
+      "ruleSetVersion": "1.5.0",
+      "inputSnapshotHash": "4a97303916eb03e228b9058fbaa06010986b775b93a6926c9eeb9cec56610609",
+      "policySnapshotHash": "095f6eff27744431216dbc2911790c8df0197419c963ccc45701d96911722c93",
+      "runKey": "7214740d3f9b436ca03359dec2cbe0a92b39e025a14ce08eda697a12ea92d4ad",
+      "resultSha256": "1861bc87300a50219b07e5b2f2ffbe19fc5269051cc41937df58b8fa1b68decb",
+      "counts": {
+        "input": 100000,
+        "matches": 36000,
+        "exceptions": 12000,
+        "ambiguousCandidates": 0
+      },
+      "matchRuleCounts": {
+        "order-payment": 20000,
+        "refund": 8000,
+        "refund-accounting": 8000
+      },
+      "exceptionTypeCounts": {
+        "malformed_identifier": 4000,
+        "paid_order_missing_payment": 4000,
+        "payment_missing_order": 4000
+      },
+      "durationMs": 1948.55,
+      "rssBeforeBytes": 213041152,
+      "rssAfterBytes": 428703744,
+      "maxRssBytes": 428703744
+    },
+    {
+      "sampleOrder": "rotate_two_thirds",
+      "engineVersion": "0.7.0",
+      "ruleSetVersion": "1.5.0",
+      "inputSnapshotHash": "4a97303916eb03e228b9058fbaa06010986b775b93a6926c9eeb9cec56610609",
+      "policySnapshotHash": "095f6eff27744431216dbc2911790c8df0197419c963ccc45701d96911722c93",
+      "runKey": "7214740d3f9b436ca03359dec2cbe0a92b39e025a14ce08eda697a12ea92d4ad",
+      "resultSha256": "1861bc87300a50219b07e5b2f2ffbe19fc5269051cc41937df58b8fa1b68decb",
+      "counts": {
+        "input": 100000,
+        "matches": 36000,
+        "exceptions": 12000,
+        "ambiguousCandidates": 0
+      },
+      "matchRuleCounts": {
+        "order-payment": 20000,
+        "refund": 8000,
+        "refund-accounting": 8000
+      },
+      "exceptionTypeCounts": {
+        "malformed_identifier": 4000,
+        "paid_order_missing_payment": 4000,
+        "payment_missing_order": 4000
+      },
+      "durationMs": 1688.23,
+      "rssBeforeBytes": 214401024,
+      "rssAfterBytes": 497418240,
+      "maxRssBytes": 502382592
+    },
+    {
+      "sampleOrder": "canonical_repeat",
+      "engineVersion": "0.7.0",
+      "ruleSetVersion": "1.5.0",
+      "inputSnapshotHash": "4a97303916eb03e228b9058fbaa06010986b775b93a6926c9eeb9cec56610609",
+      "policySnapshotHash": "095f6eff27744431216dbc2911790c8df0197419c963ccc45701d96911722c93",
+      "runKey": "7214740d3f9b436ca03359dec2cbe0a92b39e025a14ce08eda697a12ea92d4ad",
+      "resultSha256": "1861bc87300a50219b07e5b2f2ffbe19fc5269051cc41937df58b8fa1b68decb",
+      "counts": {
+        "input": 100000,
+        "matches": 36000,
+        "exceptions": 12000,
+        "ambiguousCandidates": 0
+      },
+      "matchRuleCounts": {
+        "order-payment": 20000,
+        "refund": 8000,
+        "refund-accounting": 8000
+      },
+      "exceptionTypeCounts": {
+        "malformed_identifier": 4000,
+        "paid_order_missing_payment": 4000,
+        "payment_missing_order": 4000
+      },
+      "durationMs": 1674.15,
+      "rssBeforeBytes": 211566592,
+      "rssAfterBytes": 492126208,
+      "maxRssBytes": 503775232
+    }
+  ],
+  "summary": {
+    "sampleCount": 5,
+    "durationMs": {
+      "minimum": 1664.48,
+      "p50": 1677.02,
+      "p95": 1948.55,
+      "maximum": 1948.55
+    },
+    "maximumObservedRssBytes": 521650176,
+    "exactRepeatIdentityStable": true,
+    "permutationInvariant": true,
+    "resultDigestStable": true,
+    "integerMoneyConserved": true
+  },
+  "limitations": [
+    "Five fresh-process samples are too few to establish a statistically reliable service-level percentile.",
+    "The measured duration excludes API, PostgreSQL snapshot loading, outbox, Redis, worker startup, persistence, browser rendering, and network latency.",
+    "The synthetic distribution is deliberately mixed but is not evidence of real merchant, provider, accounting, or exception prevalence.",
+    "This is one local single-host architecture/runtime, not protected staging, multi-host contention, failure injection, sustained arrival load, or production capacity.",
+    "No customer data, provider sandbox, external collector, alert delivery, deployment, or production credential was used."
+  ],
+  "credentialsRecorded": false
+}

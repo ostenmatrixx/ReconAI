@@ -1,0 +1,80 @@
+{
+  "realm": "reconai-development",
+  "enabled": true,
+  "displayName": "ReconAI local development",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": true,
+  "rememberMe": false,
+  "verifyEmail": true,
+  "bruteForceProtected": true,
+  "clients": [
+    {
+      "clientId": "reconai-web-development",
+      "name": "ReconAI web development",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "local-oidc-secret-only",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "publicClient": false,
+      "frontchannelLogout": false,
+      "redirectUris": ["http://localhost:3000/api/auth/callback/keycloak"],
+      "webOrigins": ["http://localhost:3000"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:3000/",
+        "backchannel.logout.url": "http://host.docker.internal:3000/api/auth/backchannel-logout",
+        "backchannel.logout.session.required": "true",
+        "backchannel.logout.revoke.offline.tokens": "false"
+      },
+      "protocol": "openid-connect",
+      "protocolMappers": [
+        {
+          "name": "ReconAI API audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "reconai-web-development",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": "00000000-0000-4000-8000-000000000010",
+      "username": "owner@example.test",
+      "email": "owner@example.test",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Synthetic",
+      "lastName": "Owner",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "local-owner-only",
+          "temporary": true
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000011",
+      "username": "reviewer@example.test",
+      "email": "reviewer@example.test",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Synthetic",
+      "lastName": "Reviewer",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "local-reviewer-only",
+          "temporary": true
+        }
+      ]
+    }
+  ]
+}

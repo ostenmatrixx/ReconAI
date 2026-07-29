@@ -1,0 +1,60 @@
+{
+  "evaluation": "reconciliation-ambiguous-payment-collision-v1",
+  "engineVersion": "0.5.0",
+  "ruleSetVersion": "1.3.0",
+  "evaluationLimit": 500,
+  "cases": [
+    {
+      "eligiblePayments": 500,
+      "durationMs": 32.62,
+      "candidateSearch": {
+        "eligibleCount": 500,
+        "evaluatedCount": 500,
+        "emittedCount": 5,
+        "evaluationLimit": 500,
+        "complete": true
+      },
+      "orderExceptionType": "paid_order_missing_payment",
+      "orderReasonCode": "ORDER_HAS_NO_LINKED_SUCCEEDED_PAYMENT",
+      "emittedCandidates": 5,
+      "strongestCandidateSelected": true,
+      "permutationReplayEquivalent": true
+    },
+    {
+      "eligiblePayments": 501,
+      "durationMs": 15.58,
+      "candidateSearch": {
+        "eligibleCount": 501,
+        "evaluatedCount": 0,
+        "emittedCount": 0,
+        "evaluationLimit": 500,
+        "complete": false
+      },
+      "orderExceptionType": "ambiguous_identity",
+      "orderReasonCode": "ORDER_PAYMENT_CANDIDATE_SET_EXCEEDS_LIMIT",
+      "emittedCandidates": 0,
+      "strongestCandidateSelected": false,
+      "permutationReplayEquivalent": true
+    },
+    {
+      "eligiblePayments": 10000,
+      "durationMs": 269.43,
+      "candidateSearch": {
+        "eligibleCount": 10000,
+        "evaluatedCount": 0,
+        "emittedCount": 0,
+        "evaluationLimit": 500,
+        "complete": false
+      },
+      "orderExceptionType": "ambiguous_identity",
+      "orderReasonCode": "ORDER_PAYMENT_CANDIDATE_SET_EXCEEDS_LIMIT",
+      "emittedCandidates": 0,
+      "strongestCandidateSelected": false,
+      "permutationReplayEquivalent": true
+    }
+  ],
+  "measuredAt": "2026-07-28T17:16:11.396Z",
+  "runtime": "v24.15.0",
+  "platform": "darwin-arm64",
+  "interpretation": "Complete candidate sets at or below the limit are fully ranked. Larger sets fail closed as explicit ambiguity without a partial shortlist. Synthetic local timing is regression evidence, not an SLO or production-capacity claim."
+}

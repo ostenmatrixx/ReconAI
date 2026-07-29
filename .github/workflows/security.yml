@@ -1,0 +1,62 @@
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 4 * * 2"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  supply-chain:
+    name: Dependency, secret, license, and SBOM checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+        with:
+          version: 11.9.0
+          run_install: false
+      - name: Install Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.18.0
+          cache: pnpm
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Audit known vulnerabilities
+        run: pnpm audit --audit-level high
+      - name: Scan for committed secrets
+        run: pnpm secret:scan
+      - name: Validate production licenses
+        run: pnpm license:check
+      - name: Generate CycloneDX SBOM
+        run: pnpm sbom:generate
+      - name: Preserve SBOM
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: reconai-sbom
+          path: artifacts/sbom.cdx.json
+          if-no-files-found: error
+          retention-days: 30
+
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@3b0bd1d116c0bde30213346b22d4f634d96a2fb0 # v3
+        with:
+          languages: javascript-typescript
+      - name: Analyze
+        uses: github/codeql-action/analyze@3b0bd1d116c0bde30213346b22d4f634d96a2fb0 # v3

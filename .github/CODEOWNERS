@@ -1,0 +1,8 @@
+# Replace with verified maintainer handles before public release.
+* @REPOSITORY_OWNER
+
+/SECURITY.md @REPOSITORY_OWNER
+/docs/threat-model.md @REPOSITORY_OWNER
+/packages/database/ @REPOSITORY_OWNER
+/packages/reconciliation/ @REPOSITORY_OWNER
+/.github/workflows/ @REPOSITORY_OWNER

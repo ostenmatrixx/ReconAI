@@ -1,0 +1,38 @@
+{
+  "name": "@workspace/worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "activate:source-classification-fence": "tsx --conditions=development src/activate-source-event-classification-writer-fence.ts",
+    "dev": "tsx watch src/main.ts",
+    "recovery:rebuild-queue": "tsx --conditions=development src/rebuild-recoverable-queue.ts",
+    "recovery:rebuild-unpublished-queue": "tsx --conditions=development src/rebuild-recoverable-queue.ts",
+    "repair:source-classifications": "tsx --conditions=development src/repair-source-event-classifications.ts",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@workspace/config": "workspace:*",
+    "@workspace/connector-csv": "workspace:*",
+    "@workspace/connector-shopify": "workspace:*",
+    "@workspace/connector-stripe": "workspace:*",
+    "@workspace/connectors": "workspace:*",
+    "@workspace/database": "workspace:*",
+    "@workspace/domain": "workspace:*",
+    "@workspace/ingestion": "workspace:*",
+    "@workspace/object-storage": "workspace:*",
+    "@workspace/observability": "workspace:*",
+    "@workspace/reconciliation": "workspace:*",
+    "bullmq": "5.81.2",
+    "ioredis": "5.11.1",
+    "postgres": "3.4.9",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "tsx": "4.23.1",
+    "typescript": "catalog:"
+  }
+}

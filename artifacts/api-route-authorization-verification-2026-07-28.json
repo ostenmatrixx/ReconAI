@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-28T12:46:48Z",
+  "scope": "Local source, synthetic API/tenant, policy, build, and browser verification for the fail-closed API route authorization contract.",
+  "result": "passed_with_external_evidence_open",
+  "change": {
+    "decision": "ADR 0021",
+    "routeInventory": {
+      "total": 44,
+      "methods": {
+        "GET": 18,
+        "PATCH": 4,
+        "POST": 22
+      },
+      "authenticationBoundaries": {
+        "publicHealth": 2,
+        "identity": 2,
+        "providerSignature": 4,
+        "tenant": 36
+      }
+    },
+    "enforcedBehaviors": [
+      "Application route registration fails when a method/template is absent from the typed security inventory.",
+      "Identity and tenant routes verify the bearer identity before handler execution.",
+      "Tenant routes resolve active membership server-side and enforce every declared permission before handler execution.",
+      "Request-local identity and tenant authority are reused while handler-level permission checks remain in place.",
+      "Provider webhook routes remain bound to their exact-body Shopify or Stripe signature services.",
+      "Missing or invalid authentication returns 401; authenticated foreign membership and insufficient permission return the same 404 contract."
+    ]
+  },
+  "verification": [
+    {
+      "command": "pnpm verify",
+      "status": "passed",
+      "evidence": {
+        "testFiles": 60,
+        "tests": 321,
+        "typescriptProjects": 19,
+        "migrationFiles": 40,
+        "migrationDigestSha256": "75aaa78f514eda88526ea9dee14e894489cba2a40a91d6a9b8ad656417afe84c",
+        "productionLicenses": 209,
+        "build": "passed"
+      }
+    },
+    {
+      "command": "pnpm exec vitest run --project unit --project tenant apps/api/src",
+      "status": "passed",
+      "evidence": {
+        "testFiles": 7,
+        "tests": 62
+      }
+    },
+    {
+      "command": "pnpm test:e2e",
+      "status": "passed",
+      "evidence": {
+        "browser": "Chromium",
+        "tests": 31,
+        "accessibilityScans": 10
+      }
+    },
+    {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    {
+      "command": "pnpm audit --prod --audit-level high",
+      "status": "passed",
+      "evidence": {
+        "knownVulnerabilities": 0
+      }
+    }
+  ],
+  "targetedAssertions": [
+    "The source and typed manifest contain the same 44 unique routes.",
+    "Each tenant manifest permission set exactly equals its handler-level authorizeRequest/requirePermission literals.",
+    "Public, identity, and provider-signature handlers contain no tenant permission call.",
+    "Generated HEAD routes reuse only the reviewed GET contract; unknown methods and paths are rejected.",
+    "Unauthenticated tenant access returns 401 without membership lookup.",
+    "Authenticated foreign-tenant access returns the same bounded 404 as insufficient permission and does not invoke the repository.",
+    "Identity and membership resolution run once per authorized request.",
+    "The privacy evidence package retains both retention:manage and data:export admission."
+  ],
+  "fileDigestsSha256": {
+    "apps/api/src/route-security.ts": "fa2d1363da1269cdaed21829f9a63510eac5f391d6507873dccd26c3c4dcdf2f",
+    "apps/api/src/app.ts": "7e30dd7f7f24018e615bb9b3f3c1a2c9d66bbacc4b110eeaac1d9412e8c31877",
+    "apps/api/src/route-security.tenant.test.ts": "13ac14cdffdb20728279bb400c9f0a128c6f791bedcbe9e3de0319fccc0b95ba",
+    "apps/api/src/app.tenant.test.ts": "6531590369eb9fadd429a89caba7eb7d4fdca5eea8822801615d18ba30bb01e5",
+    "docs/adr/0021-fail-closed-api-route-authorization-contract.md": "ac1afc8f876b98f173edcf70d022ef4df93f6fe0ebe257a4da729cf6fa8d6baf"
+  },
+  "environment": {
+    "node": "v24.15.0",
+    "pnpm": "11.9.0",
+    "platform": "Darwin 25.5.0 arm64"
+  },
+  "limitations": [
+    "This is local source and synthetic evidence, not a penetration test or production certification.",
+    "No current live PostgreSQL, reverse-proxy, multi-replica, staging adversarial, or response-timing exercise was available.",
+    "Repository predicates, PostgreSQL RLS, BFF CSRF/origin controls, and provider signature validation remain independently required.",
+    "No Git commit, push, publication, or deployment was performed."
+  ]
+}

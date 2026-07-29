@@ -1,0 +1,9 @@
+node_modules
+.next
+dist
+coverage
+artifacts
+pnpm-lock.yaml
+packages/database/drizzle
+infra/postgres/init/*.sql
+packages/database/migrations/*.sql

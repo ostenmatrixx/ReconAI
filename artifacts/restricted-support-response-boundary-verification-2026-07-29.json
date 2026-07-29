@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "reconai-evidence-v1",
+  "evidenceType": "restricted-support-response-boundary-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T12:05:09Z",
+  "status": "local_pass_protected_runtime_gate_open",
+  "scope": "Local source, restricted-support route/shared-parser tests, client typechecks, complete Chromium workflows, strict static checks, policy validators, and production-build evidence for the organization-blind restricted-support BFF response and transport boundary. Synthetic identities, request codes, grants, diagnostics, errors, and payloads only. No customer data, real support identity, IdP/MFA system, ticket system, protected ingress, staging deployment, compliance, support-program, or production-readiness claim is included.",
+  "decisions": {
+    "threatModelEntry": "TM-44",
+    "securityReviewControl": "BFF-RESTRICTED-SUPPORT-RESPONSE-001",
+    "apiRouteInventoryChanged": false,
+    "databaseMigrationAdded": false,
+    "supportCapabilityOrDiagnosticFieldAdded": false,
+    "tenantMembershipOrAuthorityAdded": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyNormalizationOrToleranceChanged": false,
+    "financialAuthorityAdded": false,
+    "sourceSystemWriteOrProviderScopeAdded": false,
+    "aiAuthorityOrEnablementChanged": false
+  },
+  "boundary": {
+    "browserRoute": "/api/recon/support",
+    "maximumSuccessJsonBytes": 65536,
+    "maximumInternalApiErrorBytes": 65536,
+    "successfulJsonDecoding": "fatal UTF-8",
+    "operations": {
+      "create_request": {
+        "method": "POST",
+        "fixedUpstreamPath": "/v1/support/access-requests",
+        "requiredSuccessStatus": 201,
+        "browserOutput": ["data.requestCode", "data.requestExpiresAt"],
+        "organizationBlind": true
+      },
+      "read_diagnostics": {
+        "method": "GET",
+        "fixedUpstreamPathTemplate": "/v1/support/organizations/{organizationId}/diagnostics?grantId={grantId}",
+        "requiredSuccessStatus": 200,
+        "browserOutput": [
+          "data.schemaVersion",
+          "data.generatedAt",
+          "data.grantExpiresAt",
+          "data.countsCapped",
+          "data.connections capped counts/timestamp",
+          "data.providerSyncs capped counts/timestamp",
+          "data.reconciliations capped counts/timestamp",
+          "data.exceptions capped count/timestamp",
+          "data.outbox capped counts/timestamp"
+        ],
+        "requiresExactOrganizationAndGrantIds": true
+      }
+    },
+    "acceptedErrors": {
+      "AUTHENTICATION_REQUIRED": 401,
+      "RESOURCE_NOT_FOUND": 404,
+      "RATE_LIMITED": 429
+    },
+    "rejectedConditions": [
+      "cross-site request creation",
+      "malformed or expanded browser action",
+      "missing or expired browser session access token",
+      "malformed organization or grant identifier",
+      "unexpected operation-specific successful status",
+      "expanded or malformed successful response",
+      "expanded internal API error",
+      "unknown internal API error code",
+      "internal API error code/status mismatch",
+      "malformed JSON",
+      "invalid UTF-8",
+      "non-JSON content type",
+      "declared or streamed response above 64 KiB",
+      "upstream redirect"
+    ],
+    "rejectedOutcome": {
+      "status": 502,
+      "privateNoStore": true,
+      "upstreamStatusPreserved": false,
+      "upstreamBodyPreserved": false
+    },
+    "upstreamFetchContainment": {
+      "configuredFixedOrigin": true,
+      "fixedOperationPaths": true,
+      "browserCookiesForwarded": false,
+      "tenantSelectionCookieReadOrForwarded": false,
+      "ambientCredentials": "omit",
+      "redirect": "error",
+      "timeoutMilliseconds": 8000
+    },
+    "intentionalBearerOutput": {
+      "field": "data.requestCode",
+      "entropyBits": 256,
+      "browserHandling": "React memory only; no URL or browser storage; cleared after handoff",
+      "authority": "organization-blind request awaiting separate active tenant-owner approval"
+    }
+  },
+  "source": {
+    "routeAndTestSha256": {
+      "apps/web/src/app/api/recon/support/route.ts": "b1437efe643604b09647a14be2b18cc07b6619b511c6a83afe77a56b4e016709",
+      "apps/web/src/app/api/recon/support/route.test.ts": "3aab1f3ae163db8b0d19dd04daa477bd9c457fd127f8cbff8697704cdfb3d449",
+      "apps/web/src/upstream-api-error.ts": "9bb186a4fdb2775780f2a363547c55d7244f33dd40e4aeea799f602a7ffb4dee",
+      "apps/web/src/upstream-api-error.test.ts": "af3326b08d1281b59c265f9024e1cbbde9b827dadd092a15fec6308b0e1836e7"
+    },
+    "documentationSha256": {
+      "docs/architecture.md": "c15f454b914a36aac0f8e63637918fc96dd116e707c2b1088ee5ac9e4e087b9b",
+      "docs/threat-model.md": "eee8d4991f116b375bd3d47cabc06a4fad11964d04d7bacecefaf60f009ba130",
+      "docs/security-review.md": "cc9e678bc3c9fa09c2ea453fa3eb8fda496e2ae5bc779e9109679d4bd01b4346",
+      "docs/goals/goal-1-vertical-slice.md": "b4542983cea5d28602936ff3eeb80509edae6f11e580e62f9e4334017f965564",
+      "docs/goals/goal-1-audit-2026-07-29-8.md": "835717041fe449de3e569fdf678b2abaaabf4131ea43d5ad2d62bcdddb3a1f0e"
+    }
+  },
+  "verification": {
+    "focusedGate": {
+      "command": "pnpm exec vitest run apps/web/src/app/api/recon/support/route.test.ts apps/web/src/upstream-api-error.test.ts",
+      "status": "passed",
+      "testFilesPassed": 2,
+      "testsPassed": 13,
+      "testsFailed": 0
+    },
+    "browserGate": {
+      "command": "CI=true pnpm test:e2e",
+      "status": "passed",
+      "browser": "Chromium",
+      "testsPassed": 42,
+      "accessibilityChecksPassed": 13,
+      "restrictedSupportWorkflowTestsPassed": 4,
+      "testsFailed": 0
+    },
+    "repositoryGate": {
+      "command": "RECONAI_PENDING_EVIDENCE_PATH=artifacts/restricted-support-response-boundary-verification-2026-07-29.json CI=true pnpm verify",
+      "status": "passed",
+      "testFilesPassed": 83,
+      "testsPassed": 546,
+      "migrationsValidated": 55,
+      "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+      "contractEntrypointsValidated": 4,
+      "sourceFilesValidated": 531,
+      "sourceRootsValidated": 7,
+      "dockerfilesValidated": 3,
+      "composeImagesValidated": 5,
+      "workflowImagesValidated": 3,
+      "actionPinsValidated": 25,
+      "operationalAlertRulesValidated": 13,
+      "metricContractsValidated": 9,
+      "packageManifestsPolicyValidated": 20,
+      "productionLicensesValidated": 224,
+      "productionLockSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+      "productionBuildPassed": true,
+      "productionRouteObserved": "/api/recon/support"
+    },
+    "nodeVersion": "24.15.0",
+    "pnpmVersion": "11.9.0",
+    "gitVersion": "2.50.1"
+  },
+  "knownLimitations": [
+    "This local proof does not exercise a real OIDC support group or MFA assurance claim, actual owner approval, ticket validation, customer notification, endpoint controls, support offboarding, protected ingress, or production support API.",
+    "The requestCode is intentionally browser-visible once because it is the organization-blind handoff capability; its safe handling still depends on the memory-only UI, endpoint controls, and separate owner approval.",
+    "A validated correlation UUID remains browser-visible on an allowlisted error for support correlation; it grants no tenant, diagnostic, financial, provider, or source-system authority.",
+    "The strict response and error policies must be updated deliberately when the support contract changes; unknown drift fails closed.",
+    "This increment does not migrate the openid-client dependency path, close provider sandbox or release-integrity findings, or satisfy protected-staging evidence.",
+    "One local workstation run is not CI, staging, reliability, capacity, compliance, support-program, or production-readiness evidence."
+  ],
+  "sourceControlState": {
+    "repositoryHasNoInitialCommit": true,
+    "filesStaged": false,
+    "commitCreated": false,
+    "pushOrPublishPerformed": false,
+    "deploymentPerformed": false,
+    "repositoryEnvironmentFilesPresent": false,
+    "jsonEvidenceArtifactsIncludingThisOne": 94
+  },
+  "conclusion": "The restricted-support BFF now enforces exact operation-specific success statuses, strict fixed errors, fatal decoding, explicit credential omission, and redirect rejection over its existing organization-blind request and aggregate-only diagnostic schemas. This closes BFF-RESTRICTED-SUPPORT-RESPONSE-001 locally without expanding support, tenant, financial, provider, source-system, or AI authority. Goal 1 remains active; real IdP/MFA, owner, ticket, endpoint, incident, timing, distributed-runtime, and protected-staging gates remain open."
+}

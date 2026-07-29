@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-27T15:27:25Z",
+  "component": "bounded-shopify-order-refund-snapshot-sync",
+  "outcome": "passed",
+  "providerContract": {
+    "provider": "shopify",
+    "endpointTemplate": "https://{canonical-shop}.myshopify.com/admin/api/{quarterly-version}/graphql.json",
+    "readOnly": true,
+    "queryObject": "orders sorted by UPDATED_AT with inclusive updated_at window",
+    "maximumWindowDays": 30,
+    "maximumOrdersPerPage": 100,
+    "maximumRefundTransactionsPerRefund": 100,
+    "maximumPagesPerRun": 100,
+    "maximumItemsPerRun": 10000,
+    "maximumResponseBytes": 2097152,
+    "maximumSnapshotBytes": 1048576,
+    "requestTimeoutMilliseconds": 10000,
+    "maximumRecordedFailures": 6,
+    "cursor": "opaque GraphQL endCursor",
+    "apiVersionAuthority": "configured quarterly version must equal X-Shopify-API-Version",
+    "readCredentialSeparateFromWebhookSigningSecret": true
+  },
+  "sourceSecurity": {
+    "canonicalShopDomainRequired": true,
+    "redirectsRejected": true,
+    "credentialLocation": "X-Shopify-Access-Token header only",
+    "graphqlCostThrottleClassified": true,
+    "nestedRefundPaginationRejected": true,
+    "customerPersonalDataExcludedFromRecoveryProjection": true,
+    "sourceFilesSha256": {
+      "packages/connector-shopify/src/index.ts": "e143ca7f9f04908058b089cc638886708c5827f7430d826a10a9eea33b79aa72",
+      "packages/connector-shopify/src/shopify.test.ts": "bf0dfca569bb667f49a56c6e8703f1c906f63191c0eb80a4c2bd660a9e6d44aa",
+      "packages/ingestion/src/provider-webhooks.ts": "ca085adce045e1ccdff215812c3b0a0cdc696288a68ee17001436ba59be49b98",
+      "packages/database/src/provider-sync.ts": "e7ead1fb1b468e23f56a2600ecdf0dc7090d4fd3007e43b132624375b0f4520f"
+    }
+  },
+  "verification": {
+    "adapterTestsPassed": 4,
+    "providerSyncServiceTestsPassed": 4,
+    "providerIngressTestsPassed": 4,
+    "repositoryDeterministicFilesPassed": 32,
+    "repositoryDeterministicTestsPassed": 172,
+    "postgresqlVersion": "17.10",
+    "postgresqlFilesPassed": 9,
+    "postgresqlTestsPassed": 22,
+    "chromiumTestsPassed": 27,
+    "dedicatedAccessibilityTestsPassed": 10,
+    "migrationCount": 31,
+    "migrationChainSha256": "23ef90147abf01a7f768b0ec756ef892afec860e0d7b35a469196a82178731b2"
+  },
+  "verified": [
+    "fixed constructed Admin GraphQL path from a validated canonical Shopify shop domain",
+    "pinned quarterly API version and response-header equality",
+    "read token excluded from URL, body, persistence, browser response, audit, and log paths",
+    "bounded updated-at window, order page, refund transactions, response bytes, item bytes, timeout, pages, and total snapshots",
+    "opaque forward cursor propagation and cursor-stall rejection",
+    "HTTP and GraphQL authentication, authorization, throttle, provider, timeout, and payload classification",
+    "immutable order snapshot identity includes legacy order ID, updated timestamp, and API version",
+    "stable order/refund identities align snapshot normalization with webhook normalization",
+    "tenant-bound start/load authority through restricted application and worker database roles",
+    "provider-neutral BFF/UI selection and explicit bounded-scope confirmation"
+  ],
+  "securityVerification": {
+    "productionDependencyAudit": "no known vulnerabilities",
+    "licenseAllowlist": "passed",
+    "secretScan": "passed",
+    "credentialsRecorded": false,
+    "providerNetworkRequestExecuted": false
+  },
+  "cleanup": {
+    "freshVerificationDatabaseDropped": true,
+    "postgresStopped": true,
+    "verificationPortsListeningAfterRun": false
+  },
+  "limitations": [
+    "No real Shopify credential, development store, GraphQL request, OAuth installation, or protected-customer-data approval was used.",
+    "Accessible order history is limited by the installed app's scopes and Shopify account/provider rules.",
+    "Current Shopify offline access-token issue, refresh, migration, rotation, revocation, and disconnect are incomplete.",
+    "Scheduled system-authorized repair and distributed GraphQL cost coordination are not implemented.",
+    "No protected staging deployment or provider rate-limit/load exercise was available."
+  ]
+}

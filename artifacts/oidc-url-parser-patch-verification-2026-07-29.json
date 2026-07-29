@@ -1,0 +1,256 @@
+{
+  "schemaVersion": "reconai-evidence-v1",
+  "evidenceType": "oidc-url-parser-patch-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T14:24:41Z",
+  "status": "local_pass_post_patch_keycloak_and_protected_runtime_gates_open",
+  "scope": "Local frozen-install, lockfile/installed-source, loopback OIDC URL behavior, canonical issuer configuration, focused authentication/session, complete deterministic, Chromium, accessibility, supply-chain policy, license, and production-build verification. Synthetic issuers, URLs, identities, tokens, cookies, and provider responses only. No customer data, post-patch real Keycloak flow, external identity provider, protected staging, production, compliance, reliability, or production-readiness claim is included.",
+  "finding": {
+    "id": "SEC-L-003",
+    "ruleId": "SUPPLY-AUTH-URL-001",
+    "priorSeverity": "Low",
+    "priorState": "open",
+    "priorEvidence": "The exact NextAuth transitive openid-client@5.7.1 used Node's deprecated url.parse() in issuer, callback, end-session, WebFinger, and Passport URL handling; an earlier isolated Keycloak run emitted DEP0169.",
+    "currentState": "remediated on the checked-in local source/runtime acceptance surface",
+    "decision": "ADR 0059",
+    "threatModelEntry": "TM-49"
+  },
+  "decisionBoundaries": {
+    "nextAuthVersionChanged": false,
+    "openidClientRegistryVersionChanged": false,
+    "authenticationFrameworkMigrated": false,
+    "sessionCookieOrEncryptionContractChanged": false,
+    "providerTokenStorageOrRefreshAuthorityChanged": false,
+    "rpOrBackchannelLogoutAuthorityChanged": false,
+    "distributedRevocationAuthorityChanged": false,
+    "apiTokenVerificationChanged": false,
+    "databaseMigrationAdded": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyNormalizationOrToleranceChanged": false,
+    "financialOrApprovalAuthorityAdded": false,
+    "sourceSystemWriteOrProviderScopeAdded": false,
+    "aiAuthorityOrEnablementChanged": false
+  },
+  "patchedDependency": {
+    "directParent": "next-auth@4.24.15",
+    "package": "openid-client@5.7.1",
+    "mechanism": "pnpm patchedDependencies",
+    "patchPath": "patches/openid-client@5.7.1.patch",
+    "patchSha256": "745ab8539e7a2495fdc1fb0270bac930a2736bde0c7d15bfa48b1627ab241b7b",
+    "lockfilePatchSha256": "745ab8539e7a2495fdc1fb0270bac930a2736bde0c7d15bfa48b1627ab241b7b",
+    "patchBytes": 4689,
+    "installedJavaScriptFilesScanned": 28,
+    "installedLegacyUrlParseCalls": 0,
+    "changedPaths": [
+      "issuer discovery well-known URL construction",
+      "WebFinger HTTP(S) and acct host extraction",
+      "relative callback URL query extraction",
+      "end-session endpoint and repeated query serialization",
+      "optional Passport issuer hostname extraction"
+    ],
+    "preservedSemantics": [
+      "callback parameters remain reduced to openid-client's existing allowlist",
+      "callback query decoding retains the existing querystring parser",
+      "provider endpoint query values retain precedence over caller/default values",
+      "repeated provider query parameters remain repeated in the logout URL",
+      "NextAuth Keycloak provider continues to require PKCE and state"
+    ],
+    "removalCriterion": "A stable upstream authentication path must preserve the complete authorization, encrypted-session, refresh-rotation, RP/back-channel logout, distributed-revocation, BFF, and API-verification contract and pass the full acceptance surface."
+  },
+  "canonicalIssuerBoundary": {
+    "allowedProtocols": ["http in non-production/local use", "https"],
+    "productionHttpsRequired": true,
+    "oneOptionalTrailingSlash": true,
+    "rejected": [
+      "credentials",
+      "query data",
+      "fragments",
+      "non-HTTP(S) schemes",
+      "backslash spellings",
+      "dot-segment spellings",
+      "doubled trailing slashes",
+      "other noncanonical serialization"
+    ],
+    "clientSelectedIssuer": false,
+    "clientSelectedRedirectOrLogoutOrigin": false
+  },
+  "runtimeValidator": {
+    "entrypoint": "pnpm oidc:check",
+    "checks": [
+      "exact pnpm-workspace patchedDependencies mapping",
+      "64-character lockfile patch SHA-256 and patched resolution",
+      "expected WHATWG controls in the checked-in patch",
+      "exact installed package name and version",
+      "all installed package JavaScript files contain no url.parse() call",
+      "Keycloak well-known endpoint and PKCE/state provider contract",
+      "relative callback URL parsing and parameter allowlisting",
+      "end-session origin/path/defaults/repeated provider values",
+      "optional Passport issuer hostname path",
+      "loopback issuer discovery and exact well-known request path"
+    ],
+    "throwDeprecationModePassed": true,
+    "externalNetworkUsedByRuntimeValidator": false,
+    "loopbackOnly": true
+  },
+  "sourceSha256": {
+    "patches/openid-client@5.7.1.patch": "745ab8539e7a2495fdc1fb0270bac930a2736bde0c7d15bfa48b1627ab241b7b",
+    "pnpm-lock.yaml": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0",
+    "pnpm-workspace.yaml": "f0785a9d5de6eeec707966ae84af9bfc423919b1386638bb6eb2e76ee889c2ad",
+    "apps/web/src/oidc-environment.ts": "94b54e0df86b0c555af61ff6efab0f381ff40826fd8b7319a954cc468960842f",
+    "apps/web/src/oidc-environment.test.ts": "c31bc34b127e950c9dd8ff2e5922237ac9985a32c1c306c3952dd1690750d6ae",
+    "scripts/lib/validate-openid-client-patch.mjs": "10c087dc84ba52a69c2ea3e3fe9d13f3be2f5b531aee371fb06317e299d9a0f3",
+    "scripts/validate-oidc-security.mjs": "78402ce5e67054c9915623d8b0fef7fef5def1f093b59077208b666b93d33d14",
+    "scripts/generate-production-license-inventory.mjs": "4f94fc564d210f0e5b936619b5df6b3ef2b276c42a4fad17f246f4d7e7dd3dd8",
+    "config/production-license-inventory.json": "ddb6940dee1bedff240215505ba4dcb49502cc79b20aee20f92eeac50823dd70",
+    "docs/adr/0059-pinned-oidc-url-parser-patch.md": "61928c4b9bf802f2645cab95835ed2ca5aae527db50707755e4ca2ec411776d5",
+    "docs/threat-model.md": "f326d0aa3b316782ba5a04b39c3d31021ab79c4e195fabbe4aaaa2c8205badf9",
+    "docs/security-review.md": "10c3a0676d0a128d6aa41cae03638b2db30b1431ecd762b049ae958cb37399d9",
+    "docs/goals/goal-1-audit-2026-07-29-13.md": "39430a0912fb203d34fc22e651aa1080fbfca3926516a15d1be78d7ea318c392"
+  },
+  "verification": {
+    "frozenInstall": {
+      "command": "pnpm install --frozen-lockfile",
+      "status": "passed",
+      "packageManager": "pnpm 11.9.0",
+      "lockfileChangedByInstall": false
+    },
+    "oidcDeprecationGate": {
+      "command": "NODE_OPTIONS=--throw-deprecation pnpm oidc:check",
+      "status": "passed",
+      "deprecatedWarningsThrown": 0,
+      "patchSha256PrefixReported": "745ab8539e7a"
+    },
+    "focusedAuthenticationSuite": {
+      "command": "pnpm exec vitest run --project unit apps/web/src/federated-logout.test.ts apps/web/src/oidc-backchannel-logout.test.ts apps/web/src/oidc-environment.test.ts apps/web/src/oidc-session.test.ts apps/web/src/server-session.test.ts apps/web/src/session-revocation.test.ts",
+      "status": "passed",
+      "testFilesPassed": 6,
+      "testsPassed": 31,
+      "testsFailed": 0,
+      "durationSeconds": 0.19,
+      "covered": [
+        "canonical and negative issuer configuration",
+        "server-only provider credentials",
+        "access and refresh token rotation",
+        "fail-closed refresh behavior",
+        "RP logout URL, CSRF, and local cookie clearing",
+        "signed back-channel logout claims, replay, and failure behavior",
+        "server-session revocation admission"
+      ]
+    },
+    "completeDeterministicSuite": {
+      "command": "CI=true pnpm test",
+      "status": "passed",
+      "testFilesPassed": 85,
+      "testsPassed": 561,
+      "testsFailed": 0,
+      "durationSeconds": 3.14
+    },
+    "completeChromiumSuite": {
+      "command": "CI=true pnpm test:e2e",
+      "status": "passed",
+      "testsPassed": 45,
+      "testsFailed": 0,
+      "durationSeconds": 16.3,
+      "includesFederatedLogout": true
+    },
+    "accessibilityOnlyChromiumSuite": {
+      "command": "CI=true pnpm test:accessibility",
+      "status": "passed",
+      "testsPassed": 11,
+      "testsFailed": 0,
+      "automaticallyDetectedViolations": 0,
+      "durationSeconds": 6.7
+    },
+    "licenseInventory": {
+      "command": "pnpm license:inventory && pnpm license:check",
+      "status": "passed_after_transient_registry_timeouts",
+      "productionPackagesValidated": 224,
+      "productionLockSha256": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0",
+      "packageGraphChangedByPatch": false,
+      "generatorDiagnosticImproved": "Registry transport errors now identify the exact package/version while retaining the fixed registry, credential omission, redirect rejection, 10-second deadline, response ceiling, exact identity, integrity, and license validation."
+    },
+    "productionDependencyAudit": {
+      "command": "pnpm audit --prod --audit-level=high",
+      "status": "passed",
+      "knownVulnerabilitiesReported": 0
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed",
+      "secretsReported": 0
+    },
+    "finalRepositoryGate": {
+      "command": "CI=true pnpm verify",
+      "status": "passed",
+      "testFilesPassed": 85,
+      "testsPassed": 561,
+      "migrationsValidated": 55,
+      "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+      "contractEntrypointsValidated": 4,
+      "sourceFilesValidated": 543,
+      "sourceRootsValidated": 7,
+      "dockerfilesValidated": 3,
+      "composeImagesValidated": 5,
+      "workflowImagesValidated": 3,
+      "actionPinsValidated": 25,
+      "operationalAlertRulesValidated": 13,
+      "metricContractsValidated": 9,
+      "packageManifestsPolicyValidated": 20,
+      "productionLicensesValidated": 224,
+      "productionLockSha256": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0",
+      "productionBuildPassed": true,
+      "authenticationRoutesObserved": [
+        "/api/auth/[...nextauth]",
+        "/api/auth/backchannel-logout",
+        "/api/auth/federated-logout"
+      ]
+    }
+  },
+  "verificationNotes": {
+    "firstFinalGateAttempt": "Stopped at format:check for seven newly edited Markdown files.",
+    "correction": "Prettier formatted only the reported documentation, then the complete gate was restarted from the beginning and passed.",
+    "controlWeakened": false,
+    "licenseGenerationRetries": "Three candidate-generation attempts encountered bounded npm registry timeouts; contextual package/version error reporting was added without changing policy, and a later complete exact-registry generation and offline validation passed."
+  },
+  "priorEvidenceDisposition": {
+    "realKeycloakVersion": "26.7.0",
+    "priorAuthorizationRefreshLogoutEvidenceExists": true,
+    "priorEvidencePredatesPatch": true,
+    "claimedAsPostPatchRuntimeEvidence": false,
+    "databaseEvidenceRerun": false,
+    "databaseRerunReason": "No database source or migration changed; the previous fresh 55-migration PostgreSQL 17.10 result remains separately recorded."
+  },
+  "securityReview": {
+    "openCritical": 0,
+    "openHigh": 0,
+    "openMedium": 3,
+    "openLow": 1,
+    "secL003ClosedLocally": true,
+    "productionPenetrationTestClaim": false
+  },
+  "limitations": [
+    "This is local source and loopback runtime evidence, not a post-patch real Keycloak, external IdP, protected-staging, production, penetration-test, compliance, or production-readiness result.",
+    "The patch is maintained by ReconAI until a stable upstream authentication path preserves the complete current contract; it must be intentionally rebased or removed on relevant updates.",
+    "Live IdP-initiated logout across actual Redis-backed web replicas, Redis failure/recovery, clock boundaries, session-secret rotation, and alert delivery remain unverified.",
+    "No owner-authorized Shopify/Stripe provider credential, request, webhook, staging target, deployment credential, alert destination, or production secret was used.",
+    "No database or reconciliation behavior changed, and no new fresh database result is claimed.",
+    "No file was staged, committed, pushed, published, or deployed, and no runtime .env file was created."
+  ],
+  "sourceControlState": {
+    "repositoryHasNoInitialCommit": true,
+    "filesStaged": false,
+    "commitCreated": false,
+    "pushOrPublishPerformed": false,
+    "deploymentPerformed": false,
+    "repositoryEnvironmentFilesPresent": false,
+    "jsonEvidenceArtifactsIncludingThisOne": 99
+  },
+  "runtime": {
+    "operatingSystem": "Darwin",
+    "architecture": "arm64",
+    "node": "v24.15.0",
+    "pnpm": "11.9.0",
+    "git": "2.50.1"
+  },
+  "conclusion": "The exact installed OIDC dependency path now uses WHATWG URL parsing throughout, ambiguous configured issuers fail closed, and frozen-install/runtime checks prevent silent patch loss. SEC-L-003 is remediated locally without changing authentication/session, tenant, financial, provider, source-system, or AI authority. Goal 1 remains active because post-patch real Keycloak, distributed identity lifecycle, provider, owner-decision, operational, historical-evidence, protected-staging, and stable-upstream replacement evidence remains open."
+}

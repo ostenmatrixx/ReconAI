@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-28T04:04:18Z",
+  "correctedAt": "2026-07-28T21:36:44.228Z",
+  "status": "historical_application_and_redis_evidence_superseded_for_edge_authority",
+  "supersededForEdgeAuthorityBy": "artifacts/live-edge-verification-2026-07-29.json",
+  "scope": "Production-required distributed API request limiting, explicit reverse-proxy trust, privacy-safe network keys, fail-closed dependency behavior, and reference edge routing",
+  "productionReadinessClaim": false,
+  "result": "static_and_synthetic_verification_passed_live_redis_nginx_multi_host_load_recovery_and_alert_evidence_pending",
+  "environment": {
+    "node": "v24.15.0",
+    "pnpm": "11.9.0",
+    "redisIntegrationConfigured": false,
+    "nginxExecutableAvailable": false,
+    "dockerExecutableAvailable": false,
+    "stagingTopologyAvailable": false
+  },
+  "priorDefect": {
+    "control": "one in-process IP budget per API replica",
+    "failureMode": "Horizontal scaling multiplied the effective request budget, and no repository-owned edge policy or explicit trusted-proxy contract proved the pre-authentication client identity.",
+    "tenantOrFinancialIntegrityImpactObserved": false
+  },
+  "implementedControls": [
+    "production startup rejects API_RATE_LIMIT_STORE=local",
+    "production startup rejects an empty trusted direct-proxy CIDR allowlist",
+    "proxy configuration rejects malformed, duplicate, whitespace-ambiguous, more-than-16-entry, and IPv4/IPv6 /0 trust",
+    "Redis limiting requires a stable 32-to-64-random-byte base64url key shared by all environment replicas",
+    "a dedicated Redis client uses bounded connect and command timeouts, one request retry, no offline queue, and startup ping",
+    "all replicas share a fixed 120-request-per-60-second budget while existing sensitive route limits remain",
+    "the limiter key is an environment namespace plus HMAC-SHA-256 of Fastify's proxy-verified client address",
+    "limiter keys contain no raw address, authorization value, organization ID, tenant data, or financial data",
+    "Redis store errors prevent route-handler execution rather than silently failing open",
+    "an exceeded budget returns 429 RATE_LIMITED with an application-generated correlation ID",
+    "process liveness bypasses the application limiter to prevent Redis-driven restart storms",
+    "the Nginx reference applies an outer connected-peer budget to browser /api/ and direct /v1/ traffic",
+    "browser API and authentication traffic remains on the Next.js BFF while versioned direct API traffic preserves its path to Fastify",
+    "the corrected public Nginx edge overwrites X-Forwarded-For and X-Real-IP with its observed connected peer; the original append strategy was unsafe and is superseded by live edge evidence",
+    "operations documentation forbids production fail-open/local recovery, global proxy trust, and mixed-key rolling rotation"
+  ],
+  "verification": {
+    "repositoryGate": {
+      "command": "pnpm verify",
+      "status": "passed_with_later_detected_false_assurance",
+      "checks": [
+        "Prettier format check",
+        "ESLint with zero warnings",
+        "TypeScript typecheck across 19 workspace projects",
+        "52 unit/tenant/reconciliation files with 280 passing tests",
+        "40-file migration-chain validation",
+        "schema and runtime-config validation",
+        "reference edge request/forwarding/routing validation",
+        "exact dependency-policy validation across 20 package manifests",
+        "production builds across all applicable workspace projects, including Next.js"
+      ]
+    },
+    "syntheticRateLimitCoverage": {
+      "status": "passed",
+      "covered": [
+        "one exact shared 120-request budget across two independent Fastify instances",
+        "request 121 returns 429 and does not invoke the route",
+        "rate-limit response includes stable code, safe message, and generated correlation ID",
+        "shared-store error fails closed without route execution",
+        "raw client address is absent from Redis keys",
+        "an untrusted connected peer cannot select its identity with X-Forwarded-For",
+        "a trusted direct proxy resolves the first untrusted hop and ignores attacker-controlled prefixes",
+        "125 liveness requests do not consume the normal API budget",
+        "invalid environment namespace and HMAC key material fail before route registration",
+        "production rejects local store, missing key, empty/global/malformed/duplicate proxy trust, and invalid timeouts"
+      ]
+    },
+    "edgeStaticCoverage": {
+      "command": "pnpm edge:check",
+      "status": "passed",
+      "covered": [
+        "bounded Nginx connected-peer rate zone",
+        "explicit 429 behavior on /api/ and /v1/",
+        "Next.js BFF routing for /api/",
+        "path-preserving Fastify routing for /v1/",
+        "connected-peer X-Real-IP and X-Forwarded-For authority checks, corrected to require overwrite after the original validator incorrectly accepted append behavior",
+        "client body-size and slow-body timeout ceilings",
+        "rejection of direct client-supplied X-Forwarded-For forwarding"
+      ],
+      "runtimeInterpretation": "Historical result only: the validator incorrectly accepted $proxy_add_x_forwarded_for at the public edge. That preserved an attacker-selected prefix and could influence Fastify's proxy-resolved limiter address. The validator and configuration now require $remote_addr overwrite; the superseding live edge artifact records parser and observed-response behavior."
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "browserRegression": {
+      "command": "pnpm --filter @workspace/web exec playwright test",
+      "status": "previously_passed_same_date_not_rerun_for_api_edge_increment",
+      "testCount": 31,
+      "accessibilityScanCount": 10,
+      "interpretation": "No web application source changed in this increment. The reference Nginx routing is not exercised by the local browser harness and remains runtime evidence."
+    },
+    "liveIntegrationAttempt": {
+      "command": "pnpm test:integration",
+      "status": "not_executed_missing_environment",
+      "processExitCode": 1,
+      "suiteCountAtSetup": 14,
+      "skippedTestCount": 38,
+      "rateLimitTestDefinitionCount": 1,
+      "missingConfiguration": [
+        "REDIS_URL",
+        "DATABASE_ADMIN_URL and related PostgreSQL role URLs",
+        "S3_ENDPOINT and related object-store configuration"
+      ],
+      "plannedRateLimitCoverage": [
+        "two separate Redis clients and two independent Fastify instances share one random test namespace",
+        "121 concurrent requests produce exactly 120 successful responses and one 429",
+        "only one pseudonymous namespaced key exists and it contains no raw address",
+        "the shared key has a positive bounded expiry"
+      ],
+      "interpretation": "No live integration assertion ran. The new Redis case is a defined test, not passing runtime evidence."
+    }
+  },
+  "operationalImpact": {
+    "databaseMigrationRequired": false,
+    "financialRuleVersionChanged": false,
+    "tenantAuthorityChanged": false,
+    "productionRedisRequired": true,
+    "productionTrustedProxyConfigurationRequired": true,
+    "storeFailurePolicy": "fail request admission closed while process liveness remains available",
+    "keyRotationEffect": "resets pseudonymous counters; mixed old/new replica keys temporarily create parallel budgets",
+    "rollback": "Keep the reviewed edge budget and equivalent distributed enforcement, or temporarily constrain the API to one replica. Do not restore an unverified process-local multi-replica production budget."
+  },
+  "remainingEvidenceAndOperationalRisks": [
+    "This list records the boundary at generation time; artifacts/live-edge-verification-2026-07-29.json supersedes the Nginx authority/runtime items.",
+    "Run the two-client Redis integration test against the supported production Redis version and configuration.",
+    "Parse and execute the reference or equivalent Nginx configuration in a production-like network.",
+    "Prove the exact direct-proxy CIDRs and spoofed forwarding-header behavior through every ingress/load-balancer hop.",
+    "Measure edge and application limits under representative burst, sustained, multi-address, webhook, auth, and expensive-route load.",
+    "Exercise Redis startup failure, runtime failure, recovery, readiness behavior, and alert delivery without enabling fail-open behavior.",
+    "Exercise coordinated HMAC-key rotation and prove that no mixed-key replica window remains.",
+    "Confirm acceptable NAT/shared-egress false-positive behavior and document any reviewed endpoint/user budget extension.",
+    "This artifact makes no production, staging, multi-host, Nginx runtime, live Redis, load, recovery, rotation, or alert claim; later local live Redis, readiness, and edge evidence is recorded separately."
+  ],
+  "decisionsAndRunbooks": [
+    "docs/adr/0018-distributed-api-rate-limit-and-proxy-trust.md",
+    "docs/architecture.md",
+    "docs/environment.md",
+    "docs/self-hosting.md",
+    "docs/deployment.md",
+    "docs/operations-runbook.md",
+    "docs/threat-model.md",
+    "docs/security-review.md",
+    "docs/known-limitations.md"
+  ]
+}

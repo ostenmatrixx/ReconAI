@@ -1,0 +1,338 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-29T22:57:04.071Z",
+  "component": "production-built-container-image-reconciliation-runtime",
+  "outcome": "local_container_image_vertical_slice_passed",
+  "productionReadinessClaim": false,
+  "scope": {
+    "customerDataUsed": false,
+    "providerSystemsContacted": false,
+    "runtimeConfiguration": "development API/worker dependency transport plus production web authentication over ephemeral TLS, Secure cookies, Redis revocation, and production-built image artifacts",
+    "network": "reconai-local_internal"
+  },
+  "runtime": {
+    "podmanClientVersion": "5.8.2",
+    "podmanServerVersion": "5.8.5",
+    "images": {
+      "api": {
+        "imageId": "8a05de6897aaf00ae3072e381fc36d15330aec318d9249b343b172a120c829bd",
+        "architecture": "arm64",
+        "operatingSystem": "linux",
+        "sizeBytes": 358057994,
+        "declaredUser": "node",
+        "effectiveUid": 1000,
+        "status": "running",
+        "capabilitiesDropped": true,
+        "noNewPrivileges": true,
+        "readOnlyMountDestinations": [
+          "/runtime/tls-cert.pem"
+        ]
+      },
+      "worker": {
+        "imageId": "4f1fdf9db555265ca0bb43da9c060b7f47d73ca8cf5fbc58f576cc0b1b25baca",
+        "architecture": "arm64",
+        "operatingSystem": "linux",
+        "sizeBytes": 345891773,
+        "declaredUser": "node",
+        "effectiveUid": 1000,
+        "status": "running",
+        "capabilitiesDropped": true,
+        "noNewPrivileges": true,
+        "readOnlyMountDestinations": []
+      },
+      "web": {
+        "authenticatedProductionTls": {
+          "imageId": "012de53c4e2ce39fca45df4606818b094c72cf0d17c1549efbcd59164eeaa27a",
+          "architecture": "arm64",
+          "operatingSystem": "linux",
+          "sizeBytes": 276846989,
+          "declaredUser": "node",
+          "effectiveUid": 1000,
+          "status": "running",
+          "capabilitiesDropped": true,
+          "noNewPrivileges": true,
+          "readOnlyMountDestinations": [
+            "/runtime/tls-cert.pem"
+          ]
+        },
+        "productionPublicRoute": {
+          "imageId": "012de53c4e2ce39fca45df4606818b094c72cf0d17c1549efbcd59164eeaa27a",
+          "architecture": "arm64",
+          "operatingSystem": "linux",
+          "sizeBytes": 276846989,
+          "declaredUser": "node",
+          "effectiveUid": 1000,
+          "status": "running",
+          "capabilitiesDropped": true,
+          "noNewPrivileges": true,
+          "readOnlyMountDestinations": []
+        }
+      }
+    },
+    "declaredDockerHealthcheckObservedByPodman": false,
+    "manualApiLivenessStatus": 200,
+    "manualApiReadinessStatus": 200,
+    "webStatus": 200,
+    "webCspPresent": true,
+    "environmentCredentialIsolation": {
+      "api": {
+        "injectedVariableNames": [
+          "API_HOST",
+          "API_PORT",
+          "API_RATE_LIMIT_STORE",
+          "APP_ENV",
+          "CONNECTOR_ENCRYPTION_ACTIVE_KEY_VERSION",
+          "CONNECTOR_ENCRYPTION_KEYS",
+          "DATABASE_URL",
+          "LOG_LEVEL",
+          "NODE_ENV",
+          "NODE_EXTRA_CA_CERTS",
+          "OIDC_CLIENT_ID",
+          "OIDC_ISSUER",
+          "OTEL_EXPORTER_OTLP_ENDPOINT",
+          "OTEL_EXPORT_TIMEOUT_MS",
+          "OTEL_METRIC_EXPORT_INTERVAL_MS",
+          "OTEL_TRACE_SAMPLE_RATIO",
+          "RECONAI_CONNECTOR_ENCRYPTION_KEY_V1",
+          "REDIS_URL",
+          "S3_ACCESS_KEY_ID",
+          "S3_BUCKET",
+          "S3_ENDPOINT",
+          "S3_FORCE_PATH_STYLE",
+          "S3_KMS_KEY_ID",
+          "S3_REGION",
+          "S3_SECRET_ACCESS_KEY",
+          "S3_SERVER_SIDE_ENCRYPTION",
+          "WEB_ORIGIN"
+        ],
+        "forbiddenVariableNamesChecked": [
+          "API_ORIGIN",
+          "DATABASE_ADMIN_URL",
+          "DATABASE_MAINTENANCE_URL",
+          "DATABASE_MIGRATION_URL",
+          "DATABASE_WORKER_URL",
+          "OIDC_CLIENT_SECRET",
+          "SESSION_SECRET",
+          "AI_API_KEY"
+        ],
+        "forbiddenVariablesPresent": []
+      },
+      "worker": {
+        "injectedVariableNames": [
+          "APP_ENV",
+          "CONNECTOR_ENCRYPTION_ACTIVE_KEY_VERSION",
+          "CONNECTOR_ENCRYPTION_KEYS",
+          "DATABASE_WORKER_URL",
+          "LOG_LEVEL",
+          "NODE_ENV",
+          "OTEL_EXPORTER_OTLP_ENDPOINT",
+          "OTEL_EXPORT_TIMEOUT_MS",
+          "OTEL_METRIC_EXPORT_INTERVAL_MS",
+          "OTEL_TRACE_SAMPLE_RATIO",
+          "PROVIDER_GAP_REPAIR_ENABLED",
+          "PROVIDER_PRIVACY_DEADLINE_MONITOR_ENABLED",
+          "RECONAI_CONNECTOR_ENCRYPTION_KEY_V1",
+          "REDIS_URL",
+          "S3_ACCESS_KEY_ID",
+          "S3_BUCKET",
+          "S3_ENDPOINT",
+          "S3_FORCE_PATH_STYLE",
+          "S3_KMS_KEY_ID",
+          "S3_REGION",
+          "S3_SECRET_ACCESS_KEY",
+          "S3_SERVER_SIDE_ENCRYPTION",
+          "WEB_ORIGIN"
+        ],
+        "forbiddenVariableNamesChecked": [
+          "API_ORIGIN",
+          "API_RATE_LIMIT_KEY_SECRET",
+          "DATABASE_ADMIN_URL",
+          "DATABASE_MAINTENANCE_URL",
+          "DATABASE_MIGRATION_URL",
+          "DATABASE_URL",
+          "EMAIL_DELIVERY_TOKEN",
+          "OIDC_CLIENT_SECRET",
+          "OIDC_ISSUER",
+          "SESSION_SECRET",
+          "STRIPE_APP_WEBHOOK_SECRET",
+          "SUPPORT_IDENTITY_HMAC_KEY",
+          "AI_API_KEY"
+        ],
+        "forbiddenVariablesPresent": []
+      },
+      "authenticatedWeb": {
+        "injectedVariableNames": [
+          "API_ORIGIN",
+          "APP_ENV",
+          "HOSTNAME",
+          "NEXTAUTH_URL",
+          "NODE_ENV",
+          "NODE_EXTRA_CA_CERTS",
+          "OIDC_CLIENT_ID",
+          "OIDC_CLIENT_SECRET",
+          "OIDC_ID_TOKEN_SIGNING_ALGORITHM",
+          "OIDC_ISSUER",
+          "PORT",
+          "REDIS_URL",
+          "SESSION_COOKIE_SECURE",
+          "SESSION_REVOCATION_REDIS_COMMAND_TIMEOUT_MS",
+          "SESSION_REVOCATION_REDIS_CONNECT_TIMEOUT_MS",
+          "SESSION_REVOCATION_STORE",
+          "SESSION_SECRET",
+          "WEB_ORIGIN"
+        ],
+        "forbiddenVariableNamesChecked": [
+          "API_RATE_LIMIT_KEY_SECRET",
+          "CONNECTOR_ENCRYPTION_KEYS",
+          "DATABASE_ADMIN_URL",
+          "DATABASE_MAINTENANCE_URL",
+          "DATABASE_MIGRATION_URL",
+          "DATABASE_URL",
+          "DATABASE_WORKER_URL",
+          "EMAIL_DELIVERY_TOKEN",
+          "RECONAI_CONNECTOR_ENCRYPTION_KEY_V1",
+          "S3_SECRET_ACCESS_KEY",
+          "SHOPIFY_CLIENT_SECRET",
+          "STRIPE_APP_WEBHOOK_SECRET",
+          "STRIPE_OAUTH_SECRET_KEY",
+          "SUPPORT_IDENTITY_HMAC_KEY",
+          "AI_API_KEY"
+        ],
+        "forbiddenVariablesPresent": []
+      },
+      "publicWeb": {
+        "injectedVariableNames": [
+          "API_ORIGIN",
+          "APP_ENV",
+          "HOSTNAME",
+          "NEXTAUTH_URL",
+          "NODE_ENV",
+          "OIDC_CLIENT_ID",
+          "OIDC_CLIENT_SECRET",
+          "OIDC_ID_TOKEN_SIGNING_ALGORITHM",
+          "OIDC_ISSUER",
+          "PORT",
+          "REDIS_URL",
+          "SESSION_COOKIE_SECURE",
+          "SESSION_REVOCATION_REDIS_COMMAND_TIMEOUT_MS",
+          "SESSION_REVOCATION_REDIS_CONNECT_TIMEOUT_MS",
+          "SESSION_REVOCATION_STORE",
+          "SESSION_SECRET",
+          "WEB_ORIGIN"
+        ],
+        "forbiddenVariableNamesChecked": [
+          "API_RATE_LIMIT_KEY_SECRET",
+          "CONNECTOR_ENCRYPTION_KEYS",
+          "DATABASE_ADMIN_URL",
+          "DATABASE_MAINTENANCE_URL",
+          "DATABASE_MIGRATION_URL",
+          "DATABASE_URL",
+          "DATABASE_WORKER_URL",
+          "EMAIL_DELIVERY_TOKEN",
+          "RECONAI_CONNECTOR_ENCRYPTION_KEY_V1",
+          "S3_SECRET_ACCESS_KEY",
+          "SHOPIFY_CLIENT_SECRET",
+          "STRIPE_APP_WEBHOOK_SECRET",
+          "STRIPE_OAUTH_SECRET_KEY",
+          "SUPPORT_IDENTITY_HMAC_KEY",
+          "AI_API_KEY"
+        ],
+        "forbiddenVariablesPresent": []
+      }
+    }
+  },
+  "authorization": {
+    "oidcAuthority": "isolated digest-pinned Keycloak 26.7.0 verification container",
+    "oidcTransport": "ephemeral self-signed TLS trusted only by the bounded verifier runtime",
+    "authorizationCodePkceLoginCompleted": true,
+    "authorizationRequestObserved": true,
+    "authorizationClientIdMatched": true,
+    "authorizationRedirectMatched": true,
+    "authorizationPkceS256": true,
+    "browserSessionStatus": 200,
+    "browserProviderCredentialDisclosure": false,
+    "authenticatedBffRunStartStatus": 202,
+    "authenticatedBffRunDetailStatus": 200,
+    "bffUpstreamCorrelationIdDisclosed": false,
+    "explicitOrganizationSelectionStatus": 200,
+    "secureHttpOnlySessionCookieObserved": true,
+    "syntheticKeycloakRealmImportedIntoIsolatedContainer": true,
+    "composeKeycloakClientMutated": false,
+    "verifiedSubjectBoundToFixtureMembership": true,
+    "syntheticFixtureIssuerTemporarilyRebound": true,
+    "foreignOrganizationExists": true,
+    "crossTenantRunDiscoveryStatus": 404,
+    "crossTenantExistenceDisclosed": false,
+    "tenantlessRestrictedRoleCounts": {
+      "organizations": 0,
+      "canonical_records": 0,
+      "reconciliation_runs": 0,
+      "audit_events": 0
+    }
+  },
+  "reconciliation": {
+    "runId": "b92d3991-7d63-402c-ba49-b3869888788a",
+    "correlationId": "fdebbc4f-57ca-4d7e-a10a-a0b5f8e09eea",
+    "status": "succeeded",
+    "inputCount": 8,
+    "matchCount": 3,
+    "exceptionCount": 1,
+    "errorCount": 0,
+    "operationalStateApplied": true,
+    "matchedRules": [
+      "order-payment",
+      "refund",
+      "refund-accounting-split"
+    ],
+    "splitRuleVersion": "1.5.0",
+    "splitReasonCode": "REFUND_ACCOUNTING_SPLIT_TOTAL_MATCHED",
+    "splitRecordReferenceCount": 3,
+    "exceptionReasonCode": "DUPLICATE_SOURCE_EXTERNAL_IDENTIFIER"
+  },
+  "persistence": {
+    "migrations": 56,
+    "successful_runs": 1,
+    "match_snapshots": 3,
+    "exception_snapshots": 1,
+    "published_outbox": 1,
+    "successful_jobs": 1,
+    "run_audit_events": 2
+  },
+  "boundedLogScan": {
+    "reconai-image-oidc": {
+      "checkedLines": 23,
+      "findings": 0
+    },
+    "reconai-image-api": {
+      "checkedLines": 47,
+      "findings": 0
+    },
+    "reconai-image-api-tls": {
+      "checkedLines": 0,
+      "findings": 0
+    },
+    "reconai-image-worker": {
+      "checkedLines": 3,
+      "findings": 0
+    },
+    "reconai-image-web": {
+      "checkedLines": 4,
+      "findings": 0
+    },
+    "reconai-image-web-public": {
+      "checkedLines": 4,
+      "findings": 0
+    }
+  },
+  "limitations": [
+    "The API and worker images were production-built but intentionally ran with development configuration because the local dependency network uses HTTP and development credentials.",
+    "One web-image instance ran the real Keycloak authorization-code-plus-PKCE and authenticated BFF journey with production HTTPS origins, Secure cookies, and Redis-backed revocation; a separate production-valid instance served only its public route over loopback HTTP.",
+    "Ephemeral self-signed TLS terminated at a verifier-owned Node proxy for the web image and directly in the isolated Keycloak container; this does not prove production ingress or certificate policy.",
+    "Chromium used fixed host-resolver mappings and ignored only the ephemeral synthetic CA error so the browser and private containers shared the exact Keycloak issuer and web callback hostnames without changing workstation DNS.",
+    "Podman's default OCI image format ignored Docker HEALTHCHECK metadata, so this verifier called liveness and readiness directly.",
+    "This runtime exercise does not scan images itself; the exact application image identities separately passed the bounded Trivy/CycloneDX candidate verifier.",
+    "This is one rootless single-machine ARM64 execution, not Docker Engine, an amd64 candidate archive, protected staging, TLS/ingress, a prior/current image rollout, or a capacity/SLO result.",
+    "No provider sandbox, customer payload, production credential, external collector, alert delivery, hosted CI, publication, registry push, or deployment was used."
+  ],
+  "credentialsRecorded": false
+}

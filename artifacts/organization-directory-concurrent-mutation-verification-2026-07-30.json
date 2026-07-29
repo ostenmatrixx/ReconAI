@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 2,
+  "recordedAt": "2026-07-29T17:23:47.000Z",
+  "component": "organization-directory-concurrent-mutation-semantics",
+  "outcome": "local_fresh_postgresql_and_mocked_browser_concurrency_contract_passed",
+  "productionReadinessClaim": false,
+  "sourceState": "uncommitted working tree; no repository commit exists",
+  "scope": {
+    "boundaries": [
+      "fresh PostgreSQL execution of all current migrations through separate migrator and restricted application roles",
+      "name-based keyset cursor followed by an administrator fixture rename between page requests",
+      "documented non-snapshot navigation behavior when an unseen row moves behind the cursor",
+      "exact identity-intersected lookup recovery after rename",
+      "immediate active-membership exclusion after fixture deactivation and recovery after reactivation",
+      "foreign-identity exact-lookup concealment and tenantless row-level-security denial",
+      "browser deduplication and current-name replacement when the same membership appears across mutable page boundaries"
+    ],
+    "customerDataUsed": false,
+    "identityProviderContacted": false,
+    "providerSystemsContacted": [],
+    "objectStorageExercised": false
+  },
+  "runtime": {
+    "topology": "isolated host PostgreSQL plus mocked local Chromium application boundaries",
+    "host": {
+      "operatingSystemKernel": "Darwin 25.5.0",
+      "architecture": "arm64",
+      "node": "v24.15.0",
+      "pnpm": "11.9.0"
+    },
+    "postgresql": {
+      "version": "17.10",
+      "listenAddress": "127.0.0.1",
+      "port": 55466,
+      "dataChecksums": "on",
+      "authentication": "isolated loopback trust at the server boundary; migrator and application URLs used separate non-superuser roles"
+    },
+    "browser": {
+      "engine": "Chromium",
+      "directoryResponses": "synthetic same-origin fixtures",
+      "providerLoginExercised": false
+    }
+  },
+  "runtimeSourceVerification": {
+    "postgresql": {
+      "officialSourceVersion": "17.10",
+      "sourceArchiveSha256Observed": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+      "serverBinarySha256Observed": "232bc48cf24de7c346715fe4c2e2a9fd2ed3f856597f5e1703959be5dfd1fecf",
+      "initdbBinarySha256Observed": "301a003c63600360b3685a86ffc1e693010235ad0f7f4c0b5157f1b3240bc5f6"
+    },
+    "tenantIntegrationTestSha256": "bda68acc8bce533631f623267f96f542e118d4273ac578c355ab60627c057fcb",
+    "browserSelectionTestSha256": "0106c4d5cb215d78434b6e3ba7e9c41477050ebaf850967d5593a0e81b484437",
+    "browserOrganizationSwitcherSha256": "77277b748234f1e2bf4976b79f1fed3440fc2594507b1240aee412ead9f0bc11",
+    "databaseDirectoryMigrationSha256": "8027b6f9c204cddaa841029a425471bb8ab88c8d541eb52372a0d6b39a0552ee",
+    "lockfileSha256": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0"
+  },
+  "databaseJourney": {
+    "command": "pnpm exec vitest run --project integration packages/database/src/tenant.integration.test.ts",
+    "testFiles": 1,
+    "tests": 12,
+    "status": "passed",
+    "appliedMigrations": 55,
+    "firstPageOrganization": "Integration Tenant A",
+    "renamedUnseenOrganization": "Aardvark Concurrent Tenant",
+    "pageAfterRenameCount": 0,
+    "nonSnapshotNavigationObserved": true,
+    "exactLookupAfterRenameCount": 1,
+    "exactLookupReturnedCurrentName": true,
+    "pageAfterDeactivationCount": 0,
+    "exactLookupAfterDeactivationCount": 0,
+    "exactLookupAfterReactivationCount": 1,
+    "reactivatedRole": "reviewer",
+    "foreignIdentityExactLookupCount": 0,
+    "applicationRoleTenantlessOrganizationRows": 0,
+    "terminalOrganizationNameRestored": "Integration Tenant B",
+    "terminalMembershipStatusRestored": "active",
+    "terminalAuditEvents": 5
+  },
+  "browserJourney": {
+    "command": "pnpm --filter @workspace/web exec playwright test tests/organization-selection.spec.ts",
+    "tests": 4,
+    "accessibilityTests": 1,
+    "status": "passed",
+    "duplicateOrganizationIdAcrossPages": true,
+    "firstPageName": "Zulu Before Rename",
+    "secondPageCurrentName": "Aardvark After Rename",
+    "uniqueOptionsAfterMerge": 2,
+    "currentNameReplacedStaleName": true,
+    "automaticAccessibilityViolations": 0
+  },
+  "securityInterpretation": {
+    "snapshotCompletenessClaim": false,
+    "acceptedContract": "A mutable name-ordered browsing session may omit or repeat a membership, but every page and exact lookup recomputes current identity authority; browser merge is ID-deduplicated; search/reload recovers navigation drift.",
+    "clientCursorGrantsAuthority": false,
+    "clientOrganizationIdGrantsAuthority": false,
+    "deactivatedMembershipSelectable": false,
+    "foreignOrganizationExistenceDisclosed": false
+  },
+  "verificationLimitations": [
+    "The database mutations are test-harness fixture controls applied between page requests and restored before terminal assertions; they do not exercise the product membership-administration API or its audit workflow.",
+    "The browser responses are synthetic same-origin fixtures and do not compose a real identity provider with mutation timing.",
+    "The exercise does not prove scaled mutation rates, multiple simultaneous administrators, serializable snapshots, substantially larger directories, representative timing, multi-host behavior, staging, or rolling deployment.",
+    "The locally built PostgreSQL distribution does not include the optional amcheck extension; two attempted pg_amcheck invocations correctly reported that no relations could be checked, so no amcheck claim is made.",
+    "No credential, token, session cookie, customer data, or production payload is recorded."
+  ],
+  "repositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFiles": 85,
+    "tests": 561,
+    "focusedDatabaseTestFiles": 1,
+    "focusedDatabaseTests": 12,
+    "focusedBrowserTests": 4,
+    "focusedBrowserAccessibilityTests": 1,
+    "migrationFiles": 55,
+    "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+    "contractEntrypoints": 4,
+    "sourceBoundaryFiles": 556,
+    "evidenceFiles": 107,
+    "evidenceBytesAtFullGateBeforeResultAnnotation": 1211629,
+    "productionPackageLicenses": 224,
+    "format": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "schemaConfigEdgeOidcContainerAlertSourceEvidenceDependencyLicenseChecks": "passed",
+    "secretScan": "passed",
+    "productionDependencyAudit": "no known vulnerabilities"
+  },
+  "cleanup": {
+    "postgresqlStoppedAfterEvidenceCapture": true,
+    "browserAndWebStoppedByPlaywright": true,
+    "runtimeEnvironmentFileCreated": false,
+    "postgresqlOfflineChecksum": {
+      "filesScanned": 1498,
+      "blocksScanned": 4088,
+      "badChecksums": 0,
+      "dataChecksumVersion": 1
+    },
+    "closedPorts": [
+      3000,
+      55466
+    ],
+    "isolatedRuntimeMovedToTrash": true,
+    "trashLocationRecorded": false
+  },
+  "credentialsOrCustomerDataRecorded": false
+}

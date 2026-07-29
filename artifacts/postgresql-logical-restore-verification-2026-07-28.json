@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-28T13:36:30Z",
+  "verifiedAt": "2026-07-28T13:41:32Z",
+  "component": "isolated-postgresql-logical-backup-and-restore",
+  "outcome": "local_database_restore_passed_complete_backup_and_staging_objectives_open",
+  "productionReadinessClaim": false,
+  "recoveryObjectivesClaimed": false,
+  "scope": {
+    "included": [
+      "isolated PostgreSQL 17.10 source and target clusters",
+      "data-checksummed clusters with loopback-only listeners",
+      "all 40 ReconAI migrations",
+      "two synthetic tenant identities plus tenant-scoped import/connection and audit data",
+      "custom-format pg_dump archive with owners and ACLs",
+      "single-transaction pg_restore into a separately initialized cluster",
+      "metadata-only content/catalog/RLS/grant comparison",
+      "tenant, audit, migration, repository, worker, retention, OAuth, privacy, and deterministic reconciliation database-backed tests",
+      "pg_amcheck and offline pg_checksums validation"
+    ],
+    "excluded": [
+      "base backup, WAL archiving, or point-in-time recovery",
+      "object storage versions, lifecycle, inventory, or restore",
+      "Redis/BullMQ reconstruction from the transactional outbox",
+      "configuration, secret-manager, or KMS key-reference recovery",
+      "backup encryption, immutable storage, access review, retention, or external alerting",
+      "prior application image compatibility, cutover, representative volume, or staging RPO/RTO"
+    ]
+  },
+  "runtime": {
+    "serverPackage": "@embedded-postgres/darwin-arm64@17.10.0-beta.17",
+    "serverPackageTarballSha256": "41fa2aa47ec3ae7c8692719881c6bdb8376365dd417673b37ffe8281f28f7064",
+    "serverBinarySha256": "8776e8dfcc8fd7eaaf02db978d00f225a1905b6cbe9ecdd3cf5e86cf3a00e33f",
+    "serverVersion": "PostgreSQL 17.10",
+    "officialClientSource": "https://ftp.postgresql.org/pub/source/v17.10/postgresql-17.10.tar.bz2",
+    "officialClientSourceSha256Published": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+    "officialClientSourceSha256Observed": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+    "officialClientSourceHashMatched": true,
+    "clientConfigureOptions": [
+      "--without-icu",
+      "--without-readline",
+      "--without-zlib",
+      "--without-lz4",
+      "--without-zstd"
+    ],
+    "pgDumpVersion": "pg_dump (PostgreSQL) 17.10",
+    "pgDumpBinarySha256": "be25b9604f65e0e6192f973c940fb75d66d09f7990b5c38249fd3c049be3877d",
+    "pgRestoreVersion": "pg_restore (PostgreSQL) 17.10",
+    "pgRestoreBinarySha256": "e39abcd20cade9077b9bdeab1b234e0661b6227cb487b0ac77baadf6a370d690",
+    "pgAmcheckBinarySha256": "4b2e43ab5eda7c9148ab83404e2bb0ebe9c58b27c28782fe48f8a45da1a0c029",
+    "pgChecksumsBinarySha256": "173807c4fa460e00bc6bb5d059365030ff7b20e6529c00802bd7b3c521d31d77"
+  },
+  "clusters": {
+    "source": {
+      "systemIdentifier": "7667570327780993814",
+      "loopbackOnly": true,
+      "port": 50541,
+      "freshCluster": true,
+      "dataChecksums": "on",
+      "fsync": true,
+      "fullPageWrites": true
+    },
+    "restored": {
+      "systemIdentifier": "7667570332613888801",
+      "loopbackOnly": true,
+      "port": 50542,
+      "freshCluster": true,
+      "dataChecksums": "on",
+      "fsync": true,
+      "fullPageWrites": true,
+      "distinctSystemIdentifier": true
+    },
+    "productionCredentialUsed": false,
+    "customerDataUsed": false
+  },
+  "archive": {
+    "format": "PostgreSQL custom",
+    "compression": "none",
+    "serializableDeferrableSnapshot": true,
+    "lockWaitTimeoutMilliseconds": 5000,
+    "ownersAndAccessControlListsIncluded": true,
+    "bytes": 347363,
+    "sha256": "359c89f011f47de5f04d403d451fe271f2fb89f79341598c71554cb6c293dfe7",
+    "tableOfContentsEntries": 528,
+    "tableOfContentsSha256": "f24a4eadeb8d06ceb41737ed810efc9e937d816a6fdc11dd17c8a99eb55494c3",
+    "expandedSqlSha256": "cb383f691b78e9c534c1b97e170e15a84aadf109d88fe47873e5f24e6194d359",
+    "highRiskRestorePatternMatches": 0,
+    "highRiskPatternsScanned": [
+      "COPY ... PROGRAM",
+      "CREATE EXTENSION",
+      "CREATE LANGUAGE",
+      "CREATE FOREIGN DATA WRAPPER",
+      "CREATE SERVER",
+      "SECURITY LABEL",
+      "ALTER SYSTEM"
+    ],
+    "sourceSuperuserTrusted": true,
+    "dumpElapsedSeconds": 0.05,
+    "restoreSingleTransaction": true,
+    "restoreExitOnError": true,
+    "restoreElapsedSeconds": 0.11,
+    "timingInterpretation": "The tiny synthetic dataset is not representative RTO, throughput, lock, or capacity evidence."
+  },
+  "exactRestoreComparison": {
+    "checkedInCommand": "pnpm backup:verify",
+    "confirmation": "COMPARE-ISOLATED-RESTORE",
+    "defaultNetworkBoundary": "loopback only unless explicitly enabled for an approved remote drill",
+    "comparisonMatched": true,
+    "customerDataRecorded": false,
+    "counts": {
+      "tables": 34,
+      "rows": 55,
+      "columns": 411,
+      "constraints": 252,
+      "policies": 55,
+      "indexes": 98,
+      "triggers": 41,
+      "functions": 64,
+      "rlsEnabled": 33,
+      "rlsForced": 33,
+      "grants": 376
+    },
+    "digests": {
+      "tableData": "f9faf428ee5ed87f20c71fea25935c7b45b7bb857f15edae0dbc0706f6039bac",
+      "columns": "41d485a3c0a58f9210b8b40564f6829788238acd1fbbd8adba924b17fd153dc4",
+      "constraints": "0e8bcafa5cb712451f4421b10847ef283987715e0a110d63c4959adfaa1d6ea0",
+      "policies": "9a60f1d547d22317bf223b40dad29ccb8d522e700099665a8d46163586e7e849",
+      "indexes": "4298bfffca6dc3fa2b64d155c376ed8299eea95c39497a6b7706565e6d184b15",
+      "triggers": "fbd71cbcd08e8704e8eb26478eea3b5fcb15d79222963fb9b13eddc4988e7b3e",
+      "functions": "e5f1d450f3b27c45e01cb0aab29397d6da032e15eef2141601e8ceb657c72db3",
+      "rls": "4a34e5e88c7da85bd52bc9ce00df8d352d29fd3a2bc3d891edf0d9ab9ba8f25c",
+      "grants": "f7ac80c653a005669bbce202f1ed814b8729f37f8305a95efcec230a5e4466fb"
+    }
+  },
+  "postRestoreVerification": {
+    "sourceTenantControlTest": {
+      "files": 1,
+      "tests": 9,
+      "status": "passed"
+    },
+    "restoredTenantControlTest": {
+      "files": 1,
+      "tests": 9,
+      "status": "passed"
+    },
+    "restoredDatabaseBackedSuite": {
+      "files": 11,
+      "tests": 34,
+      "status": "passed",
+      "coverage": [
+        "tenant and negative cross-tenant RLS",
+        "append-only audit writer, concurrency, and topology constraints",
+        "all 40 migrations and populated 0038-to-0039 upgrade",
+        "API repositories and deterministic reconciliation worker execution",
+        "CSV, outbox, provider receipt/sync/OAuth/privacy, retention, and credential lifecycle repositories"
+      ]
+    },
+    "leastPrivilegeRoles": {
+      "roles": [
+        "reconai_app",
+        "reconai_migrator",
+        "reconai_worker"
+      ],
+      "allNonSuperuser": true,
+      "allNoCreateRole": true,
+      "allNoCreateDatabase": true,
+      "allNoBypassRls": true
+    },
+    "auditTopologyAfterDatabaseSuite": {
+      "organizationsWithAudit": 9,
+      "organizationsWithOneGenesisOneHeadAndFullReachability": 9
+    },
+    "pgAmcheck": {
+      "status": "passed",
+      "relationsChecked": 466
+    },
+    "offlinePgChecksums": {
+      "source": {
+        "filesScanned": 1442,
+        "blocksScanned": 4134,
+        "badChecksums": 0,
+        "checksumVersion": 1
+      },
+      "restoredAfterDatabaseSuite": {
+        "filesScanned": 1446,
+        "blocksScanned": 4268,
+        "badChecksums": 0,
+        "checksumVersion": 1
+      },
+      "restoredCleanVerificationCopy": {
+        "filesScanned": 1443,
+        "blocksScanned": 4147,
+        "badChecksums": 0,
+        "checksumVersion": 1
+      }
+    }
+  },
+  "repositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFiles": 62,
+    "tests": 326,
+    "migrationFiles": 40,
+    "migrationChainSha256": "75aaa78f514eda88526ea9dee14e894489cba2a40a91d6a9b8ad656417afe84c",
+    "productionBuild": "passed",
+    "secretScan": "passed",
+    "dependencyAudit": "no known vulnerabilities",
+    "containerIntegrityCheck": "passed"
+  },
+  "cleanup": {
+    "sourceServerStopped": true,
+    "restoredServerStopped": true,
+    "temporaryDrillMovedToTrash": true,
+    "trashPath": "<local-home>/.Trash/reconai-backup-restore.CW015I",
+    "portsListeningAfterRun": false
+  },
+  "limitations": [
+    "This is a local logical-dump component drill, not the encrypted base-backup plus WAL/PITR design required for production.",
+    "No object version, noncurrent version, delete marker, lifecycle, inventory, or object checksum restore was exercised.",
+    "No Redis/BullMQ empty-start and transactional-outbox reconstruction was exercised.",
+    "No configuration, secret-manager, KMS key reference, connector credential decryptability, email, or AI disablement recovery was exercised.",
+    "The source and target used synthetic data on one workstation without customer/provider egress.",
+    "The archive was deliberately uncompressed because the locally compiled client omitted compression libraries; production backup format, encryption, immutable storage, access, and retention remain unapproved.",
+    "The measured 0.05-second dump and 0.11-second restore are not RPO, RTO, representative-volume, lock-impact, or staging-capacity evidence.",
+    "No production, staging, cutover, previous-image, provider, customer-data, or full disaster-recovery result is claimed."
+  ],
+  "credentialsRecorded": false
+}

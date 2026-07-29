@@ -1,0 +1,352 @@
+{
+  "evidenceType": "source-object-classification-correction-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T06:03:40.185Z",
+  "scope": "Local source, unit, tenant/API, static migration, production-build, and Chromium evidence correcting fixed-family source watermarks to use immutable receipt classification rather than provider transport topics. No customer data, PostgreSQL migration execution, provider credential/request, source-system write, protected staging, or production environment was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/tenant-source-object-watermarks-verification-2026-07-29.json",
+      "sha256": "45bf2f224dec735379594c5ff9b571596be1701f2be291dd061d59a5804d2ec8",
+      "purpose": "The immediately preceding immutable 49-migration, 481-test watermark artifact. Its strict tenant/API/browser evidence remains historical, but its direct external_object_type family-aggregation premise is withdrawn by this corrective artifact."
+    }
+  ],
+  "correction": {
+    "priorClaimFoundInvalid": true,
+    "invalidPremise": "Provider source_events.external_object_type normally stores transport topics such as orders/snapshot, orders/updated, payment_intent.succeeded, and refund.updated rather than the six product-facing families.",
+    "whyPriorFocusedEvidenceWasInsufficient": "The ADR 0046 mapper fixtures supplied family labels directly and therefore bypassed normal provider ingestion.",
+    "oneToManyCase": "One authenticated Shopify orders/snapshot receipt always classifies to order and additionally classifies to refund_transaction only when the exact validated payload contains refund transactions.",
+    "priorAdrAndArtifactModified": false,
+    "priorEvidenceMayClaimNormalIngestionFamilyCoverage": false,
+    "correctionMethod": "Accepted superseding ADR, additive migration, classification-aware writers, conservative reader state, tests, and a new immutable artifact."
+  },
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "playwright": "1.62.0"
+  },
+  "decision": {
+    "governingAdr": "ADR 0047",
+    "governingAdrStatus": "Accepted",
+    "governingAdrSha256": "65a1eb833c483d78a3e88d2cc3d42c054f3f01a47798b6733e571705a8022530",
+    "supersedesAdr0046Scope": "source-family storage/query premise and watermark read mechanism",
+    "securityReviewControl": "CONNECTOR-SOURCE-CLASSIFICATION-001",
+    "threatModelEntry": "TM-37",
+    "databaseMigrationRequired": true,
+    "databaseMigration": "0049_source_event_object_classifications.sql",
+    "configurationChangeRequired": false,
+    "publicApiResponseChanged": true,
+    "publicApiChangeKind": "The existing object-watermark discriminated union adds classification_unavailable.",
+    "rawProviderTopicChanged": false,
+    "sourceEventWriteBehaviorChanged": true,
+    "sourceEventWriteBehaviorChange": "One append-only classification row is committed per operational provider or CSV source event.",
+    "providerReadRequestOrSourceSystemWriteAdded": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyAuditReviewRetentionOrAiBehaviorChanged": false,
+    "classificationAuthoritativeForNormalizationCompletenessOrFinancialBehavior": false
+  },
+  "fixedFamilyContract": {
+    "sharedSchema": "SourceObjectFamilySchema",
+    "classifierVersion": "source-object-family-v1",
+    "shopify": [
+      "order",
+      "refund_transaction"
+    ],
+    "stripe": [
+      "payment_intent",
+      "refund",
+      "balance_transaction"
+    ],
+    "accountingCsv": [
+      "csv_row"
+    ],
+    "states": [
+      "never_observed",
+      "observed",
+      "classification_unavailable"
+    ],
+    "stableProviderSpecificOrder": true,
+    "everyExpectedFamilyReturned": true,
+    "observedFields": [
+      "latestSourceAt",
+      "latestReceivedAt"
+    ],
+    "sourceAndReceiptMaximaIndependent": true,
+    "dynamicObjectFamilyAccepted": false,
+    "sourceEventExternalObjectIdCountMoneyCurrencyPayloadOrCredentialReturned": false,
+    "stripeBalanceTransactionInExpectedContract": true,
+    "stripeBalanceTransactionCurrentlyIngested": false,
+    "meaningOfStableAbsentBalanceFamily": "An honest V1 source gap, not processing-fee evidence."
+  },
+  "classificationRules": {
+    "classificationOccursAfterProviderAuthentication": true,
+    "classificationRequiresExactPayloadSchema": true,
+    "shopifyOrdersCreateOrUpdated": [
+      "order"
+    ],
+    "shopifyRefundsCreate": [
+      "refund_transaction"
+    ],
+    "shopifySnapshotWithoutRefundTransaction": [
+      "order"
+    ],
+    "shopifySnapshotWithRefundTransaction": [
+      "order",
+      "refund_transaction"
+    ],
+    "stripePaymentIntentDiscriminator": [
+      "payment_intent"
+    ],
+    "stripeRefundDiscriminator": [
+      "refund"
+    ],
+    "csvCommittedRow": [
+      "csv_row"
+    ],
+    "shopifyPrivacyTopicsClassifiedAsOperationalFamily": false,
+    "providerCompatibilityValidatedByWriter": true,
+    "replayRequiresExactImmutableFamilyArray": true
+  },
+  "databaseContract": {
+    "table": "source_event_object_classifications",
+    "primaryKey": [
+      "organization_id",
+      "source_event_id"
+    ],
+    "tenantCompositeSourceEventForeignKey": true,
+    "organizationIdNonNull": true,
+    "classificationRepresentation": "One complete non-empty text array per source event.",
+    "exactV1Shapes": [
+      [
+        "order"
+      ],
+      [
+        "refund_transaction"
+      ],
+      [
+        "order",
+        "refund_transaction"
+      ],
+      [
+        "payment_intent"
+      ],
+      [
+        "refund"
+      ],
+      [
+        "balance_transaction"
+      ],
+      [
+        "csv_row"
+      ]
+    ],
+    "duplicateOrMixedProviderArrayAcceptedByDatabase": false,
+    "forcedRowLevelSecurity": true,
+    "tenantPolicy": true,
+    "appendOnlyUpdateDeleteTrigger": true,
+    "applicationPrivileges": [
+      "SELECT",
+      "INSERT"
+    ],
+    "workerPrivileges": [
+      "SELECT",
+      "INSERT"
+    ],
+    "applicationOrWorkerUpdateDeleteTruncatePrivilege": false,
+    "storesMoneyCurrencyExternalObjectPayloadCredentialOrAccount": false,
+    "automaticLegacyBackfill": false,
+    "noBackfillReason": "A legacy Shopify snapshot topic cannot prove refund presence, and an unbounded object-store scan is unsafe in a schema migration."
+  },
+  "atomicityAndIdempotency": {
+    "providerTransaction": [
+      "source event receipt",
+      "source-event family classification",
+      "durable outbox envelope"
+    ],
+    "csvImportCompletionTransaction": [
+      "CSV source rows",
+      "CSV-row classifications",
+      "canonical records",
+      "field provenance",
+      "import completion"
+    ],
+    "providerSourceEventIdStableAcrossReplay": true,
+    "providerClassificationConflictFailsTransaction": true,
+    "csvCompletionVerifiesSourceCanonicalAndClassificationCounts": true,
+    "classificationArrayAtomicCompleteness": true,
+    "oneRowPerFamilyPartialWriteModelUsed": false
+  },
+  "tenantAndReadContract": {
+    "endpointPermission": "financial-records:view",
+    "tenantContextSource": "authenticated membership resolved server-side",
+    "clientOrganizationIdGrantsAccess": false,
+    "connectionClassificationAndGapQueriesShareTenantTransaction": true,
+    "allThreeQueriesHaveExplicitOrganizationPredicates": true,
+    "forcedRowLevelSecurityRetained": true,
+    "classifiedRead": "Join classification to the same tenant source event, unnest the fixed array, and compute independent maximum source and receipt timestamps by connection and family.",
+    "unclassifiedRead": "Detect operational source events lacking the exact supported classifier version; exclude only exact Shopify privacy topics.",
+    "oneUnclassifiedOperationalReceiptBehavior": "Every expected family on that connection is classification_unavailable.",
+    "knownObservedRowsMixedWithNeverObservedDuringGap": false,
+    "futureOrUnknownClassifierVersionTreatedAsCompleteCoverage": false,
+    "foreignConnectionWatermarkAccepted": false,
+    "foreignConnectionGapAccepted": false,
+    "nonPositiveOrDuplicateGapRowAccepted": false,
+    "providerIncompatibleDynamicDuplicateOrMalformedWatermarkAccepted": false,
+    "browserRequiresExactProviderFamilyCountAndOrder": true,
+    "browserMalformedResponseBehavior": "Fail the connector-health view closed without partial connection rendering."
+  },
+  "migrationAndRolloutContract": {
+    "migrationNumber": 49,
+    "migrationMode": "transactional additive schema/security migration",
+    "migration0048RetainedPurpose": "Raw source-event tenant/connection/topic/time access path only.",
+    "migration0048IsFamilyAuthority": false,
+    "applyOrder": [
+      "0048_source_event_object_watermark_index.sql",
+      "0049_source_event_object_classifications.sql",
+      "classification-aware API/worker/web images"
+    ],
+    "oldWriterAdmittedAfter0049": false,
+    "protectedPriorDeploymentExists": false,
+    "firstProtectedDeploymentRequirement": "Start clean with only classification-aware writers after migration 0049.",
+    "futurePopulatedUpgradeRequirement": "Inventory gaps and use a separately reviewed, bounded, checksum/object-integrity-verified repair with interruption/retry rehearsal; require zero gaps before claiming complete coverage.",
+    "manualTopicOnlyClassificationAllowed": false,
+    "rollback": "Roll back API/web/worker together and leave the additive index and table in place while any classification-aware reader or writer may remain."
+  },
+  "focusedVerification": {
+    "typecheck": {
+      "packages": [
+        "@workspace/connectors",
+        "@workspace/ingestion",
+        "@workspace/database",
+        "@workspace/api",
+        "@workspace/web"
+      ],
+      "packagesPassed": 5,
+      "status": "passed"
+    },
+    "migration": {
+      "command": "pnpm migrations:check",
+      "migrationsValidated": 50,
+      "migrationChainSha256": "ccef6227b9b485226ec0ddc34f18d77e636b164595a177ba26f18a8e94f586f3",
+      "status": "passed"
+    },
+    "tests": {
+      "command": "pnpm exec vitest run packages/ingestion/src/provider-webhooks.test.ts apps/api/src/connection-health.test.ts apps/api/src/app.tenant.test.ts packages/database/src/migration.tenant.test.ts",
+      "testFilesPassed": 4,
+      "testsPassed": 99,
+      "testsFailed": 0,
+      "authenticatedShopifyOrderClassificationCovered": true,
+      "shopifySnapshotMultiFamilyClassificationCovered": true,
+      "stripePaymentClassificationCovered": true,
+      "fixedObservedNeverAndUnavailableStatesCovered": true,
+      "foreignWatermarkAndGapRejectionCovered": true,
+      "nonPositiveAndDuplicateGapRejectionCovered": true,
+      "exactDatabaseShapesNoBackfillRlsAppendOnlyAndGrantsCovered": true,
+      "permissionedApiResponseCovered": true
+    },
+    "browser": {
+      "command": "pnpm --filter @workspace/web exec playwright test tests/accounting-import-rollback.spec.ts tests/provider-sync-runs.spec.ts --workers=1",
+      "testsPassed": 7,
+      "testsFailed": 0,
+      "accessibilityScansPassed": 2,
+      "classificationUnavailableRendered": true,
+      "threeStripeFamiliesUnavailableWithoutNeverObservedClaim": true,
+      "malformedWrongProviderFamilyFailsViewClosed": true
+    }
+  },
+  "postgresqlIntegrationStatus": {
+    "checkedInTests": [
+      "packages/database/src/provider-webhook.integration.test.ts",
+      "packages/database/src/csv-import.integration.test.ts",
+      "apps/api/src/repository.integration.test.ts"
+    ],
+    "providerClassificationPersistenceAsserted": true,
+    "csvClassificationPersistenceAsserted": true,
+    "foreignTenantConcealmentAsserted": true,
+    "classificationDeleteDeniedAsserted": true,
+    "classificationBackedWatermarkAndNeverStateAsserted": true,
+    "executedThisIncrement": false,
+    "reason": "No local PostgreSQL runtime or .env was available.",
+    "liveMigrationRlsAtomicityQueryPlanTimingAndStorageClaimed": false
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 74,
+    "testsPassed": 483,
+    "testsFailed": 0,
+    "migrationsValidated": 50,
+    "migrationChainSha256": "ccef6227b9b485226ec0ddc34f18d77e636b164595a177ba26f18a8e94f586f3",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "finalFormatCheckAfterEvidenceCountAndAdrStatusUpdates": "passed",
+    "completeBrowser": {
+      "command": "CI=true pnpm --filter @workspace/web test:e2e",
+      "testsPassed": 37,
+      "testsFailed": 0,
+      "accessibilityScansPassed": 11
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "productionDependencyAuditAtHighSeverity": {
+      "command": "pnpm audit --prod --audit-level=high",
+      "status": "no known vulnerabilities found"
+    },
+    "currentDrizzleGenerateNoDriftClaimed": false,
+    "currentDrizzleNote": "The pinned CLI has no generate --check mode and custom migrations extend beyond the snapshot-managed chain; current classification migration/schema alignment is covered statically and by strict typecheck, not claimed as a fresh generate-no-drift result."
+  },
+  "sourceSha256": {
+    "packages/connectors/src/index.ts": "f805f9d585765dd1336819a7fe0e5d34b4c452aefc40ffb0fa5749f68772cf3d",
+    "packages/database/migrations/0049_source_event_object_classifications.sql": "fcf9b9e7ec1151231699257e0cadbde56ee3d321f029770bbe51eaaabeb896a0",
+    "packages/database/src/schema.ts": "0c46339ebe16e62603f9ae0e37b36d1da56ceaaca9a3c1e4792d0feaba33b3f4",
+    "packages/database/src/migration.tenant.test.ts": "04c6c1d550dafa75cfa15da8dd5d582a5f54740e9b0169d47c9e6377afaf84be",
+    "packages/ingestion/src/provider-webhooks.ts": "77b4748275f0c4331dcf7c917f00dfe4e6ef5a07077819d2bf2ff504e781e728",
+    "packages/ingestion/src/provider-webhooks.test.ts": "468cf98d9eca9dd54e07b15e750266cfc2725f21be2ae2961af2d378f2555ca1",
+    "packages/database/src/provider-webhooks.ts": "065641683a1714facb893e9f4ee61259fe14d8caf1fdb654d5c072b95d5496f8",
+    "packages/database/src/provider-webhook.integration.test.ts": "c6a88f96f7414a74701f83b382ff33ef17fabd9dae82a846b592f959760baa80",
+    "packages/database/src/csv-imports.ts": "2d9ba7edec9d617036ae66c46771a5639e77f07632e298c8e192e158c4687a85",
+    "packages/database/src/csv-import.integration.test.ts": "fdcb1f6fa8a07d74d0c4867c2eda53505dfaef04690a1319ed0ebf03c36966c9",
+    "apps/api/src/repository.ts": "b822f78ebf5907ebc4b1af54a73903e742b39ff11f5e348bb086ba2bbbbc0f08",
+    "apps/api/src/connection-health.test.ts": "2f55c6aa686d03ef1cef49fedd5557731777d8871ca6c23fee59edccac785cf5",
+    "apps/api/src/app.tenant.test.ts": "5610d13b8c1897c5f25e4f851018a18a4eb00983af4b0f2e7f952967dc535514",
+    "apps/api/src/repository.integration.test.ts": "f7da6e4fde0df7523eef6d72830d07ce0f45ce123b29d66a3a9713bef5a46d3d",
+    "apps/web/src/components/connector-health.tsx": "6398365ecae25f2765954d954e3ee76dab70437a07a8aec34339901b6796349d",
+    "apps/web/tests/provider-sync-runs.spec.ts": "ff6f1aa00df7d8a7d02306420ba65000721cabc04ad493492e2d3ecdf9448ac3",
+    "apps/web/tests/accounting-import-rollback.spec.ts": "ca427a42668608fd8de57f2f99a5f96e01d0b98c59079521955453a0217d14fc",
+    "docs/adr/0047-source-event-object-family-classification.md": "65a1eb833c483d78a3e88d2cc3d42c054f3f01a47798b6733e571705a8022530",
+    "docs/adr/README.md": "1275879064bf5f2e98d64cbc48e8813621ee6ceb677d6f5ddf664844753798ae",
+    "docs/architecture.md": "7a46cd99bc9f5bcdcafd2e3a70b157e4eb2ccc4f3c3fc354d824bc8dfc1e18ee",
+    "docs/data-model.md": "a4a62cc5cf1e73cf23a0fb04014d21f5ab3dbaa9855b4229271ee92ab5b4dbda",
+    "docs/connectors.md": "2c2421ac38135724e515bda734634aaee77967478ed4b8e6fd6a02c6c9084120",
+    "docs/observability.md": "d5abdb08f63532a65da620aa77bb373c1de6aa81576e3738e97f6f6e00e943d5",
+    "docs/operations-runbook.md": "cd60cc5dedeaacd83ced9aaea17131ceafb332c92640b1c24ff7c7efccce1b00",
+    "docs/migrations.md": "85e7d9f4647f2d38c49fa59d09f9db3659bac10062c15bc1b582617a617b08cc",
+    "docs/upgrade-and-rollback.md": "bb4df31f772c4fb4acd955cdf8f069c0962a3dd524a83561123f76c3f76c8a8e",
+    "docs/known-limitations.md": "96268570874d9f41580988d0a874fd5229d659db1c63d3b4ac8e356333903370",
+    "docs/security-review.md": "67af5de5d16bf9f9801784a873dc6bdd263a34e7276fee93073474ad75c8aae4",
+    "docs/threat-model.md": "a9bda715db4460dc7ae1d7d0e390ab2cc90809bd0f41fa1483c3942b994e23ca",
+    "docs/goals/goal-0-foundation.md": "95edc9f5599209bb6fbfd747a5330cecab78beb1c9a71d6cc7489c7f11562a81",
+    "docs/goals/goal-1-vertical-slice.md": "381faa5c3b46339a0890e813cff0699ba126bff577a4363c24e4ab5f32aa6bc5",
+    "GOALS.md": "5acc8aae1b1541f6ac09c69dd1a65d982ef40c77fb28c9e68c553dda9c39ba07",
+    "CHANGELOG.md": "8c3cadadfb435b8f50920117420968216a95caff4ae8959583222b6efd2af6de"
+  },
+  "repositoryState": {
+    "stagedFileCount": 0,
+    "environmentFilePresent": false,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "The checked-in PostgreSQL/RLS integration paths were not executed because no local PostgreSQL runtime or .env was available. Transactional migration execution, restricted-role classification writes/reads, append-only denial, provider/CSV atomicity, tenant concealment, and classified/gap query behavior remain source-defined on the 50-migration chain.",
+    "Migration 0049 performs no legacy backfill. Any existing operational event or event written by an old image remains classification_unavailable until a separately reviewed bounded object-integrity-checked repair proves zero gaps. No such populated repair exists or is claimed.",
+    "The current Stripe adapter does not ingest balance transactions. The stable family exposes that known V1 gap; it is not evidence that Stripe fee data is available.",
+    "No provider credential, Shopify/Stripe sandbox request, real provider pagination, webhook delivery, gap-repair completeness, provider outage, source-system write, protected staging, or production traffic was exercised.",
+    "Independent source and receipt maxima can come from different classified receipts. They do not prove normalization success, raw-object retention, provider completeness, current availability, reconciliation correctness, or financial state.",
+    "Representative classification-table storage growth, provider/CSV write contention, classified and unclassified query plans/latency, tenant timing, populated migration behavior, mixed-image rehearsal, backup/restore, WAL/replica impact, and protected alerting remain unverified.",
+    "A fresh Drizzle generate-no-drift result is not claimed for the custom migration chain. The classification schema and migration are aligned by reviewed source, static migration assertions, strict typecheck, and migration integrity validation; live PostgreSQL remains required."
+  ]
+}

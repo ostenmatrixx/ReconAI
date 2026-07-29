@@ -1,0 +1,146 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Quality and deterministic tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17.6-alpine3.22@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+        env:
+          POSTGRES_DB: reconai
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: local-postgres-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d reconai" --health-interval 3s --health-timeout 3s
+          --health-retries 20
+      redis:
+        image: redis:8.2.8-alpine@sha256:a7859ed111db3c1f5404a973a4747505d559fb5ca32d37e447afc0ef845a2103
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 3s --health-timeout 3s --health-retries 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+        with:
+          version: 11.9.0
+          run_install: false
+      - name: Install Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.18.0
+          cache: pnpm
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Start private S3-compatible integration storage
+        run: |
+          docker run --detach --name reconai-minio \
+            --publish 127.0.0.1:9000:9000 \
+            --env MINIO_ROOT_USER=local-minio-only \
+            --env MINIO_ROOT_PASSWORD=local-minio-secret-only \
+            quay.io/minio/minio:RELEASE.2025-07-23T15-54-02Z@sha256:d249d1fb6966de4d8ad26c04754b545205ff15a62e4fd19ebd0f26fa5baacbc0 server /data
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:9000/minio/health/ready >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs reconai-minio
+          exit 1
+      - name: Verify repository
+        run: pnpm verify
+      - name: Verify live tenant database controls
+        env:
+          DATABASE_ADMIN_URL: postgresql://postgres:local-postgres-only@127.0.0.1:5432/reconai
+          DATABASE_MIGRATION_URL: postgresql://reconai_migrator:local-migrator-only@127.0.0.1:5432/reconai
+          DATABASE_URL: postgresql://reconai_app:local-app-only@127.0.0.1:5432/reconai
+          DATABASE_WORKER_URL: postgresql://reconai_worker:local-worker-only@127.0.0.1:5432/reconai
+          REDIS_URL: redis://127.0.0.1:6379
+          S3_ENDPOINT: http://127.0.0.1:9000
+          S3_REGION: us-east-1
+          S3_ACCESS_KEY_ID: local-minio-only
+          S3_SECRET_ACCESS_KEY: local-minio-secret-only
+        run: pnpm test:integration
+      - name: Verify tenant suite explicitly
+        run: pnpm test:tenant
+      - name: Verify reconciliation suite explicitly
+        run: pnpm test:reconciliation
+      - name: Verify representative reconciliation load
+        run: pnpm verify:reconciliation-load
+
+  browser:
+    name: Browser and accessibility
+    needs: quality
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+        with:
+          version: 11.9.0
+          run_install: false
+      - name: Install Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.18.0
+          cache: pnpm
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install browser
+        run: pnpm --filter @workspace/web exec playwright install --with-deps chromium
+      - name: Run browser checks
+        run: pnpm test:e2e
+
+  containers:
+    name: Build container ${{ matrix.service }}
+    needs: quality
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [api, worker, web]
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Set up BuildKit
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - name: Build without publishing
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          file: apps/${{ matrix.service }}/Dockerfile
+          load: true
+          push: false
+          tags: reconai/${{ matrix.service }}:ci
+      - name: Scan container vulnerabilities
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          # Explicit post-incident scanner pin; do not inherit the action default.
+          version: v0.72.0
+          image-ref: reconai/${{ matrix.service }}:ci
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+          vuln-type: os,library
+          severity: CRITICAL,HIGH

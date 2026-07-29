@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-28T03:35:20.218Z",
+  "evaluation": "reconciliation-ambiguous-payment-collision-v1",
+  "productionReadinessClaim": false,
+  "engineVersion": "0.4.0",
+  "ruleSetVersion": "1.2.0",
+  "evaluationLimit": 500,
+  "result": "synthetic_boundary_and_overflow_cases_passed",
+  "cases": [
+    {
+      "eligiblePayments": 500,
+      "durationMs": 42.15,
+      "candidateSearch": {
+        "eligibleCount": 500,
+        "evaluatedCount": 500,
+        "emittedCount": 5,
+        "evaluationLimit": 500,
+        "complete": true
+      },
+      "orderExceptionType": "paid_order_missing_payment",
+      "orderReasonCode": "ORDER_HAS_NO_LINKED_SUCCEEDED_PAYMENT",
+      "emittedCandidates": 5,
+      "strongestCandidateSelected": true,
+      "permutationReplayEquivalent": true
+    },
+    {
+      "eligiblePayments": 501,
+      "durationMs": 16.95,
+      "candidateSearch": {
+        "eligibleCount": 501,
+        "evaluatedCount": 0,
+        "emittedCount": 0,
+        "evaluationLimit": 500,
+        "complete": false
+      },
+      "orderExceptionType": "ambiguous_identity",
+      "orderReasonCode": "ORDER_PAYMENT_CANDIDATE_SET_EXCEEDS_LIMIT",
+      "emittedCandidates": 0,
+      "strongestCandidateSelected": false,
+      "permutationReplayEquivalent": true
+    },
+    {
+      "eligiblePayments": 10000,
+      "durationMs": 288,
+      "candidateSearch": {
+        "eligibleCount": 10000,
+        "evaluatedCount": 0,
+        "emittedCount": 0,
+        "evaluationLimit": 500,
+        "complete": false
+      },
+      "orderExceptionType": "ambiguous_identity",
+      "orderReasonCode": "ORDER_PAYMENT_CANDIDATE_SET_EXCEEDS_LIMIT",
+      "emittedCandidates": 0,
+      "strongestCandidateSelected": false,
+      "permutationReplayEquivalent": true
+    }
+  ],
+  "verificationAtMeasurement": {
+    "focusedTestCommand": "pnpm test:reconciliation",
+    "focusedTestStatus": "passed",
+    "focusedTestCount": 14,
+    "packageTypecheckCommand": "pnpm --filter @workspace/reconciliation typecheck",
+    "packageTypecheckStatus": "passed",
+    "evaluationCommand": "pnpm --filter @workspace/reconciliation evaluate:collisions",
+    "evaluationCommandStatus": "passed"
+  },
+  "finalRepositoryVerification": {
+    "verifiedAt": "2026-07-28T03:43:46Z",
+    "repositoryGate": {
+      "command": "pnpm verify",
+      "status": "passed",
+      "checks": [
+        "Prettier format check",
+        "ESLint with zero warnings",
+        "TypeScript typecheck across 19 workspace projects",
+        "51 unit/tenant/reconciliation files with 270 passing tests",
+        "40-file migration-chain validation",
+        "schema/config/dependency-policy validation",
+        "production builds across all applicable workspace projects, including Next.js"
+      ]
+    },
+    "browserRegression": {
+      "command": "pnpm --filter @workspace/web exec playwright test",
+      "status": "passed",
+      "testCount": 31,
+      "accessibilityScanCount": 10,
+      "covered": "Operator-visible fail-closed overflow message and exact evidence counts"
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "liveIntegrationAttempt": {
+      "command": "pnpm test:integration",
+      "status": "not_executed_missing_environment",
+      "processExitCode": 1,
+      "suiteCountAtSetup": 13,
+      "skippedTestCount": 37,
+      "missingConfiguration": [
+        "DATABASE_ADMIN_URL and related PostgreSQL role URLs",
+        "REDIS_URL",
+        "S3_ENDPOINT and related object-store configuration"
+      ],
+      "interpretation": "No integration assertion ran. Persisted worker output, current PostgreSQL execution, Redis queue behavior, and object-store contracts remain unavailable evidence rather than passing results."
+    }
+  },
+  "environment": {
+    "runtime": "v24.15.0",
+    "platform": "darwin-arm64"
+  },
+  "interpretation": "Complete candidate sets at or below the limit are fully ranked. Larger sets fail closed as explicit ambiguity without a partial shortlist. Synthetic local timing is regression evidence, not an SLO, accuracy measurement, representative distribution, or production-capacity claim.",
+  "remainingEvidence": [
+    "Measure representative collision distributions and operator workload in an authorized staging environment.",
+    "Decide whether a reviewed multi-dimensional index can safely produce useful complete shortlists above the current bound.",
+    "Exercise persisted worker output, queue rendering, alerting, and concurrent tenant workloads with the new engine and rule versions."
+  ]
+}

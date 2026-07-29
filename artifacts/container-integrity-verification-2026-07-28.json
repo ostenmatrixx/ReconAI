@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-28T04:24:12Z",
+  "scope": "Immutable container build inputs, commit-pinned workflow actions, non-publishing OCI release-candidate construction, vulnerability gating, SBOMs, checksums, and signed provenance",
+  "productionReadinessClaim": false,
+  "result": "source_policy_and_repository_verification_passed_hosted_candidate_registry_and_deployment_evidence_pending",
+  "environment": {
+    "node": "v24.15.0",
+    "pnpm": "11.9.0",
+    "dockerExecutableAvailable": false,
+    "podmanExecutableAvailable": false,
+    "actionlintExecutableAvailable": false,
+    "authorizedRemoteAvailable": false,
+    "hostedWorkflowExecuted": false,
+    "artifactAttestationPlanEligibilityVerified": false
+  },
+  "priorRisk": {
+    "control": "Exact human-readable container tags without immutable digests",
+    "failureMode": "A publisher could move an upstream tag and change an application, CI-service, or local-development input without a ReconAI source change.",
+    "publishedOrDeployedArtifactExisted": false,
+    "tenantOrFinancialIntegrityImpactObserved": false
+  },
+  "reviewedRegistryInputs": [
+    {
+      "reference": "docker/dockerfile:1.7",
+      "digest": "sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e",
+      "registry": "Docker Hub Registry V2",
+      "platforms": [
+        "linux/386",
+        "linux/amd64",
+        "linux/arm/v7",
+        "linux/arm64",
+        "linux/mips",
+        "linux/mipsle",
+        "linux/mips64",
+        "linux/mips64le",
+        "linux/ppc64le",
+        "linux/riscv64",
+        "linux/s390x"
+      ]
+    },
+    {
+      "reference": "node:24.14.0-bookworm-slim",
+      "digest": "sha256:d8e448a56fc63242f70026718378bd4b00f8c82e78d20eefb199224a4d8e33d8",
+      "registry": "Docker Hub Registry V2",
+      "platforms": [
+        "linux/amd64",
+        "linux/arm64/v8",
+        "linux/ppc64le",
+        "linux/s390x"
+      ]
+    },
+    {
+      "reference": "postgres:17.6-alpine3.22",
+      "digest": "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94",
+      "registry": "Docker Hub Registry V2",
+      "platforms": [
+        "linux/386",
+        "linux/amd64",
+        "linux/arm/v6",
+        "linux/arm/v7",
+        "linux/arm64/v8",
+        "linux/ppc64le",
+        "linux/riscv64",
+        "linux/s390x"
+      ]
+    },
+    {
+      "reference": "redis:8.2.1-alpine",
+      "digest": "sha256:987c376c727652f99625c7d205a1cba3cb2c53b92b0b62aade2bd48ee1593232",
+      "registry": "Docker Hub Registry V2",
+      "platforms": [
+        "linux/386",
+        "linux/amd64",
+        "linux/arm/v6",
+        "linux/arm/v7",
+        "linux/arm64/v8",
+        "linux/ppc64le",
+        "linux/riscv64",
+        "linux/s390x"
+      ]
+    },
+    {
+      "reference": "quay.io/minio/minio:RELEASE.2025-07-23T15-54-02Z",
+      "digest": "sha256:d249d1fb6966de4d8ad26c04754b545205ff15a62e4fd19ebd0f26fa5baacbc0",
+      "registry": "Quay Registry V2",
+      "platforms": ["linux/amd64", "linux/arm64", "linux/ppc64le"]
+    },
+    {
+      "reference": "quay.io/minio/mc:RELEASE.2025-07-21T05-28-08Z",
+      "digest": "sha256:fb8f773eac8ef9d6da0486d5dec2f42f219358bcb8de579d1623d518c9ebd4cc",
+      "registry": "Quay Registry V2",
+      "platforms": ["linux/amd64", "linux/arm64", "linux/ppc64le"]
+    },
+    {
+      "reference": "quay.io/keycloak/keycloak:26.7.0",
+      "digest": "sha256:0f198be292568439d700cdbfb893e69a6009bb43a94a06a945b1d3d506c76b13",
+      "registry": "Quay Registry V2",
+      "platforms": ["linux/amd64", "linux/arm64", "linux/ppc64le"]
+    }
+  ],
+  "implementedControls": [
+    "the Dockerfile frontend and every external FROM input retain a readable tag plus reviewed manifest-list SHA-256 digest",
+    "all five Compose services use readable tags plus immutable manifest-list digests",
+    "GitHub Actions PostgreSQL, Redis, and Docker-run MinIO inputs use immutable manifest-list digests",
+    "all external workflow actions are pinned to full commit SHAs",
+    "pnpm container:check is included in pnpm verify and rejects unreviewed container repositories or pin regressions",
+    "the validator rejects registry login, image push, registry-attestation push, package/repository/deployment write permission, and release creation in the candidate workflow",
+    "the candidate workflow is manually dispatched, main-branch-only, and requires the exact BUILD-NON-PUBLISHING-CANDIDATE confirmation",
+    "the candidate grants only contents read, OIDC token, attestation write, and artifact-metadata write",
+    "each application candidate is a local linux/amd64 OCI archive with BuildKit maximum provenance and SBOM",
+    "Trivy is configured to reject fixed High/Critical operating-system or library vulnerabilities and emit an external CycloneDX SBOM",
+    "SHA-256 checksums bind the OCI archive and external SBOM",
+    "actions/attest v4.2.0 is commit-pinned and configured for signed SLSA provenance plus an SBOM attestation over the candidate archive",
+    "candidate archives, checksums, SBOMs, and attestation bundles are retained for 30 days without registry, release, or deployment authority"
+  ],
+  "verification": {
+    "repositoryGate": {
+      "command": "pnpm verify",
+      "status": "passed",
+      "checks": [
+        "Prettier format check",
+        "ESLint with zero warnings",
+        "TypeScript typecheck across 19 workspace projects",
+        "52 unit/tenant/reconciliation files with 280 passing tests",
+        "40-file migration-chain validation",
+        "schema and runtime-config validation",
+        "reference edge request/forwarding/routing validation",
+        "container and release-candidate integrity validation",
+        "exact dependency-policy validation across 20 package manifests",
+        "production builds across all applicable workspace projects, including Next.js"
+      ]
+    },
+    "containerPolicy": {
+      "command": "pnpm container:check",
+      "status": "passed",
+      "validated": {
+        "dockerfiles": 3,
+        "composeImages": 5,
+        "workflowImages": 3,
+        "actionReferences": 25,
+        "nonPublishingCandidateBoundary": true
+      }
+    },
+    "registryResolution": {
+      "status": "passed",
+      "method": "Authenticated anonymous pull metadata from the official Docker Hub and Quay Registry V2 APIs",
+      "resolvedManifestLists": 7,
+      "interpretation": "The recorded digests and platform sets were observed from the official registries on the review date. This proves the tag-to-manifest mapping at that instant, not publisher trust or ongoing vulnerability status."
+    },
+    "workflowYamlParsing": {
+      "status": "passed",
+      "files": [
+        ".github/workflows/ci.yml",
+        ".github/workflows/security.yml",
+        ".github/workflows/release-candidate.yml",
+        "compose.yaml"
+      ],
+      "interpretation": "The YAML parser accepted each document and the repository validator inspected semantic values. actionlint and the GitHub hosted runner were unavailable."
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "hostedCandidate": {
+      "status": "not_executed_no_authorized_remote_or_hosted_runner",
+      "unverified": [
+        "Dockerfile frontend and base-image pull by digest",
+        "application image build and runtime behavior",
+        "OCI archive export and embedded BuildKit provenance/SBOM",
+        "Trivy image vulnerability gate and CycloneDX generation",
+        "checksum generation",
+        "GitHub OIDC/Sigstore provenance and SBOM attestation",
+        "artifact retention and downloaded checksum/gh attestation verification",
+        "repository visibility or plan eligibility for artifact attestations"
+      ]
+    }
+  },
+  "operationalImpact": {
+    "databaseMigrationRequired": false,
+    "financialRuleVersionChanged": false,
+    "tenantAuthorityChanged": false,
+    "productionRuntimeBehaviorChanged": false,
+    "publishedArtifactCreated": false,
+    "deploymentCreated": false,
+    "baseImageUpgradeBehavior": "Upstream tag movement no longer changes a build; security updates require a reviewed source digest change.",
+    "rollback": "Replace an unsuitable digest with a separately reviewed digest. Do not restore mutable tag-only container inputs or remove artifact identity verification."
+  },
+  "remainingEvidenceAndOperationalRisks": [
+    "Run the candidate workflow from main in an authorized repository whose visibility or plan supports GitHub artifact attestations.",
+    "Inspect all three archive builds, embedded BuildKit provenance/SBOMs, Trivy results, external CycloneDX SBOMs, checksum manifests, signed bundles, source commits, and workflow identities.",
+    "Download each candidate and pass sha256sum --check plus gh attestation verify against the expected owner/repository identity.",
+    "Define and review supported production platforms; the current candidate is linux/amd64 only.",
+    "After explicit owner publication approval, define a protected registry and bind image-level attestations to the exact published image digest.",
+    "Enforce expected signer/repository/workflow identity and immutable digest verification before any staging or production deployment.",
+    "Exercise container startup, non-root runtime, health checks, Compose networking, staging rollout, rollback, and admission failure paths.",
+    "Continue reviewed digest refreshes because immutable pins intentionally do not receive upstream security updates automatically.",
+    "No hosted image build, vulnerability scan, signed attestation, registry publication, staging deployment, or production result is claimed."
+  ],
+  "decisionsAndRunbooks": [
+    "docs/adr/0019-immutable-container-inputs-and-signed-candidates.md",
+    "docs/container-integrity.md",
+    "docs/dependency-policy.md",
+    "docs/release.md",
+    "docs/deployment.md",
+    "docs/threat-model.md",
+    "docs/security-review.md",
+    "docs/known-limitations.md"
+  ]
+}

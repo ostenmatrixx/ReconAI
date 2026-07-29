@@ -1,0 +1,247 @@
+{
+  "evidenceType": "tenant-source-object-watermarks-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T05:29:03.568Z",
+  "scope": "Local source, unit, tenant/API, static migration, production-build, and Chromium evidence for fixed-family source observation watermarks on the existing tenant-authorized connector-health view. No customer data, PostgreSQL migration execution, provider credential/request, source-system write, protected staging, or production environment was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/provider-request-circuit-verification-2026-07-29.json",
+      "sha256": "c7509480559bfce5a042809a9fa03e0f77c41cf2ef7f07ed82d30600d51a1223",
+      "purpose": "The immediately preceding accepted 48-migration, 477-test provider-request circuit baseline."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "playwright": "1.62.0"
+  },
+  "decision": {
+    "governingAdr": "ADR 0046",
+    "securityReviewControl": "CONNECTOR-SOURCE-WATERMARK-001",
+    "threatModelEntry": "TM-36",
+    "databaseMigrationRequired": true,
+    "databaseMigration": "0048_source_event_object_watermark_index.sql",
+    "configurationChangeRequired": false,
+    "publicApiResponseChanged": true,
+    "publicApiChangeKind": "additive required objectWatermarks field on each connection-health item",
+    "sourceEventWriteOrRetentionBehaviorChanged": false,
+    "providerReadRequestOrSourceSystemWriteAdded": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyAuditReviewRetentionOrAiBehaviorChanged": false,
+    "watermarkAuthoritativeForCompletenessOrFinancialBehavior": false
+  },
+  "fixedFamilyContract": {
+    "shopify": [
+      "order",
+      "refund_transaction"
+    ],
+    "stripe": [
+      "payment_intent",
+      "refund",
+      "balance_transaction"
+    ],
+    "accountingCsv": [
+      "csv_row"
+    ],
+    "stableProviderSpecificOrder": true,
+    "everyExpectedFamilyReturned": true,
+    "states": [
+      "never_observed",
+      "observed"
+    ],
+    "observedFields": [
+      "latestSourceAt",
+      "latestReceivedAt"
+    ],
+    "sourceAndReceiptMaximaIndependent": true,
+    "maximaRequiredToComeFromSameRow": false,
+    "dynamicObjectFamilyAccepted": false,
+    "sourceEventExternalObjectIdCountMoneyCurrencyPayloadOrCredentialReturned": false
+  },
+  "tenantAndAuthorizationContract": {
+    "endpointPermission": "financial-records:view",
+    "tenantContextSource": "authenticated membership resolved server-side",
+    "clientOrganizationIdGrantsAccess": false,
+    "connectionAndWatermarkQueriesShareTenantTransaction": true,
+    "connectionQueryHasExplicitOrganizationPredicate": true,
+    "watermarkQueryHasExplicitOrganizationPredicate": true,
+    "forcedRowLevelSecurityRetained": true,
+    "watermarkOutsideAuthorizedConnectionSetAccepted": false,
+    "crossTenantIdentifierResolvesAsData": false,
+    "checkedInRestrictedRoleForeignTenantTest": true,
+    "restrictedRoleForeignTenantTestExecutedThisIncrement": false
+  },
+  "mappingAndValidationContract": {
+    "queryObjectFamiliesAreSixSqlLiterals": true,
+    "unexpectedConnectionRejected": true,
+    "providerIncompatibleFamilyRejected": true,
+    "duplicateFamilyRejected": true,
+    "dynamicFamilyRejected": true,
+    "malformedTimestampRejected": true,
+    "missingExpectedFamilyRenderedAs": "never_observed",
+    "browserConnectionShapeStrict": true,
+    "browserWatermarkUnionStrictAndDiscriminated": true,
+    "browserRequiresExactProviderFamilyCountAndOrder": true,
+    "malformedBrowserResponseBehavior": "fail the connector-health view closed without partial connection rendering"
+  },
+  "migrationContract": {
+    "migrationNumber": 48,
+    "mode": "restart-safe non-transactional migration runner",
+    "statement": "CREATE INDEX CONCURRENTLY IF NOT EXISTS",
+    "indexName": "source_events_org_connection_object_watermark_idx",
+    "table": "source_events",
+    "orderedColumns": [
+      "organization_id",
+      "connection_id",
+      "external_object_type",
+      "source_timestamp DESC",
+      "received_at DESC"
+    ],
+    "globalMigrationLockRetained": true,
+    "readyAndValidCatalogCheckRetained": true,
+    "checksumRecordedOnlyAfterReadyValidState": true,
+    "populatedTableBuildExecutedThisIncrement": false,
+    "productionPrerequisites": [
+      "restorable backup",
+      "index disk headroom",
+      "representative source-event distribution and query plan",
+      "scan, WAL, replica, and lock impact review",
+      "reviewed lock and statement timeouts",
+      "interruption and resumption rehearsal",
+      "prior/new-image compatibility and protected tenant timing"
+    ],
+    "rollback": "Roll back API and web together while leaving the additive index in place; do not drop it while a new image can still serve requests."
+  },
+  "productSemantics": {
+    "recentWatermarkClaimsNormalizationSuccess": false,
+    "recentWatermarkClaimsProviderPaginationComplete": false,
+    "recentWatermarkClaimsProviderAvailability": false,
+    "recentWatermarkClaimsWebhookOrGapRepairComplete": false,
+    "recentWatermarkClaimsReconciliationCorrect": false,
+    "recentWatermarkClaimsFinancialState": false,
+    "retainedMetadataCanOutliveRawPayload": true,
+    "csvRollbackErasesSourceObservationHistory": false,
+    "futureProviderTimestampClamped": false,
+    "browserCopyStatesNoCompletenessOrReconciliationGuarantee": true
+  },
+  "focusedVerification": [
+    {
+      "command": "affected database, API, and web typechecks plus focused ESLint",
+      "packagesPassed": 3,
+      "lintStatus": "passed"
+    },
+    {
+      "command": "node scripts/validate-migrations.mjs",
+      "migrationsValidated": 49,
+      "migrationChainSha256": "2042d0602d4a22e16edc0e11ab0ebf965148e4b94173df3a59a40a0088327b2a",
+      "status": "passed"
+    },
+    {
+      "command": "pnpm exec vitest run apps/api/src/connection-health.test.ts apps/api/src/app.tenant.test.ts packages/database/src/migration.tenant.test.ts",
+      "testFilesPassed": 3,
+      "testsPassed": 92,
+      "testsFailed": 0,
+      "fixedObservedAndNeverObservedFamiliesCovered": true,
+      "foreignConnectionRejectionCovered": true,
+      "providerIncompatibleAndDynamicFamilyRejectionCovered": true,
+      "duplicateFamilyRejectionCovered": true,
+      "malformedTimestampRejectionCovered": true,
+      "permissionedApiResponseCovered": true,
+      "concurrentMigrationStatementCovered": true
+    }
+  ],
+  "browserVerification": {
+    "focused": {
+      "command": "pnpm --filter @workspace/web exec playwright test tests/accounting-import-rollback.spec.ts tests/provider-sync-runs.spec.ts --workers=1",
+      "testsPassed": 6,
+      "testsFailed": 0,
+      "accessibilityScansPassed": 2,
+      "shopifyStripeAndCsvRendered": true,
+      "neverObservedRendered": true,
+      "malformedWrongProviderFamilyFailsViewClosed": true
+    },
+    "complete": {
+      "command": "pnpm --filter @workspace/web exec playwright test --workers=1",
+      "testsPassed": 36,
+      "testsFailed": 0,
+      "accessibilityScansPassed": 11
+    }
+  },
+  "postgresqlIntegrationStatus": {
+    "checkedInTest": "apps/api/src/repository.integration.test.ts",
+    "appliesCurrentMigrationChainThroughRestrictedApplicationRole": true,
+    "ownTenantObservedShopifyOrderCovered": true,
+    "ownTenantNeverObservedShopifyRefundCovered": true,
+    "foreignTenantEmptyResultCovered": true,
+    "executedThisIncrement": false,
+    "reason": "No local PostgreSQL runtime or .env was available.",
+    "liveRlsIndexUpgradeAndRepresentativeTimingClaimed": false
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 74,
+    "testsPassed": 481,
+    "testsFailed": 0,
+    "migrationsValidated": 49,
+    "migrationChainSha256": "2042d0602d4a22e16edc0e11ab0ebf965148e4b94173df3a59a40a0088327b2a",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "finalFormatCheckAfterEvidenceCountUpdates": "passed",
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "productionDependencyAuditAtHighSeverity": {
+      "command": "pnpm audit --prod --audit-level high",
+      "status": "no known vulnerabilities found"
+    }
+  },
+  "sourceSha256": {
+    "packages/database/migrations/0048_source_event_object_watermark_index.sql": "84d86b8df5b97ecc579058290093ff657e870df8154eba02e4e3b77c1ac526a6",
+    "packages/database/src/schema.ts": "5272880e24e8a09c696642d0279de4157515def1995961f165846947b9cbf131",
+    "packages/database/src/migration.tenant.test.ts": "554910a9cc1f531b5a1c71e7687bde4ac1b17b5857f539120a78d69f80557402",
+    "apps/api/src/repository.ts": "f958f7fee1a196d64f9d96ef946220c6182522f57da06850b2b539373a5a9fb1",
+    "apps/api/src/connection-health.test.ts": "b3111cd517a7582bc96702d0e4875027e7eca133ee1211372a3301d3aa5058ed",
+    "apps/api/src/app.tenant.test.ts": "5610d13b8c1897c5f25e4f851018a18a4eb00983af4b0f2e7f952967dc535514",
+    "apps/api/src/repository.integration.test.ts": "e8a18c19c27652bee978855d4daf3e23997bc625a455fef5184f618e7df56edd",
+    "apps/web/src/components/connector-health.tsx": "ddaadc7446d8177f5724702724e69dd8d7664f3815ae39be24103e4432696ba1",
+    "apps/web/src/app/globals.css": "57fe37848e9b571ec69b935a36a5ea9bb1ca64fdf1bdeae0ec3c953a6b4278ca",
+    "apps/web/tests/accounting-import-rollback.spec.ts": "ca427a42668608fd8de57f2f99a5f96e01d0b98c59079521955453a0217d14fc",
+    "apps/web/tests/provider-sync-runs.spec.ts": "b610ad7a5b1babd64c24954a40cb0e92796dee5d507eea8be2c8f3ed046bac4e",
+    "docs/adr/0046-tenant-authorized-source-object-watermarks.md": "a99ccf1fc0540eb5b5bb228b4acac78cc9ef5b712bc43aa93a870f9ac325a6d4",
+    "docs/adr/README.md": "f1a6d3b1c7270369aafc0de601a0ab9e7db38c2b907afc9a6144d815fff018d5",
+    "docs/architecture.md": "805fa1d3070efa2edef839e6d29b832cc403227ea57157b0eea410dd4015a8dc",
+    "docs/connectors.md": "ada762d76d679668a06bbca611054e75539598d9130b84d056800ca35b3241dc",
+    "docs/data-model.md": "93dbdf2c0e3f00dc2dcb2b5a25c65cf2fd9f51d242249214ab9a143fca68e80f",
+    "docs/operations-runbook.md": "b65889ae097ece0f74797909665b5e33d27b0facede021d93d477cdc83d9ed49",
+    "docs/observability.md": "01bc3669e4d33f292c7f8f12bfd9a3a1278e6e4b7e674c0c7655159f74e0cee2",
+    "docs/migrations.md": "a303ebf44fa177ca7dc99189904a21f0bad5c4152a6103daa09c13c1e6a162c7",
+    "docs/upgrade-and-rollback.md": "cc1e49b092e820c4f7d75919d57da53c8f7edbf31e9be7a2d5b3432ab45de79e",
+    "docs/known-limitations.md": "d3a2ebd42ff08dc5df218a47f68f3980252491e16bb5f51a5acd90c80ce0c4b8",
+    "docs/security-review.md": "54e3329aecf1eee9a869b655769be8dd0a9b819416c63dee51a9658603096dee",
+    "docs/threat-model.md": "317951f6b8114bd98d661702539ff5b380110f67aeb86902019dc78952009dce",
+    "docs/goals/goal-0-foundation.md": "bfd04471b6f9a80e316878fd5fbfa584a797612c2349db7a83dbc3b2ca597f4a",
+    "docs/goals/goal-1-vertical-slice.md": "af04649e725b00ab0f75e0088d48deffc6260db2671c479a394b8971c601a27c",
+    "GOALS.md": "11cc097d88785c86be90dd82c749593717350073afa478d95b076d522962d7b0",
+    "CHANGELOG.md": "044077dd4a401ba72114fc931b23386fd6b05c94f86cac1fbc6aa8084f4f326f"
+  },
+  "repositoryState": {
+    "stagedFileCount": 0,
+    "environmentFilePresent": false,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "The checked-in PostgreSQL/RLS/index integration test was not executed because no local PostgreSQL runtime or .env was available. The concurrent index build, restricted-role tenant behavior, populated upgrade, invalid-index recovery, and representative query/build timing remain unverified on the 49-migration chain.",
+    "No provider credential, Shopify/Stripe sandbox request, real provider pagination, webhook delivery, gap-repair completeness, provider outage, source-system write, protected staging, or production traffic was exercised.",
+    "The endpoint computes independent maxima from immutable source-event metadata. Those timestamps do not prove one shared latest row, normalization success, retained raw evidence, provider completeness, current availability, reconciliation correctness, or financial state.",
+    "Source-event metadata can outlive raw-payload retention, and CSV rollback intentionally retains source observation history. Operators must not interpret a watermark as current reconciliation eligibility.",
+    "A provider-skewed future source timestamp remains visible. Separate bounded freshness telemetry classifies it; this view does not clamp it or make it health authority.",
+    "The additive index requires production backup, capacity, lock/timeout, WAL/replica, interruption, compatibility, and rollback rehearsal. New API/web images must not be deployed before the migration is ready.",
+    "The source-event aggregation still needs representative-volume EXPLAIN/ANALYZE and tenant timing review. No latency, throughput, SLO, completeness, reliability, or production-readiness claim is made."
+  ]
+}

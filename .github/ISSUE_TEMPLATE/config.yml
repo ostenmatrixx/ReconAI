@@ -1,0 +1,7 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Private security report
+    url: https://github.com/
+    about:
+      "Do not disclose publicly. Until the owner configures private reporting, follow SECURITY.md
+      and use an existing verified private channel."

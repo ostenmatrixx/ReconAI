@@ -1,0 +1,278 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-28T14:17:59Z",
+  "verifiedAt": "2026-07-28T14:21:22Z",
+  "component": "tenant-object-version-and-unpublished-outbox-recovery",
+  "outcome": "local_component_recovery_passed_complete_disaster_recovery_objectives_open",
+  "productionReadinessClaim": false,
+  "recoveryObjectivesClaimed": false,
+  "scope": {
+    "included": [
+      "one synthetic tenant prefix in two distinct version-enabled loopback MinIO buckets",
+      "all source and restored object versions and delete markers under the bounded prefix",
+      "streamed body, required content-sha256 metadata, content-type, custom-metadata, history-order, and current-state comparison",
+      "one synthetic unpublished outbox event in a separately restored PostgreSQL 17.10 cluster",
+      "empty authenticated Redis 8.2.8 logical database 15",
+      "stable BullMQ identity, duplicate-add deduplication, and restored outbox publication state",
+      "checked-in fail-closed commands, unit tests, live component tests, repository verification, secret scan, and production dependency audit"
+    ],
+    "excluded": [
+      "an atomic PostgreSQL and object-storage recovery point",
+      "encrypted or immutable backup storage and backup access review",
+      "PostgreSQL base backup, WAL archiving, or point-in-time recovery",
+      "object tags, object-lock, legal-hold, lifecycle, replication, or KMS configuration",
+      "configuration, secret-manager, KMS key-reference, or credential decryptability recovery",
+      "published-but-unprocessed BullMQ work and event-specific replay classification",
+      "representative volume, prior application image compatibility, staging cutover, RPO, RTO, or external alerts"
+    ]
+  },
+  "host": {
+    "operatingSystem": "macOS 26.5.2",
+    "architecture": "arm64",
+    "node": "v24.15.0",
+    "pnpm": "11.9.0",
+    "customerDataUsed": false,
+    "productionCredentialsUsed": false,
+    "providerOrCustomerEgressUsed": false
+  },
+  "objectRuntime": {
+    "server": "MinIO RELEASE.2025-07-23T15-54-02Z",
+    "officialBinary": "https://dl.min.io/server/minio/release/darwin-arm64/archive/minio.RELEASE.2025-07-23T15-54-02Z",
+    "officialBinarySha256Published": "0939ce5553ce9e6451b69e049fbf399794368276b61da8166f84cbd8c7f2d641",
+    "binarySha256Observed": "0939ce5553ce9e6451b69e049fbf399794368276b61da8166f84cbd8c7f2d641",
+    "binaryHashMatched": true,
+    "sourcePort": 9100,
+    "restoredPort": 9200,
+    "loopbackOnly": true,
+    "distinctProcesses": true,
+    "distinctBuckets": true,
+    "sourceVersioning": "Enabled",
+    "restoredVersioning": "Enabled"
+  },
+  "objectRestoreComparison": {
+    "checkedInCommand": "pnpm backup:verify-objects",
+    "confirmation": "COMPARE-ISOLATED-TENANT-OBJECTS",
+    "status": "passed",
+    "comparisonMatched": true,
+    "tenantScope": "one server-constructed environment/organization-UUID prefix",
+    "counts": {
+      "keys": 2,
+      "objectVersions": 3,
+      "deleteMarkers": 1,
+      "totalBodyBytes": 66
+    },
+    "digests": {
+      "prefixSha256": "d316cfb1eaf082703eb3f596b41a414fdb54d8c64656ac7981d0b13ccdea14ed",
+      "historySha256": "6a9f053a0166d7fa9e105ae4732580a7da49328bf370acbb620681ea15890b7f",
+      "currentStateSha256": "1f42c0fcd55140a4384398345ab9ef8d81fae369363b137f835411f55f78a16c"
+    },
+    "portableIdentity": [
+      "logical version position",
+      "body SHA-256",
+      "body size",
+      "content type",
+      "custom metadata digest",
+      "object or delete-marker head state"
+    ],
+    "providerAssignedVersionIdsCompared": false,
+    "providerAssignedTimestampsComparedAsIdentity": false,
+    "objectKeysOrBodiesRecorded": false,
+    "guardrails": {
+      "completeVersionPaginationRequired": true,
+      "maximumVersionsDefault": 10000,
+      "maximumObjectBytesDefault": 10485760,
+      "maximumTotalBytesDefault": 1073741824,
+      "requestTimeoutMillisecondsDefault": 15000,
+      "nonLoopbackRequiresExplicitApprovalAndHttps": true,
+      "sameSourceAndTargetBucketRejected": true,
+      "ambiguousTimestampOrderingRejected": true
+    },
+    "officialSemantics": [
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/list-obj-version-enabled-bucket.html",
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html",
+      "https://min.io/docs/minio/linux/administration/object-management/object-delete.html",
+      "https://min.io/product/object-versioning-bucket-versioning"
+    ]
+  },
+  "databaseRestoreForQueueProof": {
+    "serverPackage": "@embedded-postgres/darwin-arm64@17.10.0-beta.17",
+    "serverPackageTarballSha256": "41fa2aa47ec3ae7c8692719881c6bdb8376365dd417673b37ffe8281f28f7064",
+    "serverBinarySha256": "8776e8dfcc8fd7eaaf02db978d00f225a1905b6cbe9ecdd3cf5e86cf3a00e33f",
+    "serverVersion": "PostgreSQL 17.10",
+    "dataChecksums": "on",
+    "sourcePort": 55440,
+    "restoredPort": 55441,
+    "sourceSystemIdentifier": "7667578031116315511",
+    "restoredSystemIdentifier": "7667580335891552599",
+    "distinctSystemIdentifiers": true,
+    "officialClientSource": "https://ftp.postgresql.org/pub/source/v17.10/postgresql-17.10.tar.gz",
+    "officialClientSourceSha256Published": "e4b43025f32ea3d271be64365d284c8462cffd41d80db0c3df6fc62417a2d9dc",
+    "officialClientSourceSha256Observed": "e4b43025f32ea3d271be64365d284c8462cffd41d80db0c3df6fc62417a2d9dc",
+    "officialClientSourceHashMatched": true,
+    "pgDumpBinarySha256": "3bbe0d358d33ab172218a397fab7d3dcc83c70b3a0c82aeadd254922b225c62f",
+    "pgRestoreBinarySha256": "240916bb4272c30a56e78693aaf6ef33dda829b89ac3d53ce9eec7cea87f42a2",
+    "archive": {
+      "format": "PostgreSQL custom",
+      "bytes": 346250,
+      "sha256": "8fbafbc212ec49bc13673326220f07a5b48fc9ed60eda5ca1231d8175d313749",
+      "tableOfContentsEntries": 542,
+      "tableOfContentsSha256": "7e7292d0c554c10e3963f71e921ed54001b06e2727f11fed755b52dd95f3a62b",
+      "expandedSqlSha256": "1b905525927949887f0d583a2e214008f960ac9008329d947f230bae173cfac4",
+      "highRiskRestorePatternMatches": 0,
+      "restoreSingleTransaction": true,
+      "restoreExitOnError": true
+    },
+    "exactComparison": {
+      "checkedInCommand": "pnpm backup:verify",
+      "status": "passed",
+      "comparisonMatched": true,
+      "counts": {
+        "tables": 34,
+        "rows": 48,
+        "columns": 411,
+        "constraints": 252,
+        "policies": 55,
+        "indexes": 98,
+        "triggers": 41,
+        "functions": 64,
+        "rlsEnabled": 33,
+        "rlsForced": 33,
+        "grants": 376
+      },
+      "digests": {
+        "tableData": "2479ec6ef548562185e9ca2daf059b5d1f4707443db10aeeac0183a635b3ceed",
+        "columns": "41d485a3c0a58f9210b8b40564f6829788238acd1fbbd8adba924b17fd153dc4",
+        "constraints": "0e8bcafa5cb712451f4421b10847ef283987715e0a110d63c4959adfaa1d6ea0",
+        "policies": "9a60f1d547d22317bf223b40dad29ccb8d522e700099665a8d46163586e7e849",
+        "indexes": "4298bfffca6dc3fa2b64d155c376ed8299eea95c39497a6b7706565e6d184b15",
+        "triggers": "fbd71cbcd08e8704e8eb26478eea3b5fcb15d79222963fb9b13eddc4988e7b3e",
+        "functions": "e5f1d450f3b27c45e01cb0aab29397d6da032e15eef2141601e8ceb657c72db3",
+        "rls": "4a34e5e88c7da85bd52bc9ce00df8d352d29fd3a2bc3d891edf0d9ab9ba8f25c",
+        "grants": "f7ac80c653a005669bbce202f1ed814b8729f37f8305a95efcec230a5e4466fb"
+      }
+    }
+  },
+  "queueRuntime": {
+    "server": "Redis 8.2.8",
+    "officialSourceArchive": "https://download.redis.io/releases/redis-8.2.8.tar.gz",
+    "officialSourceArchiveSha256": "01354ee4449e758e6e45d056fe5802abd9ccde4d669b79c9d5e9f6d730a80759",
+    "serverBinarySha256": "3509d386076f0f45770686c0f51035e5f43eb26ab1d1cf9535c42c84d777e637",
+    "cliBinarySha256": "abeac1c51febedb98fd50e5a65a936732bc25767a62d767148c849e8d762bfb3",
+    "buildTls": false,
+    "allocator": "libc",
+    "port": 6389,
+    "bind": "127.0.0.1",
+    "protectedMode": true,
+    "authenticationRequired": true,
+    "logicalDatabase": 15,
+    "keysBeforeRecovery": 0
+  },
+  "unpublishedOutboxRecovery": {
+    "checkedInCommand": "pnpm backup:rebuild-unpublished-queue",
+    "confirmation": "REBUILD-UNPUBLISHED-IN-ISOLATED-REDIS",
+    "status": "passed",
+    "stateChanging": true,
+    "sourcePendingAtBackup": 1,
+    "eligibleEvents": 1,
+    "examinedEvents": 1,
+    "publishedEvents": 1,
+    "retryEvents": 0,
+    "deadLetterEvents": 0,
+    "duplicateReplayAttempts": 1,
+    "remainingUnpublishedEventsInRestore": 0,
+    "jobIdSetSha256": "c43cdee03bd4c1a1251390aabe2c4ca1dc02242facfeb6888c53ef66ef0898bb",
+    "queueCountsAfterRecovery": {
+      "wait": 1,
+      "active": 0,
+      "completed": 0,
+      "failed": 0,
+      "delayed": 0,
+      "paused": 0
+    },
+    "duplicateReplayRetainedOneJob": true,
+    "restoredOutboxRowMarkedPublishedOnce": true,
+    "secondCommandInvocationRejectedNonemptyRedis": true,
+    "guardrails": {
+      "emptyRedisDatabaseRequired": true,
+      "allowedLogicalDatabaseRange": "1..15",
+      "maximumBatchHardLimit": 499,
+      "exactTenantEventAndIdempotencyAuthorityRequired": true,
+      "remoteRedisRequiresRediss": true,
+      "remotePostgresqlRequiresSslmodeVerifyFull": true,
+      "publishedHistoricalRowsReplayed": false
+    }
+  },
+  "targetedVerification": {
+    "objectRestoreUnit": {
+      "files": 1,
+      "tests": 3,
+      "status": "passed"
+    },
+    "liveObjectRestore": {
+      "files": 1,
+      "tests": 2,
+      "status": "passed",
+      "coverage": [
+        "exact body, metadata, history, and current delete-marker match",
+        "fail-closed rejection of an extra restored object version"
+      ]
+    },
+    "liveOutboxRecovery": {
+      "files": 1,
+      "tests": 1,
+      "status": "passed",
+      "coverage": [
+        "empty isolated Redis start",
+        "one exact restored outbox publication",
+        "stable job identity and duplicate-add deduplication",
+        "one restored database publication transition"
+      ]
+    }
+  },
+  "repositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFiles": 63,
+    "tests": 329,
+    "migrationFiles": 40,
+    "migrationChainSha256": "75aaa78f514eda88526ea9dee14e894489cba2a40a91d6a9b8ad656417afe84c",
+    "productionPackageLicenses": 209,
+    "lockfileSha256": "edb0da67a969c2a920d6f5b6e85cea6f2750c33e73384f37363da0722185ab4a",
+    "format": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "schemaConfigEdgeOidcContainerDependencyChecks": "passed",
+    "secretScan": "passed",
+    "dependencyAudit": "no known vulnerabilities"
+  },
+  "cleanup": {
+    "sourceObjectServerStopped": true,
+    "restoredObjectServerStopped": true,
+    "sourcePostgresqlStopped": true,
+    "restoredPostgresqlStopped": true,
+    "isolatedRedisStopped": true,
+    "volatileRedisQueueDiscardedByServerTermination": true,
+    "temporaryDrillMovedToTrash": true,
+    "trashPath": "<local-home>/.Trash/reconai-object-restore.ibWISi",
+    "portsChecked": [
+      9100,
+      9200,
+      55440,
+      55441,
+      6389
+    ],
+    "portsListeningAfterRun": false
+  },
+  "limitations": [
+    "This is a local synthetic component drill, not a complete disaster-recovery or production-readiness result.",
+    "The object comparator verifies an already restored bounded tenant prefix; it does not perform or validate backup, replication, version selection, encryption, immutability, access, lifecycle, object-lock, legal-hold, tags, or KMS recovery.",
+    "Provider-assigned object version IDs and restoration timestamps are not portable identities; ambiguous same-timestamp logical ordering fails closed and requires provider-native ordered inventory.",
+    "The PostgreSQL custom dump is a local logical restore, not the required production base-backup plus WAL/PITR design.",
+    "The guarded queue command only rebuilds unpublished outbox rows and intentionally leaves published-but-unprocessed recovery unresolved.",
+    "The queue command marks restored outbox rows published, so it must only run after the read-only database comparison in an isolated environment with all normal workers and outbound connectors stopped.",
+    "No atomic PostgreSQL/object consistency point, configuration/key recovery, staging cutover, prior-image compatibility, representative volume, external alerting, RPO, or RTO was established.",
+    "No production, staging, provider, customer-data, or customer-credential result is claimed."
+  ],
+  "credentialsRecorded": false
+}

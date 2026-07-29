@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 2,
+  "recordedAt": "2026-07-29T17:39:24.000Z",
+  "component": "concurrent-membership-lifecycle-api-and-audit",
+  "outcome": "local_fresh_postgresql_restricted_role_http_concurrency_contract_passed",
+  "productionReadinessClaim": false,
+  "sourceState": "uncommitted working tree; no repository commit exists",
+  "scope": {
+    "boundaries": [
+      "fresh PostgreSQL execution of all current migrations through separate migrator and restricted application roles",
+      "real Fastify PATCH membership route with runtime schema validation and server-side current-membership authorization",
+      "two simultaneously authorized administrator identities issuing conflicting changes to one target membership",
+      "organization-scoped advisory-lock serialization in the product repository",
+      "append-only canonical audit events whose previous/new values form one linear tenant chain",
+      "immediate exact-directory reflection of the serialized terminal membership",
+      "corrective reactivation through the same product API and immediate directory recovery",
+      "foreign-organization administrator concealment with no audit append",
+      "tenantless restricted-role row-level-security denial"
+    ],
+    "customerDataUsed": false,
+    "identityProviderContacted": false,
+    "providerSystemsContacted": [],
+    "objectStorageExercised": false
+  },
+  "runtime": {
+    "topology": "one local Fastify process exercised through injection plus one isolated loopback PostgreSQL process",
+    "host": {
+      "operatingSystemKernel": "Darwin 25.5.0",
+      "architecture": "arm64",
+      "node": "v24.15.0",
+      "pnpm": "11.9.0"
+    },
+    "postgresql": {
+      "version": "17.10",
+      "listenAddress": "127.0.0.1",
+      "port": 55467,
+      "dataChecksums": "on",
+      "authentication": "isolated loopback trust at the server boundary; migrator, application, administrator, worker, and maintenance roles remained distinct"
+    },
+    "api": {
+      "transport": "Fastify inject without a bound network port",
+      "identityVerifier": "bounded synthetic bearer-to-identity mapping",
+      "membershipDirectory": "PostgresMembershipDirectory through reconai_app",
+      "repository": "PostgresReconciliationRepository through reconai_app"
+    }
+  },
+  "runtimeSourceVerification": {
+    "postgresql": {
+      "officialSourceVersion": "17.10",
+      "sourceArchiveSha256Observed": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+      "serverBinarySha256Observed": "8c5eec2f2da34b18a119b29b4d59ac18d7ec73ec5ff8264b8f872d5b1c050c77",
+      "initdbBinarySha256Observed": "6cdfb3dc710899b31c3666e976f3c1b1ed24b58509bfad0d6b0e107cafce51d9"
+    },
+    "membershipLifecycleIntegrationTestSha256": "7d3885d7454ab5adcffe46f748dbdcd4dc1fd609270390b2d26c1a58a6ea9c4b",
+    "apiApplicationSha256": "dccf02d37f3f15cbd4fb9e0afc671095a5ec963ab843851938ed156727009be9",
+    "membershipDirectorySha256": "27938b5c0565a6b93d97409d09f24e59aa5b442f213ad7c06cfb2973126af7e8",
+    "repositorySha256": "87bd029fab5721897998b0ebd57ee9b056e7f2404c37d872c530fc2e5fa1f19e",
+    "auditImplementationSha256": "68bdaadab464a84f241a319f80b1bb289ca3c21798d9e916e8887c503c8f5a2d",
+    "databaseDirectoryMigrationSha256": "8027b6f9c204cddaa841029a425471bb8ab88c8d541eb52372a0d6b39a0552ee",
+    "lockfileSha256": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0"
+  },
+  "apiJourney": {
+    "command": "pnpm exec vitest run --project integration apps/api/src/membership-lifecycle.integration.test.ts",
+    "testFiles": 1,
+    "tests": 1,
+    "status": "passed",
+    "appliedMigrations": 55,
+    "organizations": 2,
+    "users": 4,
+    "memberships": 4,
+    "simultaneousAdministrators": 2,
+    "concurrentRequests": 2,
+    "concurrentStatuses": [
+      200,
+      200
+    ],
+    "observedSerializedTransitions": [
+      "analyst/active -> reviewer/deactivated",
+      "reviewer/deactivated -> auditor/active"
+    ],
+    "directoryMatchedConcurrentTerminalState": true,
+    "restorationStatus": 200,
+    "restoredTargetRole": "reviewer",
+    "restoredTargetStatus": "active",
+    "restoredDirectoryCount": 1,
+    "foreignAdministratorStatus": 404,
+    "foreignRequestAuditEventsAdded": 0,
+    "restrictedApplicationRoleTenantlessCounts": {
+      "organizations": 0,
+      "memberships": 0,
+      "auditEvents": 0
+    }
+  },
+  "auditJourney": {
+    "membershipUpdateEvents": 3,
+    "hashVersion2Events": 3,
+    "genesisEvents": 1,
+    "missingPredecessors": 0,
+    "uniqueEventHashes": 3,
+    "linearChainComplete": true,
+    "eachSuccessRecordedPreviousAndNewMembership": true,
+    "terminalCorrectiveEventLinkedToConcurrentHead": true,
+    "foreignDenialAppendedEvent": false
+  },
+  "failedAttemptDisclosure": {
+    "attemptsBeforeFinalPass": 1,
+    "failureBoundary": "the first harness revision omitted the reconai_maintenance role required by migration 0051",
+    "applicationRequestsExecuted": 0,
+    "remediation": "added the required least-privilege maintenance role, dropped and recreated only the isolated test database, then reran all 55 migrations from empty before capturing the final pass"
+  },
+  "securityInterpretation": {
+    "clientOrganizationIdGrantsAuthority": false,
+    "authorizationRecomputedBeforeEachMutation": true,
+    "organizationScopedWriteSerialization": true,
+    "foreignOrganizationExistenceDisclosed": false,
+    "foreignRequestMutatedState": false,
+    "cursorOrBrowserContextUsedAsMutationAuthority": false,
+    "auditAppendSharesMembershipTransaction": true
+  },
+  "verificationLimitations": [
+    "The verifier uses bounded synthetic identities rather than a real OIDC provider; prior isolated Keycloak evidence covers provider-authenticated organization selection and membership lifecycle separately.",
+    "Fastify injection exercises the actual route and hooks without external HTTPS, a reverse proxy, or a bound API socket.",
+    "This is one conflicting request pair from two administrators in one process and one PostgreSQL server; it does not prove sustained mutation rates, multi-host behavior, managed database failover, or rolling deployment.",
+    "The product currently exposes membership role/status administration but no organization-name mutation API, so this run does not exercise rename timing through a product endpoint.",
+    "The exercise uses synthetic tenant-complete fixtures and does not prove invitation delivery, provider acceptance, staging, capacity, or production readiness.",
+    "No credential, token, session cookie, customer data, or production payload is recorded."
+  ],
+  "repositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFiles": 85,
+    "tests": 561,
+    "focusedIntegrationTestFiles": 1,
+    "focusedIntegrationTests": 1,
+    "migrationFiles": 55,
+    "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+    "contractEntrypoints": 4,
+    "sourceBoundaryFiles": 558,
+    "evidenceFiles": 108,
+    "evidenceBytesAtFullGateBeforeResultAnnotation": 1219561,
+    "productionPackageLicenses": 224,
+    "format": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "schemaConfigEdgeOidcContainerAlertSourceEvidenceDependencyLicenseChecks": "passed",
+    "secretScan": "passed",
+    "productionDependencyAudit": "no known vulnerabilities"
+  },
+  "cleanup": {
+    "apiClosedByTest": true,
+    "postgresqlStoppedAfterEvidenceCapture": true,
+    "runtimeEnvironmentFileCreated": false,
+    "postgresqlOfflineChecksum": {
+      "filesScanned": 1500,
+      "blocksScanned": 4114,
+      "badChecksums": 0,
+      "dataChecksumVersion": 1
+    },
+    "closedPorts": [
+      3000,
+      4000,
+      55467
+    ],
+    "isolatedRuntimeMovedToTrash": true,
+    "trashLocationRecorded": false
+  },
+  "credentialsOrCustomerDataRecorded": false
+}

@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-28T00:54:55Z",
+  "scope": "Disabled-by-default Shopify and Stripe OAuth authorization, refresh rotation, provider-aware disconnect, and provider-confirmed revocation",
+  "productionReadinessClaim": false,
+  "result": "static_and_synthetic_verification_passed_live_provider_and_current_database_evidence_pending",
+  "environment": {
+    "node": "v24.15.0",
+    "pnpm": "11.9.0",
+    "realProviderCredentialsUsed": false,
+    "providerSandboxRequestsMade": false,
+    "currentPostgresqlIntegrationConfigured": false
+  },
+  "implementedControls": [
+    "256-bit OAuth state with only a SHA-256 digest in the tenant authorization ledger",
+    "encrypted HttpOnly BFF transaction state and fixed provider callback paths",
+    "single-claim callback lifecycle issued for ten minutes, database-capped at 15 minutes, with replay, expiry, provider, tenant, connection, account, and requesting-membership binding",
+    "fixed HTTPS provider origins, disabled redirects, and bounded request/response size and time",
+    "Shopify callback HMAC/timestamp/shop verification and allowlisted read scopes",
+    "Stripe authorization-code stripe_user_id and refresh account_id response contracts normalized without accepting the wrong grant shape",
+    "versioned runtime-validated OAuth token bundles inside tenant/connection/provider/purpose/key-bound AES-256-GCM envelopes",
+    "tenant database locking and append-only service-authored credential generations for near-expiry refresh",
+    "refresh account, exact scope set, and Stripe live/test-mode drift rejection",
+    "Shopify provider-first lifecycle-only appUninstall before local credential revocation",
+    "Stripe immediate read stop and action-required state with only a fixed server-derived app-settings URL",
+    "exact-raw-body Stripe signature verification for account.application.deauthorized",
+    "Stripe account, live/test mode, authorization-generation time, unique event identity, and raw-body digest binding",
+    "narrow app-only Stripe account resolver followed by tenant-RLS transaction finalization",
+    "append-only deauthorization evidence, revoked credentials, cleared references/cursors, and redacted hash-chained system audit",
+    "already-disconnected replay reports provider confirmation as not_recorded rather than inferring external state"
+  ],
+  "verification": {
+    "repositoryGate": {
+      "command": "pnpm verify",
+      "status": "passed",
+      "checks": [
+        "Prettier format check",
+        "ESLint with zero warnings",
+        "TypeScript typecheck across 19 workspace projects",
+        "42 unit/tenant/reconciliation files with 226 passing tests",
+        "migration-chain validation",
+        "schema/config/dependency-policy validation",
+        "production builds across all applicable workspace projects, including Next.js"
+      ]
+    },
+    "migrationChain": {
+      "command": "pnpm migrations:check",
+      "status": "passed",
+      "migrationCount": 36,
+      "sha256": "925e10bbf9e8a0b6a16d579397f93f8b11b153f139ce9463d3977a7ea15fba13",
+      "newBoundary": [
+        "0033_provider_authorization_lifecycle.sql",
+        "0034_oauth_credential_refresh.sql",
+        "0035_provider_confirmed_disconnect.sql"
+      ]
+    },
+    "browser": {
+      "command": "pnpm --filter @workspace/web exec playwright test",
+      "status": "passed",
+      "project": "chromium",
+      "testCount": 28,
+      "oauthLifecycleCoverage": "The connector scenario installs sealed metadata, requires exact connection confirmation, verifies Stripe read-stop/action-required messaging, and accepts only the fixed Stripe app-settings URL."
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "liveIntegrationAttempt": {
+      "command": "pnpm test:integration",
+      "status": "not_executed_missing_environment",
+      "processExitCode": 1,
+      "suiteCountAtSetup": 13,
+      "skippedTestCount": 34,
+      "missingConfiguration": [
+        "DATABASE_ADMIN_URL and related PostgreSQL role URLs",
+        "REDIS_URL",
+        "S3_ENDPOINT and related object-store configuration"
+      ],
+      "interpretation": "No integration assertion ran. This is recorded as unavailable evidence, not a passing integration result."
+    }
+  },
+  "officialContractChecks": [
+    {
+      "provider": "Stripe",
+      "source": "https://docs.stripe.com/stripe-apps/api-authentication/oauth",
+      "verified": [
+        "authorization code is one-time and five-minute bounded",
+        "access token lifetime is one hour",
+        "refresh token lifetime is one year and rolls on exchange",
+        "authorization response uses stripe_user_id while refresh response uses account_id"
+      ]
+    },
+    {
+      "provider": "Stripe",
+      "source": "https://docs.stripe.com/stripe-apps/app-settings",
+      "verified": [
+        "the app settings page is the only uninstall location",
+        "the fixed settings path contains the configured application ID"
+      ]
+    },
+    {
+      "provider": "Stripe",
+      "source": "https://docs.stripe.com/stripe-apps/events",
+      "verified": [
+        "app uninstall emits account.application.deauthorized",
+        "app-level event delivery must be configured separately"
+      ]
+    },
+    {
+      "provider": "Shopify",
+      "source": "https://shopify.dev/docs/apps/build/authentication-authorization/access-tokens/offline-access-tokens",
+      "verified": [
+        "public apps use expiring offline access tokens",
+        "authorization code exchange requests expiring=1",
+        "refresh returns new access and refresh tokens with provider-supplied expirations"
+      ]
+    },
+    {
+      "provider": "Shopify",
+      "source": "https://shopify.dev/docs/api/admin-graphql/latest/mutations/appuninstall",
+      "verified": [
+        "apps can uninstall themselves with appUninstall",
+        "the mutation is lifecycle-only and irreversible"
+      ]
+    }
+  ],
+  "remainingEvidenceAndOperationalRisks": [
+    "Run migrations 0033-0035 from empty and the previous supported release on PostgreSQL through administrator, migrator, application, and worker roles.",
+    "Exercise authorization, refresh, Shopify uninstall, Stripe user uninstall, and signed event delivery in authorized provider sandboxes.",
+    "Approve provider permissions, production key custody/rotation, callback and webhook routing, NTP, rate/capacity policy, and alerts.",
+    "A Stripe refresh may succeed before a local database commit fails and orphan the rolled refresh token; recover by reauthorization without ambiguous automatic retry.",
+    "Shopify uninstall may succeed before local cleanup fails; provider authority is gone but the unusable encrypted local token needs reasoned operator cleanup.",
+    "Stripe disconnect completion depends on the user uninstalling in app settings and delivery of the signed app-deauthorization event.",
+    "No production, staging, hosted CI, container-topology, backup/restore, or provider-contract result is claimed."
+  ],
+  "decisionsAndRunbooks": [
+    "docs/adr/0012-provider-oauth-authorization-refresh-and-revocation.md",
+    "docs/connectors.md",
+    "docs/environment.md",
+    "docs/operations-runbook.md",
+    "docs/upgrade-and-rollback.md",
+    "docs/security-review.md",
+    "docs/known-limitations.md"
+  ]
+}

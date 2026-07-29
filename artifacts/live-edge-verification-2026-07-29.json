@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-28T21:36:44.228Z",
+  "localVerificationDate": "2026-07-29",
+  "scope": "Reference Nginx forwarding authority, routing, response controls, request ceiling, outer rate budget, and two-upstream distribution",
+  "productionReadinessClaim": false,
+  "result": "single_host_live_edge_control_verification_passed_staging_multi_host_load_tls_and_alert_evidence_pending",
+  "sourceState": "uncommitted working tree; no repository commit exists",
+  "runtime": {
+    "nginxVersion": "1.30.4",
+    "nginxSourceOrigin": "https://github.com/nginx/nginx.git",
+    "nginxSourceTag": "release-1.30.4",
+    "nginxSourceCommit": "017cf98dcce217946572a896f0992370475e189f",
+    "nginxBinarySha256": "2b6b49be1a151bc7def6a37c2a5fa652e8c4c71dd354dd20f81230272e2bca91",
+    "nginxCompiler": "clang 21.0.0",
+    "canonicalConfigurationSha256": "9a27b7ae727faa2a339d65e58d9bbbeb9f221038dc5198fda126dd8a952e5230",
+    "loopbackOnly": true,
+    "apiReplicas": 2,
+    "apiRuntime": "Fastify",
+    "fastifyProxyTrust": [
+      "127.0.0.1"
+    ]
+  },
+  "priorDefect": {
+    "directive": "proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for",
+    "failureMode": "The public API edge preserved a client-selected forwarding prefix. Because Fastify trusted the direct Nginx peer, a caller could influence the proxy-resolved client address used by the distributed limiter and split the application budget. The catch-all web route also passed client forwarding metadata through unchanged.",
+    "correctedContract": [
+      "proxy_set_header X-Real-IP $remote_addr",
+      "proxy_set_header X-Forwarded-For $remote_addr",
+      "proxy_set_header X-Forwarded-Host $host",
+      "proxy_set_header X-Forwarded-Proto $scheme",
+      "proxy_set_header Forwarded \"\""
+    ],
+    "tenantOrFinancialIntegrityImpactObserved": false
+  },
+  "verification": {
+    "staticValidator": {
+      "command": "pnpm edge:check",
+      "status": "passed",
+      "negativeSelfTests": [
+        "an additional $proxy_add_x_forwarded_for directive is rejected even when the required overwrite remains present",
+        "an additional copied $http_forwarded directive is rejected even when the required removal remains present"
+      ]
+    },
+    "command": "LIVE_EDGE_NGINX_BIN=<verified-nginx-binary> pnpm verify:live-edge",
+    "status": "passed",
+    "assertions": {
+      "canonicalConfigurationParsedByNginx": true,
+      "clientForwardingChainDiscarded": true,
+      "clientForwardedHostAndProtoOverwritten": true,
+      "standardizedForwardedHeaderRemoved": true,
+      "catchAllWebForwardingMetadataSanitized": true,
+      "fastifyResolvedObservedPeer": true,
+      "attackerRequestIdDiscarded": true,
+      "browserApiRoutedOnlyToWebBoundary": true,
+      "versionedApiDistributedAcrossBothReplicas": true,
+      "pathPreserved": true,
+      "securityHeadersPresentOn200413And429": true,
+      "nginxVersionHidden": true,
+      "oversizedBodyRejectedBeforeUpstream": true,
+      "forgedForwardingAddressesDidNotSplitOuterBudget": true,
+      "rateLimitedRequestsDidNotReachUpstreams": true,
+      "nginxStoppedAfterVerification": true
+    },
+    "observations": {
+      "routedReplicaSequence": [
+        "api-replica-1",
+        "api-replica-2",
+        "api-replica-1",
+        "api-replica-2",
+        "api-replica-1",
+        "api-replica-2",
+        "api-replica-1",
+        "api-replica-2"
+      ],
+      "spoofedHeaderProbe": {
+        "clientIp": "127.0.0.1",
+        "forwarded": null,
+        "forwardedFor": "127.0.0.1",
+        "forwardedHost": "127.0.0.1",
+        "realIp": "127.0.0.1",
+        "forwardedProto": "http",
+        "generatedRequestIdShape": "32 lowercase hexadecimal characters"
+      },
+      "requestBodyCeiling": {
+        "configuredBytes": 12582912,
+        "attemptedBytes": 12582913,
+        "status": 413,
+        "upstreamRequestsAdded": 0
+      },
+      "outerBurst": {
+        "attempted": 100,
+        "admitted": 41,
+        "rejected": 59,
+        "rejectedStatus": 429,
+        "distinctForgedForwardingAddresses": 100,
+        "upstreamRequestsAdded": 41
+      }
+    }
+  },
+  "limitations": [
+    "The verifier uses one host and loopback HTTP; it does not prove TLS, external load balancers, multi-host scheduling, production network policy, or the exact production binary.",
+    "Two real Fastify instances validate proxy-address semantics, but the full ReconAI API, Redis application limiter, authenticated routes, and Next.js runtime are not composed in this edge-only exercise.",
+    "The observed burst is a bounded control test, not representative capacity, latency, availability, or denial-of-service resistance evidence.",
+    "No customer payload, production credential, staging deployment, external alert, or hosted CI run is included."
+  ],
+  "remainingEvidenceAndOperationalRisks": [
+    "Repeat the forwarding-authority and routing proof through every actual ingress and load-balancer hop with exact approved direct-peer CIDRs.",
+    "Run the edge and application budgets together in a multi-replica staging topology against representative burst, sustained, multi-address, authentication, webhook, and expensive-route load.",
+    "Exercise Redis startup loss, runtime loss, recovery, HMAC-key rotation, readiness polling, and alert delivery through the deployed topology.",
+    "Verify TLS termination, request timeout behavior, network policy, scheduler behavior, and version-hidden error responses at the deployed edge."
+  ],
+  "credentialsRecorded": false
+}

@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-28T13:17:00Z",
+  "verifiedAt": "2026-07-28T13:22:20Z",
+  "component": "redis-security-patch-distributed-runtime-and-container-policy",
+  "outcome": "local_runtime_and_policy_passed_staging_topology_open",
+  "productionReadinessClaim": false,
+  "securityBasis": {
+    "minimumReviewedVersion": "8.2.8",
+    "officialRelease": "https://github.com/redis/redis/releases/tag/8.2.8",
+    "officialSecurityAdvisory": "https://redis.io/blog/security-advisory-cve202623479-cve202625243-cve-2026-25588-cve202625589-cve-2026-23631/",
+    "reviewInterpretation": "Redis 8.2.8 includes security fixes for crafted RESTORE payloads that the release notes describe as potentially leading to use-after-free, out-of-bounds writes, and remote code execution. The repository policy prevents a silent regression to the previously pinned 8.2.1 or another version below 8.2.8.",
+    "vulnerabilityAbsenceClaim": false
+  },
+  "sourceBuild": {
+    "archive": "https://download.redis.io/releases/redis-8.2.8.tar.gz",
+    "publishedHashes": "https://github.com/redis/redis-hashes/blob/master/README",
+    "archiveSha256Published": "01354ee4449e758e6e45d056fe5802abd9ccde4d669b79c9d5e9f6d730a80759",
+    "archiveSha256Observed": "01354ee4449e758e6e45d056fe5802abd9ccde4d669b79c9d5e9f6d730a80759",
+    "archiveHashMatched": true,
+    "buildCommand": "make -j2 BUILD_TLS=no MALLOC=libc redis-server redis-cli",
+    "serverVersion": "Redis server v=8.2.8 sha=00000000:1 malloc=libc bits=64 build=cf9297fdf0200c4d",
+    "cliVersion": "redis-cli 8.2.8",
+    "serverBinarySha256": "ee05ae5476d15daaa57b5d65ac417abce941860442b25a2fdd9a30347b3ae2c5",
+    "cliBinarySha256": "a59d4ff216b5830621e9ddfe5d9dc3e2342ff8ef5dae63af56704cc3a8d9035e",
+    "host": {
+      "operatingSystem": "macOS 26.5.2",
+      "architecture": "arm64",
+      "compiler": "Apple clang version 21.0.0 (clang-2100.0.123.102)",
+      "node": "v24.15.0",
+      "pnpm": "11.9.0"
+    }
+  },
+  "reviewedContainerInput": {
+    "image": "redis:8.2.8-alpine",
+    "manifestListDigest": "sha256:a7859ed111db3c1f5404a973a4747505d559fb5ca32d37e447afc0ef845a2103",
+    "registryResolutionDate": "2026-07-28",
+    "platforms": [
+      "386",
+      "amd64",
+      "arm/v6",
+      "arm/v7",
+      "arm64/v8",
+      "ppc64le",
+      "riscv64",
+      "s390x"
+    ],
+    "currentPins": [
+      "compose.yaml",
+      ".github/workflows/ci.yml"
+    ],
+    "policy": {
+      "validator": "scripts/validate-container-integrity.mjs",
+      "module": "scripts/container-integrity-policy.mjs",
+      "test": "scripts/container-integrity-policy.test.mjs",
+      "rejectsFloatingTags": true,
+      "rejectsVersionsBelow": "8.2.8",
+      "policyTestsPassed": 2
+    },
+    "imageExecuted": false,
+    "interpretation": "The manifest-list identity and source policy were verified, but Docker and Podman were unavailable, so the pinned Alpine image itself was not pulled or executed."
+  },
+  "liveServer": {
+    "version": "8.2.8",
+    "mode": "standalone",
+    "bind": "127.0.0.1",
+    "port": 50531,
+    "protectedMode": true,
+    "authenticationRequired": true,
+    "persistence": {
+      "rdbSaveConfigured": false,
+      "appendOnly": false
+    },
+    "testCredentialRecorded": false,
+    "productionCredentialUsed": false
+  },
+  "integrationVerification": {
+    "command": "REDIS_URL=<authenticated-loopback-url> pnpm exec vitest run --project integration apps/worker/src/queue.integration.test.ts apps/api/src/rate-limit.integration.test.ts apps/web/src/session-revocation.integration.test.ts",
+    "status": "passed",
+    "testFiles": 3,
+    "tests": 4,
+    "durationMilliseconds": 802,
+    "coverage": {
+      "durableQueue": [
+        "three separate Redis connections coordinate the producer, worker, and queue event stream",
+        "one tenant-bound job is processed once and its stable queue identity deduplicates a duplicate add",
+        "an invalid capability fails unrecoverably after one attempt without spending a five-attempt retry budget"
+      ],
+      "distributedRateLimit": [
+        "two separate Redis clients and Fastify instances share one randomized namespace",
+        "121 concurrent requests produce exactly 120 successful responses and one 429",
+        "exactly one environment-scoped 64-hex HMAC key exists",
+        "the key contains no raw loopback address and has a positive TTL"
+      ],
+      "distributedSessionRevocation": [
+        "two separate Redis-backed stores share one randomized namespace",
+        "a logout recorded through one store is enforced through the other",
+        "a different session ID for the same subject remains valid",
+        "the same JWT ID is classified as replayed across stores",
+        "exactly one replay and one session key use 64-hex HMAC indexes",
+        "keys contain no raw subject, session ID, or JWT ID and have positive TTLs"
+      ]
+    },
+    "databaseSizeAfterTestCleanup": 0
+  },
+  "repositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFiles": 61,
+    "tests": 323,
+    "migrationFiles": 40,
+    "migrationChainSha256": "75aaa78f514eda88526ea9dee14e894489cba2a40a91d6a9b8ad656417afe84c",
+    "productionBuild": "passed",
+    "secretScan": "passed",
+    "dependencyAudit": "no known vulnerabilities",
+    "containerIntegrityCheck": "passed"
+  },
+  "cleanup": {
+    "serverStopped": true,
+    "temporaryBuildMovedToTrash": true,
+    "trashPath": "<local-home>/.Trash/reconai-redis-verification.d0KbsO",
+    "listeningPortAfterRun": false
+  },
+  "limitations": [
+    "The official source archive was compiled and executed on the host; the pinned Alpine OCI image and Compose network were not executed because Docker and Podman were unavailable.",
+    "The server used authenticated loopback TCP without TLS; no production Redis transport, ACL, network policy, sentinel, cluster, or managed-service configuration was exercised.",
+    "Two clients and application instances ran in one host process topology, not on separately scheduled machines or containers.",
+    "Nginx, ingress, realistic load, Redis startup/runtime failure and recovery, coordinated HMAC/session-secret rotation, and alert delivery remain unexercised.",
+    "No authorized Keycloak back-channel delivery, old-cookie denial through two actual Next.js replicas, later-login recovery, or provider clock boundary was exercised.",
+    "No production, staging, multi-host, container-runtime, provider, or customer-data result is claimed."
+  ],
+  "credentialsRecorded": false
+}

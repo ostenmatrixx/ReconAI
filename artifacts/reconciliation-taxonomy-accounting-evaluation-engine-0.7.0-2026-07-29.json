@@ -1,0 +1,127 @@
+{
+  "evaluation": "reconciliation-taxonomy-and-accounting-cardinality-v2",
+  "engineVersion": "0.7.0",
+  "ruleSetVersion": "1.5.0",
+  "canonicalExceptionTypes": 19,
+  "everyCanonicalExceptionTypeExercised": true,
+  "scenarios": [
+    {
+      "name": "paid_order_missing_payment",
+      "exceptionTypes": ["paid_order_missing_payment"],
+      "matches": [],
+      "permutationReplayEquivalent": true
+    },
+    {
+      "name": "payment_missing_order",
+      "exceptionTypes": ["payment_missing_order"],
+      "matches": [],
+      "permutationReplayEquivalent": true
+    },
+    {
+      "name": "order_payment_amount_mismatch",
+      "exceptionTypes": ["order_payment_amount_mismatch"],
+      "matches": [],
+      "permutationReplayEquivalent": true
+    },
+    {
+      "name": "currency_mismatch",
+      "exceptionTypes": ["currency_mismatch"],
+      "matches": [],
+      "permutationReplayEquivalent": true
+    },
+    {
+      "name": "shopify_refund_missing_stripe_refund",
+      "exceptionTypes": ["shopify_refund_missing_stripe_refund"],
+      "matches": ["refund-accounting"],
+      "permutationReplayEquivalent": true
+    },
+    {
+      "name": "refund_missing_accounting_entry",
+      "exceptionTypes": ["refund_missing_accounting_entry"],
+      "matches": ["refund"],
+      "permutationReplayEquivalent": true
+    },
+    {
+      "name": "refund_amount_mismatch",
+      "exceptionTypes": ["refund_amount_mismatch"],
+      "matches": ["refund-accounting"],
+      "permutationReplayEquivalent": true
+    },
+    {
+      "name": "partial_refund_discrepancy",
+      "exceptionTypes": ["partial_refund_discrepancy"],
+      "matches": ["refund", "refund-accounting"],
+      "permutationReplayEquivalent": true
+    },
+    {
+      "name": "missing_processing_fee",
+      "exceptionTypes": ["missing_processing_fee"],
+      "matches": ["order-payment"],
+      "permutationReplayEquivalent": true
+    },
+    {
+      "name": "duplicates",
+      "exceptionTypes": [
+        "duplicate_accounting_entry",
+        "duplicate_order",
+        "duplicate_payment",
+        "duplicate_processing_fee",
+        "duplicate_refund"
+      ],
+      "matches": [],
+      "permutationReplayEquivalent": true
+    },
+    {
+      "name": "missing_and_incomplete",
+      "exceptionTypes": ["incomplete_source_record", "missing_identifier"],
+      "matches": [],
+      "permutationReplayEquivalent": true
+    },
+    {
+      "name": "malformed_identifier",
+      "exceptionTypes": ["malformed_identifier"],
+      "matches": [],
+      "permutationReplayEquivalent": true
+    },
+    {
+      "name": "delayed_source_record",
+      "exceptionTypes": ["delayed_source_record"],
+      "matches": [],
+      "permutationReplayEquivalent": true
+    },
+    {
+      "name": "ambiguous_identity",
+      "exceptionTypes": ["ambiguous_identity"],
+      "matches": ["refund-accounting"],
+      "permutationReplayEquivalent": true
+    }
+  ],
+  "accountingLinkage": {
+    "normalizedUniqueReferenceMatched": true,
+    "uniqueMatchRule": "refund-accounting",
+    "multipleCandidatesFailedClosed": true,
+    "sharedEntryReused": false,
+    "sharedEntryAmbiguityArtifacts": 1,
+    "evaluationLimit": 500,
+    "boundaryFullyEvaluated": true,
+    "overflowFailedClosed": true,
+    "overflowEligibleCountLowerBound": 501,
+    "mixedKeyOverflowTaintPreventedHiddenReuse": true,
+    "permutationReplayEquivalent": true
+  },
+  "splitAccounting": {
+    "evaluationLimit": 50,
+    "wholePositiveBucketRequired": true,
+    "subsetSelectionPerformed": false,
+    "conservedBucketMatched": true,
+    "matchRule": "refund-accounting-split",
+    "matchedAccountingEntryCount": 2,
+    "mismatchDifferenceMinor": "100",
+    "overflowFailedClosed": true,
+    "permutationReplayEquivalent": true
+  },
+  "measuredAt": "2026-07-28T22:07:56.376Z",
+  "runtime": "v24.15.0",
+  "platform": "darwin-arm64",
+  "interpretation": "All canonical V1 exception types are exercised by exact synthetic scenarios. Refund/accounting linkage records one unique match, accepts only a complete conserved positive split bucket under one exact transaction reference, and fails closed for non-conservation, multiple identities, reuse, overflow, or mixed-key overflow taint. This is local regression evidence, not staging accuracy or operator-outcome evidence."
+}

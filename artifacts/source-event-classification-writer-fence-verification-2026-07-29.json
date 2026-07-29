@@ -1,0 +1,306 @@
+{
+  "evidenceType": "source-event-classification-writer-fence-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T09:22:14Z",
+  "scope": "Local source, unit, tenant/static migration, fresh and populated PostgreSQL 17.10, restricted-role, in-flight writer, current provider/CSV, privacy, replay, CLI-redaction/success, production-build, secret-scan, and dependency evidence for the opt-in one-way source-classification writer fence. No customer data, provider credential/request, source-system write, real prior deployable image, hosted database, representative volume, protected staging, production deployment, legal decision, compliance, or production-readiness claim is included.",
+  "priorEvidence": {
+    "path": "artifacts/source-event-classification-repair-verification-2026-07-29.json",
+    "sha256": "32a1e9cf9115c30e07130d8b7179c5efed6924b5e621bf25746259eb0d7bab2a",
+    "relationship": "Extends the prior bounded repair evidence with migration 0052, a transaction-serialized activation boundary, deferred exact-classification enforcement, a one-way operating contract, and final 53-migration verification. It supersedes only that artifact's bounded old-writer race and mixed-writer control gap."
+  },
+  "runtime": {
+    "product": "PostgreSQL",
+    "version": "17.10",
+    "sourceUrl": "https://ftp.postgresql.org/pub/source/v17.10/postgresql-17.10.tar.bz2",
+    "expectedAndActualSourceSha256": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+    "platform": "aarch64-apple-darwin25.5.0",
+    "compiler": "Apple clang 21.0.0",
+    "databaseSystemIdentifier": "7667853522249928433",
+    "networkBinding": "127.0.0.1 and ::1 on local port 5432",
+    "dataChecksums": true,
+    "fsync": true,
+    "fullPageWrites": true,
+    "synchronousCommit": true,
+    "temporaryRuntimeOutsideRepository": true,
+    "repositoryEnvironmentFilesCreated": false,
+    "customerOrProviderDataUsed": false
+  },
+  "decision": {
+    "governingAdr": "ADR 0052",
+    "governingAdrStatus": "Accepted",
+    "governingAdrSha256": "d5aa88a98557f4057da6b0f8474fb5c894978827ab09dac03eaf3be23b2afbee",
+    "extendsAdr": "ADR 0051",
+    "threatModelEntry": "TM-37",
+    "securityReviewControl": "CONNECTOR-SOURCE-CLASSIFICATION-001",
+    "databaseMigration": "0052_source_event_classification_writer_fence.sql",
+    "databaseMigrationSha256": "dd55c37bc896117093b6e1ee55a4fc2f828f623211ac71bc88930f7603e2e236",
+    "fenceVersion": "source-classification-writer-fence-v1",
+    "classifierVersion": "source-object-family-v1",
+    "activatedByMigration": false,
+    "disableAuthorityProvided": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyCanonicalMatchExceptionApprovalOrAiBehaviorChanged": false,
+    "providerRequestOrSourceSystemWriteAdded": false
+  },
+  "databaseContract": {
+    "allSourceInsertsTakeSharedTransactionAdvisoryLock": true,
+    "activationTakesMatchingExclusiveTransactionAdvisoryLock": true,
+    "lockKey": "reconai:source-event-classification-writer-fence:v1",
+    "activationWaitsForInFlightWriters": true,
+    "activationRescansAfterWait": true,
+    "activationRequiresZeroMissingUnsupportedOrIncompatibleOperationalRows": true,
+    "shopifyPrivacyTopicsExempt": [
+      "customers/data_request",
+      "customers/redact",
+      "shop/redact"
+    ],
+    "commitCheck": "DEFERRABLE INITIALLY DEFERRED constraint trigger",
+    "sourceAndClassificationMustCommitTogether": true,
+    "missingClassificationSqlState": "23514",
+    "incompatibleClassificationSqlState": "23514",
+    "failedTransactionLeavesSourceClassificationOutboxCanonicalAndAuditPartialRows": false,
+    "globalActivationTableContainsCustomerData": false,
+    "globalActivationTableRlsEnabled": false,
+    "globalActivationTableRuntimePrivileges": false,
+    "activationSingleton": true,
+    "activationAppendOnly": true,
+    "activationTimestampServerRecorded": true,
+    "exactReplayReturnsOriginalActivation": true,
+    "disableFunctionExists": false
+  },
+  "compatibilityContract": {
+    "accountingCsv": {
+      "objectFamilies": [
+        "csv_row"
+      ]
+    },
+    "shopify": {
+      "orders/create": [
+        "order"
+      ],
+      "orders/updated": [
+        "order"
+      ],
+      "refunds/create": [
+        "refund_transaction"
+      ],
+      "orders/snapshot": [
+        "order",
+        "order + refund_transaction"
+      ]
+    },
+    "stripe": {
+      "paymentIntentTopics": [
+        "payment_intent"
+      ],
+      "refundTopics": [
+        "refund"
+      ],
+      "balance_transaction.snapshot": [
+        "balance_transaction"
+      ]
+    },
+    "unsupportedOperationalTopicCanActivate": false,
+    "transportTopicAloneInfersShopifySnapshotFamilies": false
+  },
+  "authorityContract": {
+    "role": "reconai_maintenance",
+    "roleIsSuperuser": false,
+    "roleCanCreateDatabase": false,
+    "roleCanCreateRole": false,
+    "roleInheritsPrivileges": false,
+    "roleBypassesRls": false,
+    "maintenanceDirectActivationTablePrivilege": false,
+    "applicationActivationExecute": false,
+    "workerActivationExecute": false,
+    "migratorSessionCanSubstituteForMaintenance": false,
+    "securityDefinerCurrentUser": "reconai_migrator",
+    "requiredSessionUser": "reconai_maintenance",
+    "rowSecurityOn": true,
+    "fixedSearchPath": "pg_catalog, public",
+    "clientSuppliedOrganizationGrantsAuthority": false,
+    "crossTenantScanReturnsTenantData": false
+  },
+  "commandSafety": {
+    "script": "pnpm activate:source-classification-fence",
+    "databaseUrlEnvironment": "DATABASE_MAINTENANCE_URL",
+    "exactConfirmation": "ENABLE-SOURCE-CLASSIFICATION-WRITER-FENCE",
+    "databaseSystemIdentifierBinding": true,
+    "loopbackDefault": true,
+    "nonLoopbackRequiresExplicitOptIn": true,
+    "nonLoopbackPostgreSqlRequirement": "sslmode=verify-full",
+    "repositoryLockTimeoutMs": 10000,
+    "repositoryStatementTimeoutMs": 15000,
+    "fixedFailureCode": "SOURCE_CLASSIFICATION_FENCE_ACTIVATION_FAILED",
+    "successOutputIncludes": [
+      "schema version",
+      "activated or already_active status",
+      "database system identifier",
+      "activation ID SHA-256",
+      "fence version",
+      "enabled boolean"
+    ],
+    "outputIncludesDatabaseCredentialOperatorReasonTenantSourceEventObjectOrPayload": false,
+    "invalidEnvironmentRedactionTest": true,
+    "freshEmptyDatabaseSuccessfulCommandTest": true,
+    "successfulCommandStatusVerifiedIndependently": true
+  },
+  "livePostgreSqlVerification": {
+    "databaseSuite": {
+      "command": "CI=true pnpm exec vitest run --project integration packages/database/src",
+      "status": "passed",
+      "testFilesPassed": 10,
+      "testsPassed": 37,
+      "testsSkipped": 0,
+      "elapsedSeconds": 6.46
+    },
+    "repairSuite": {
+      "command": "CI=true pnpm exec vitest run --project integration apps/worker/src/source-event-classification-repair.integration.test.ts",
+      "status": "passed",
+      "testFilesPassed": 1,
+      "testsPassed": 2,
+      "testsSkipped": 0,
+      "elapsedSeconds": 1.0
+    },
+    "writerFenceSuite": {
+      "command": "CI=true pnpm exec vitest run --project integration apps/worker/src/source-event-classification-writer-fence.integration.test.ts",
+      "status": "passed",
+      "testFilesPassed": 1,
+      "testsPassed": 1,
+      "testsSkipped": 0,
+      "elapsedSeconds": 1.45
+    },
+    "populatedUpgrade": {
+      "fromLastVersion": "0041_paginated_organization_access_directory.sql",
+      "throughLastVersion": "0052_source_event_classification_writer_fence.sql",
+      "status": "passed",
+      "membershipAndAuditSnapshotsPreserved": true,
+      "writerFenceInitiallyDisabled": true,
+      "maintenanceActivationExecute": true,
+      "applicationActivationExecute": false
+    },
+    "migrationLedger": {
+      "appliedMigrations": 53,
+      "firstVersion": "0000_broken_shriek.sql",
+      "lastVersion": "0052_source_event_classification_writer_fence.sql",
+      "sourceChainSha256": "1f4cc24d367ab63b06bbc23afb75a99d291c951a324b65a35d7f24b50a9bad14",
+      "migration0052LedgerSha256": "dd55c37bc896117093b6e1ee55a4fc2f828f623211ac71bc88930f7603e2e236"
+    },
+    "catalogSnapshotBeforeActivation": {
+      "publicTables": 43,
+      "rlsEnabledTables": 41,
+      "forcedRlsTables": 41,
+      "writerFenceEnabled": false,
+      "maintenanceDirectActivationTableSelect": false,
+      "maintenanceActivationExecute": true,
+      "applicationActivationExecute": false,
+      "workerActivationExecute": false
+    },
+    "coveredAssertions": [
+      "migration leaves the writer fence disabled",
+      "an existing unclassified operational receipt prevents activation",
+      "checksum-bound migration 0051 repair restores zero gaps",
+      "activation takes an exclusive advisory lock and visibly waits for an in-flight writer holding the shared transaction lock",
+      "the drained in-flight old writer commits before the boundary and is then included in the rescan",
+      "the newly observed gap prevents that activation attempt",
+      "repair followed by activation creates exactly one immutable singleton",
+      "exact repeated activation returns the original singleton without mutation",
+      "a post-activation classification-unaware source transaction rolls back completely",
+      "a post-activation source with a permitted but provider-incompatible family rolls back completely",
+      "the actual Shopify ingress repository writes exact source classification and one durable outbox authority while duplicate dispatch returns the same envelope",
+      "the actual CSV preview, commit, and worker processing path writes exact source classification and one durable outbox authority",
+      "provider and CSV replay append no duplicate source, classification, or outbox authority",
+      "an exact Shopify privacy topic commits without operational classification and does not create a repair gap",
+      "foreign-tenant application context sees zero source or classification rows",
+      "application and worker cannot activate or read status",
+      "maintenance cannot read the activation table directly",
+      "the migration owner session cannot substitute for maintenance despite owning the security-definer function",
+      "activation update/delete is rejected as append-only",
+      "the populated previous-release upgrade preserves tenant membership and audit evidence"
+    ]
+  },
+  "verificationCorrections": [
+    {
+      "problemObserved": "The initial cross-tenant activation scan relied on existing repair-owner RLS policies that did not explicitly authorize a plain source-event SELECT for activation.",
+      "correction": "Add a migration-owner SELECT policy requiring both security-definer current_user and the dedicated maintenance session_user, then reject every non-maintenance session inside the activation function.",
+      "controlWeakened": false,
+      "postCorrectionResult": "Existing and in-flight gaps block activation; app, worker, maintenance-table, and direct migrator-session negative tests pass."
+    },
+    {
+      "problemObserved": "The first provider replay assertion expected only one publisher call, while the service deliberately republishes the same already-durable envelope after a duplicate receipt.",
+      "correction": "Assert two equal dispatch envelopes while independently proving a single source classification and a total of only two durable outbox authorities across the provider and CSV writers.",
+      "controlWeakened": false,
+      "postCorrectionResult": "Duplicate dispatch semantics and durable idempotency are both represented accurately."
+    },
+    {
+      "problemObserved": "A combined selected run of the database suite followed by the existing repair suite found three deliberate unclassified test rows left by the first suite.",
+      "correction": "Run each existing stateful integration suite against a fresh, exact named local test database; keep the new writer-fence suite fully isolated with create/drop lifecycle.",
+      "controlWeakened": false,
+      "postCorrectionResult": "The current 37-test database suite, two-test repair suite, and isolated one-test fence suite all pass from their documented clean boundaries."
+    }
+  ],
+  "repositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 78,
+    "testsPassed": 507,
+    "migrationsValidated": 53,
+    "migrationChainSha256": "1f4cc24d367ab63b06bbc23afb75a99d291c951a324b65a35d7f24b50a9bad14",
+    "contractEntrypointsValidated": 4,
+    "dockerfilesValidated": 3,
+    "composeImagesValidated": 5,
+    "workflowImagesValidated": 3,
+    "actionPinsValidated": 25,
+    "operationalAlertRulesValidated": 13,
+    "metricContractsValidated": 9,
+    "packageManifestsPolicyValidated": 20,
+    "productionLicensesValidated": 224,
+    "productionBuildPassed": true,
+    "secretScanPassed": true,
+    "productionDependencyAuditHighSeverityOrGreater": 0,
+    "lockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94"
+  },
+  "repositoryState": {
+    "gitHasAnyCommit": false,
+    "realPriorDeployableImageAvailable": false,
+    "realMixedBinaryRehearsalPerformed": false,
+    "oldWriterEvidenceType": "synthetic database-effect transaction using the current schema and a classification-unaware insert",
+    "stagedPaths": 0,
+    "environmentFilesCreated": 0,
+    "jsonArtifactsBeforeThisArtifact": 83,
+    "jsonArtifactsAfterThisArtifact": 84
+  },
+  "limitations": [
+    "The repository has no commit and therefore no real prior deployable image; the old-writer test is a synthetic database-effect transaction, not a mixed-binary deployment rehearsal.",
+    "No representative source-event volume, activation scan duration, steady-state advisory-lock latency, WAL, disk, replica lag, or hosted PostgreSQL behavior was measured.",
+    "No protected staging, multi-host, supervisor restart, rollback-image, backup/PITR restore, failover, alert delivery, or production activation was exercised.",
+    "No authorized Shopify or Stripe sandbox request was made; current writer compatibility uses synthetic authenticated payloads and actual repository/service paths.",
+    "The fence protects source-event/classification atomicity and does not prove provider completeness, normalization correctness, reconciliation accuracy, financial savings, compliance, reliability, or production readiness.",
+    "Activation is one-way. Once enabled, an old classification-unaware writer is intentionally unavailable; rollback must use a compatible image or a separately reviewed future forward migration."
+  ],
+  "sha256": {
+    "packages/database/migrations/0052_source_event_classification_writer_fence.sql": "dd55c37bc896117093b6e1ee55a4fc2f828f623211ac71bc88930f7603e2e236",
+    "packages/database/src/source-event-classification-writer-fence.ts": "119756c26a1cbb5c6534d60c6d4e58053e0c0543722ae57d05a413a9306ace7e",
+    "packages/database/src/migration.tenant.test.ts": "099785c47ccdae4bedf1182e28a232ab0b0ee9b2a1506de4195d012267d03699",
+    "packages/database/src/upgrade.integration.test.ts": "e56351c4f90775db8cab0a8c915e8e77a211516561e3c6bbd01048e9482e56cc",
+    "apps/worker/src/maintenance-command-security.ts": "0d3f876193e1de73097836edb61b294e9b09b827a3e3e11546e1cf78dfc8573a",
+    "apps/worker/src/activate-source-event-classification-writer-fence.ts": "fac6d5bba17ba70f0afd065c5cf5de72d90c7d379eeb2c7142dd13413c357bff",
+    "apps/worker/src/activate-source-event-classification-writer-fence.test.ts": "13dccb8cd35b7fe1f3857536c245906a84383de53974b79f4e694913e69ffd71",
+    "apps/worker/src/source-event-classification-writer-fence.integration.test.ts": "f35b1621ee00ed70ea37f4421e10257fb167eb89ddfb4bda197700450a8fa116",
+    "docs/adr/0052-one-way-source-classification-writer-fence.md": "d5aa88a98557f4057da6b0f8474fb5c894978827ab09dac03eaf3be23b2afbee",
+    "docs/operations-runbook.md": "67332a4a46c63a5d09305585222fdcb1554cd06b2285d415fd7349867e0cac07",
+    "docs/migrations.md": "608c9a65f5cbed0a07645d9c5ac6527a0a25debc745367df0d64832ec720b8e7",
+    "docs/environment.md": "81f08d480b8b7f1eba9126fd869675a59f96dd86cebfa788fd837aa962c17cf7",
+    "docs/connectors.md": "2abf7fcf9a9361e57a9c65631d77c64e8a2e7cbfe8fe26c0828f6784b97ab66a",
+    "docs/security-review.md": "41a017c13b60f39efa7b68a13dda1370bca969fe53d59aeb370fc1111324ade3",
+    "docs/threat-model.md": "0184a450bddf0bb63b02ca274374601651d0e071b0f7e9117dc6bc1ce11a21e0",
+    "docs/known-limitations.md": "8deca001396d59e03b285d9c96209736083b833db5b5e87b191ae025c4f8bdfa",
+    "docs/goals/goal-1-vertical-slice.md": "dc8f7abd2a3bb68723a1ec25d6dfbf8540e48979209f7fd0b55043cefab70ef3",
+    "docs/upgrade-and-rollback.md": "5e176ddaafcd35f1d2e78a2856abaf650b311ec2ba6bf222daef0834c33d6f4b",
+    "docs/architecture.md": "eab8573e73a2ba979874baf666f52bca79e2dbe91175e56d91b8357dc3dd5929",
+    "GOALS.md": "330bc0f17d871c3aca4b6bb58c1b4fc845701c068ddadb9c8eb9d30c707b3e0c",
+    "package.json": "b58404850dc2c7c1a4af1f68b67e6bc95dc94c67c8456693e93ecfac96724765",
+    "apps/worker/package.json": "e2bf73eea111ba69b6379539d7b4e12e2ceae0d884a51f49f7161f32b2269c32",
+    "pnpm-lock.yaml": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94"
+  }
+}

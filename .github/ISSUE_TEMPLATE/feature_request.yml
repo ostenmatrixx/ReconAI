@@ -1,0 +1,32 @@
+name: Feature request
+description: Propose a user problem and bounded outcome
+title: "feat: "
+labels: ["enhancement", "triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem
+      description:
+        Who experiences it, in what workflow, and what evidence supports it? Mark hypotheses.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome and acceptance evidence
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Safety, tenant, financial, privacy, and operational effects
+      description:
+        Explain why this preserves read-only V1, deterministic authority, human approval, and
+        self-hosting.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives and non-goals

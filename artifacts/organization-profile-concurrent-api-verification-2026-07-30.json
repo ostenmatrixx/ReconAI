@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "reconai-verification-v1",
+  "verification": "organization-profile-concurrent-api-and-browser",
+  "result": "passed",
+  "generatedAt": "2026-07-29T19:07:06.540Z",
+  "scope": {
+    "customerDataUsed": false,
+    "providerSystemsContacted": false,
+    "productionSystemsContacted": false,
+    "topology": "fresh isolated PostgreSQL cluster and local Chromium browser"
+  },
+  "runtime": {
+    "postgresqlVersion": "PostgreSQL 17.10",
+    "browserVersion": "151.0.7922.34",
+    "appliedMigrations": 56,
+    "sourceHashes": {
+      "scripts/verify-organization-profile.mjs": "68888d2ed85edb6dc8aaf5905e8a155b654f4bde97b4c8040c6082f082def237",
+      "apps/api/src/organization-profile.integration.test.ts": "c98abfa645e4ce7803f0435d67792fd8d8abad88a026665cbf2d6c9298418064",
+      "apps/api/src/app.ts": "efbfc3a04dcea4989b00c995746d25ebce01ffa3a0d4377e3549d92d925c8274",
+      "apps/api/src/repository.ts": "5877ee606c29f09ff644c27c9882f44eba5814f525652b0998ec52f3f183edd6",
+      "apps/web/src/app/api/recon/actions/route.ts": "90eae2edde791cd898890e6e5f15bb5c55ba8ab15d84fecd9b3c759067667bc3",
+      "apps/web/src/components/organization-profile-settings.tsx": "5c4f55c44c9b200fdfb30d6391858c5db4b526496a0c13a856731503c5ad4b12",
+      "apps/web/tests/organization-profile-settings.spec.ts": "1893c72e0f5d3012346268cc0c6aa62e2ee860f449dcb0b57ba0d0804a7fca2a",
+      "packages/database/migrations/0055_organization_profile_version.sql": "eaeabd21964310e919d934300b12cfbb3911ef69ebdb95a15383aa30427f52ec"
+    }
+  },
+  "apiAndPersistence": {
+    "initialProfileVersion": 1,
+    "concurrentMutationStatuses": [
+      200,
+      409
+    ],
+    "staleRetryStatus": 409,
+    "authorizedFinalProfileVersion": 3,
+    "noOpRetainedProfileVersion": 3,
+    "analystReadStatus": 404,
+    "analystMutationStatus": 404,
+    "foreignTenantMutationStatus": 404,
+    "malformedMutationStatus": 400,
+    "expandedMutationStatus": 400,
+    "organizationProfileAuditEvents": 2,
+    "auditHashVersion": 2,
+    "auditLinearChain": true,
+    "tenantlessApplicationRoleCounts": {
+      "organizations": 0,
+      "memberships": 0,
+      "auditEvents": 0
+    }
+  },
+  "browser": {
+    "testsPassed": 3,
+    "explicitConfirmationExercised": true,
+    "switcherRefreshExercised": true,
+    "conflictReloadExercised": true,
+    "automatedAccessibilityViolations": 0
+  },
+  "controlsExercised": [
+    "strict bounded profile read and mutation contracts at API and BFF boundaries",
+    "current organization-management permission resolution before every profile operation",
+    "optimistic profile-version concurrency with one accepted and one conflicting simultaneous write",
+    "same-transaction organization update and v2 append-only audit event",
+    "immediate exact organization-directory name re-resolution",
+    "lower-privilege and foreign-tenant uniform not-found denials without audit state",
+    "tenantless restricted-role RLS reads for organizations, memberships, and audit events",
+    "browser confirmation, stale-conflict reload, live switcher refresh, and accessibility scan"
+  ],
+  "limitations": [
+    "This is one isolated local PostgreSQL and Chromium exercise; it is not staging or production evidence.",
+    "The concurrent mutation test uses one API process and one PostgreSQL primary; it does not prove multi-region, failover, replica-lag, or sustained-load behavior.",
+    "The browser test intercepts the BFF endpoints while the API integration independently exercises the real Fastify and PostgreSQL composition.",
+    "Business-time-zone mutation is intentionally outside this slice because it can change financial business-date interpretation.",
+    "No credential, customer payload, production identifier, or external-provider data is recorded."
+  ],
+  "credentialsRecorded": false
+}

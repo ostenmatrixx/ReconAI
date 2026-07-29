@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-27T16:04:02Z",
+  "component": "scheduled-provider-gap-repair",
+  "outcome": "passed",
+  "policy": {
+    "enabledByDefault": false,
+    "serviceIdentity": "provider-gap-repair-scheduler",
+    "providers": [
+      "shopify",
+      "stripe"
+    ],
+    "intervalBoundsMilliseconds": {
+      "minimum": 60000,
+      "maximum": 86400000,
+      "default": 900000
+    },
+    "lookbackBoundsMilliseconds": {
+      "minimum": 60000,
+      "maximum": 2592000000,
+      "default": 86400000
+    },
+    "overlapBoundsMilliseconds": {
+      "minimum": 0,
+      "maximum": 3600000,
+      "default": 300000,
+      "mustBeLessThanLookback": true
+    },
+    "automaticPageCeiling": {
+      "minimum": 1,
+      "maximum": 25,
+      "default": 5
+    },
+    "batchSize": {
+      "minimum": 1,
+      "maximum": 100,
+      "default": 25
+    }
+  },
+  "authority": {
+    "requesterAuthorityExactXor": true,
+    "userAuthorityRequiresMembership": true,
+    "systemAuthorityRequiresFixedServiceIdentity": true,
+    "workerFunctionsSecurityDefiner": true,
+    "workerFunctionsForceRowSecurity": true,
+    "workerDirectInsertGranted": false,
+    "exactTenantEnvelopeValidated": true,
+    "dueAndActiveRunValidatedInDatabase": true,
+    "userAndSystemRunsShareConnectionAdvisoryLock": true,
+    "cadenceSlotIdempotencyIsDeterministic": true,
+    "schedulerCallsProviderDirectly": false,
+    "existingOutboxAndWorkerPathUsed": true,
+    "automaticAuditActorType": "system"
+  },
+  "sourceHashesSha256": {
+    "migration0031": "2b88c5af64c2a155acc434bb8f628b7d0d5f63d21618c297f246c801974522c8",
+    "providerSyncRepository": "609ca2b7e7a505d4644c336a99df8b2c3942187bca58ee16c061b30e432be292",
+    "providerSyncIntegrationTest": "a35cc102c9ec7acf071301bb27cf6699dc6b40dbcd755b7aab16a353d17b30b3",
+    "upgradeIntegrationTest": "0f8c2cc59e998ec1971006530993f1318a88adba20d94eeba5d966ab0e34fe25",
+    "workerScheduler": "bcd2baa73dea6950943648545e4e15dd3f6ea632ea68dcc8e80eb6a5631c426a",
+    "workerSchedulerTest": "d5de4751216e314de8dea6852656191740c68f4022be002bdad53d1a0cae3fef",
+    "config": "432d5dfdaf96c1bdc83c88a9f9087201a835346ca078841e73eb4a660cd99a3a",
+    "connectorHistoryUi": "4ce1b3789b0f0fb5c84d0dff1d88b639588f491568589840c008c535939e6932",
+    "drizzleSnapshot0031": "fffbeae6918a1f5d60abc123b61fb073eb4042019053d0548b3acb6051eb6459"
+  },
+  "verification": {
+    "repositoryDeterministicTests": {
+      "files": 33,
+      "tests": 177,
+      "passed": true
+    },
+    "postgresql": {
+      "serverVersion": "PostgreSQL 17.10",
+      "files": 9,
+      "tests": 23,
+      "passed": true
+    },
+    "browser": {
+      "engine": "Chromium",
+      "tests": 27,
+      "accessibilityScans": 10,
+      "passed": true
+    },
+    "migrations": {
+      "count": 32,
+      "chainSha256": "fed45566c68de11255ba0d7efc3031091a6a73ad897671af48f7075ca6ae9af2",
+      "drizzleSchemaDrift": false,
+      "populatedPreviousReleaseUpgradePassed": true
+    },
+    "dependencyAuditKnownVulnerabilities": 0,
+    "licenseCheckPassed": true,
+    "secretScanPassed": true,
+    "cycloneDxSbomGenerated": true
+  },
+  "verifiedBehaviors": [
+    "Only healthy, degraded, or stale read-authorized Shopify and Stripe connections without an active run are due.",
+    "User and system run authority cannot be combined, omitted, or changed after insertion.",
+    "A forged service identity or mismatched tenant envelope is rejected.",
+    "Repeated or concurrent scans of one cadence slot create at most one immutable run and outbox event.",
+    "Operator and scheduled starts serialize on the same organization and connection lock.",
+    "Automatic runs retain fixed system provenance in audit and connector history.",
+    "Existing 0030 membership-requested runs migrate to explicit user authority without changing their requester."
+  ],
+  "cleanup": {
+    "postgresServerStopped": true,
+    "temporaryClusterMovedToTrash": true,
+    "verificationPortListeningAfterRun": false
+  },
+  "limitations": [
+    "No real Shopify or Stripe request, credential, or authorized sandbox was used.",
+    "Production scheduling remains disabled pending approved cadence, provider capacity, distributed rate, and alert evidence.",
+    "OAuth installation, KMS-backed credential envelopes, rotation, revocation, disconnect, and complete privacy deletion remain incomplete.",
+    "No protected staging, alert, load, prior-image runtime rollback, or backup-restore exercise was performed."
+  ],
+  "credentialsRecorded": false
+}

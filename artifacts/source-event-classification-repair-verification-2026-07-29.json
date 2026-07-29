@@ -1,0 +1,289 @@
+{
+  "evidenceType": "source-event-classification-repair-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T08:43:13.000Z",
+  "scope": "Local source, unit, static migration, fresh/populated PostgreSQL 17.10, restricted-role, previous-release upgrade, production-build, secret-scan, and dependency evidence for bounded repair of synthetic pre-classifier source receipts. No customer data, provider credential/request, source-system write, hosted database, protected staging, production deployment, mixed-image rollout, representative volume, legal decision, or production-readiness claim is included.",
+  "priorEvidence": {
+    "path": "artifacts/postgresql-51-migration-integration-verification-2026-07-29.json",
+    "sha256": "d4f41373691b078a71edfc7fbf49ee969a34ccd79f31ce7a9ffa866697094528",
+    "relationship": "Extends the prior immutable 51-migration database evidence with migration 0051, a dedicated maintenance role, the bounded repair implementation, and final 52-migration verification. It supersedes only that artifact's bounded populated classification-repair blocker."
+  },
+  "runtime": {
+    "product": "PostgreSQL",
+    "version": "17.10",
+    "sourceUrl": "https://ftp.postgresql.org/pub/source/v17.10/postgresql-17.10.tar.bz2",
+    "expectedAndActualSourceSha256": "078a03516dcdbdb705fecaf415ea3d13a956c589e46f09fed68a06fb00598c90",
+    "platform": "aarch64-apple-darwin25.5.0",
+    "compiler": "Apple clang 21.0.0",
+    "networkBinding": "127.0.0.1 only on an ephemeral port",
+    "authentication": "trust on the loopback-only temporary synthetic cluster",
+    "dataChecksums": true,
+    "fsync": true,
+    "fullPageWrites": true,
+    "synchronousCommit": true,
+    "temporaryRuntimeOutsideRepository": true,
+    "repositoryEnvironmentFilesCreated": false,
+    "customerOrProviderDataUsed": false
+  },
+  "decision": {
+    "governingAdr": "ADR 0051",
+    "governingAdrStatus": "Accepted",
+    "governingAdrSha256": "e0f674480865e89325df545f0ddf160dcd9bcd20237f929d462932897478539f",
+    "extendsAdr": "ADR 0047",
+    "threatModelEntry": "TM-37",
+    "securityReviewControl": "CONNECTOR-SOURCE-CLASSIFICATION-001",
+    "databaseMigration": "0051_source_event_classification_repair_authority.sql",
+    "databaseMigrationSha256": "027c61cc1f415bc0cfb1a86278943ead6a8e01bdfda0dbdcde1ef16a4f37597d",
+    "repairVersion": "source-object-family-repair-v1",
+    "classifierVersion": "source-object-family-v1",
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyCanonicalMatchExceptionApprovalOrAiBehaviorChanged": false,
+    "providerRequestOrSourceSystemWriteAdded": false
+  },
+  "authorityContract": {
+    "role": "reconai_maintenance",
+    "roleProvisionedBeforeMigration": true,
+    "roleProperties": {
+      "superuser": false,
+      "createDatabase": false,
+      "createRole": false,
+      "inherit": false,
+      "bypassRls": false
+    },
+    "directSourceEventsPrivilege": false,
+    "directClassificationPrivilege": false,
+    "directAuditPrivilege": false,
+    "applicationOrWorkerFunctionExecution": false,
+    "maintenanceFunctions": [
+      "reconai_claim_source_event_classification_repair_candidate()",
+      "reconai_source_event_classification_repair_gap_counts()",
+      "reconai_prepare_source_event_classification_repair_audit(uuid,uuid,uuid,text,text,text,text)",
+      "reconai_record_source_event_classification_repair(uuid,uuid,uuid,text,text,text,text,text[],uuid,uuid,text,text,timestamptz,text,text)"
+    ],
+    "functionOwner": "reconai_migrator",
+    "functionSecurityDefiner": true,
+    "rowSecurityOn": true,
+    "fixedSearchPath": "pg_catalog, public",
+    "clientSuppliedOrganizationGrantsAuthority": false,
+    "candidateTenantComesFromLockedSourceRow": true
+  },
+  "repairContract": {
+    "migrationPerformsBackfill": false,
+    "maximumEventsPerCommand": 100,
+    "defaultEventsPerCommand": 25,
+    "candidateOrder": [
+      "payload_object_key",
+      "received_at",
+      "source_event_id"
+    ],
+    "candidateLock": "FOR UPDATE OF source_events SKIP LOCKED",
+    "concurrentClaimsMaySelectSameLockedRow": false,
+    "sourceRowLockedAcrossObjectRead": true,
+    "repairableSources": [
+      "accounting_csv",
+      "shopify",
+      "stripe"
+    ],
+    "shopifyTopics": [
+      "orders/create",
+      "orders/updated",
+      "orders/snapshot",
+      "refunds/create"
+    ],
+    "stripeTopics": [
+      "payment_intent.amount_capturable_updated",
+      "payment_intent.canceled",
+      "payment_intent.payment_failed",
+      "payment_intent.processing",
+      "payment_intent.succeeded",
+      "refund.created",
+      "refund.failed",
+      "refund.updated",
+      "balance_transaction.snapshot"
+    ],
+    "shopifyPrivacyTopicsCountedAsOperationalGap": false,
+    "unsupportedOperationalTopicHidden": false,
+    "unsupportedOperationalTopicBlocksCompletion": true,
+    "objectKeyAndDigestComeFromServerReceipt": true,
+    "providerMaximumBytes": 1048576,
+    "csvMaximumBytes": 10485760,
+    "objectReadDeadlineMs": 15000,
+    "exactProductionProviderClassifierReused": true,
+    "shopifySnapshotInferredFromTopicAlone": false,
+    "immutableRechecks": [
+      "organization_id",
+      "source_event_id",
+      "connection_id",
+      "source",
+      "event_type",
+      "payload_object_key",
+      "payload_sha256"
+    ],
+    "databaseEnforcesExactProviderTopicFamilyShape": true,
+    "classificationAndAuditAtomic": true,
+    "auditAction": "source_event.classification_repaired",
+    "auditActorType": "system",
+    "auditHashVersion": 2,
+    "auditRepairAndClassifierVersionsRecorded": true,
+    "replayConflictWithDifferentFamilyFails": true,
+    "zeroTotalGapsRequiredByDefault": true
+  },
+  "commandSafety": {
+    "script": "pnpm repair:source-classifications",
+    "exactConfirmation": "REPAIR-INTEGRITY-VERIFIED-SOURCE-CLASSIFICATIONS",
+    "databaseSystemIdentifierBinding": true,
+    "loopbackDefault": true,
+    "nonLoopbackRequiresExplicitOptIn": true,
+    "nonLoopbackPostgreSqlRequirement": "sslmode=verify-full",
+    "nonLoopbackObjectRequirement": "HTTPS",
+    "recommendedObjectAuthority": "temporary prefix-scoped GetObject only",
+    "successOutputIncludes": [
+      "schema version",
+      "complete or incomplete status",
+      "database system identifier",
+      "repair-run SHA-256",
+      "aggregate examined/classified/already/remaining counts"
+    ],
+    "outputIncludesTenantConnectionSourceEventObjectDigestOperatorReasonCredentialOrPayload": false,
+    "fixedFailureCodes": [
+      "SOURCE_OBJECT_NOT_FOUND",
+      "SOURCE_OBJECT_INTEGRITY_FAILED",
+      "SOURCE_OBJECT_READ_TIMEOUT",
+      "SOURCE_PAYLOAD_UNSUPPORTED",
+      "SOURCE_CLASSIFICATION_REPAIR_FAILED"
+    ],
+    "invalidEnvironmentRedactionTest": true,
+    "actualHangingHttpObjectReadDeadlineTest": true
+  },
+  "livePostgreSqlVerification": {
+    "databaseSuite": {
+      "command": "CI=true pnpm exec vitest run --project integration packages/database/src",
+      "status": "passed",
+      "testFilesPassed": 10,
+      "testsPassed": 37,
+      "testsSkipped": 0,
+      "elapsedSeconds": 5.49
+    },
+    "repairSuite": {
+      "command": "CI=true pnpm exec vitest run --project integration apps/worker/src/source-event-classification-repair.integration.test.ts",
+      "status": "passed",
+      "testFilesPassed": 1,
+      "testsPassed": 2,
+      "testsSkipped": 0,
+      "elapsedSeconds": 1.07
+    },
+    "migrationLedger": {
+      "appliedMigrations": 52,
+      "firstVersion": "0000_broken_shriek.sql",
+      "lastVersion": "0051_source_event_classification_repair_authority.sql",
+      "sourceChainSha256": "268fbbbcd1f4678968620500abf575de77ce74e7e3097ae1a91ca0e8722c6e60",
+      "migration0051LedgerSha256": "027c61cc1f415bc0cfb1a86278943ead6a8e01bdfda0dbdcde1ef16a4f37597d"
+    },
+    "catalogSnapshot": {
+      "publicTables": 42,
+      "rlsEnabledTables": 41,
+      "forcedRlsTables": 41,
+      "maintenanceDirectSourcePrivilege": false,
+      "maintenanceDirectClassificationPrivilege": false,
+      "maintenanceDirectAuditPrivilege": false,
+      "maintenanceClaimExecute": true,
+      "maintenanceGapCountExecute": true
+    },
+    "syntheticFinalState": {
+      "repairedClassifications": 3,
+      "repairAuditEvents": 3,
+      "allRepairAuditsHashVersion2": true,
+      "remainingTotalGaps": 1,
+      "remainingRepairableGaps": 0,
+      "reasonForRemainingGap": "The test deliberately inserts one unsupported Shopify operational topic to prove it remains visible and blocks completion."
+    },
+    "coveredAssertions": [
+      "two independent maintenance sessions pass a two-read barrier and claim distinct locked candidates",
+      "Shopify order and Stripe refund classifications are exact",
+      "classification and audit are visible only in the correct tenant",
+      "audit version-2 event hash recomputes exactly",
+      "application and worker cannot execute maintenance repair functions",
+      "maintenance cannot directly read or write source, classification, or audit tables",
+      "maintenance is non-superuser, non-createdb, non-createrole, non-inheriting, and non-bypass",
+      "missing object rolls back classification and audit",
+      "corrected object retry succeeds",
+      "exact replay appends no duplicate classification or audit",
+      "unsupported topic is excluded from repair claims but remains in total gap count",
+      "populated previous-release upgrade applies migration 0051 and preserves membership and audit evidence"
+    ]
+  },
+  "verificationCorrections": [
+    {
+      "problemObserved": "The first live gap-count attempt overcounted repaired rows because the non-bypass security-definer owner could not see classification rows under forced RLS without tenant context.",
+      "correction": "Add a migrator-only SELECT policy on the append-only classification table for the fixed repair functions; maintenance still has no table privilege.",
+      "controlWeakened": false,
+      "postCorrectionResult": "The live concurrent and retry/replay suite passed."
+    },
+    {
+      "problemObserved": "The initial repository design required generic maintenance SELECT/INSERT authority on audit_events to call the standard TypeScript audit writer.",
+      "correction": "Move audit-head preparation and the fixed repair-audit insert behind security-definer functions and revoke every direct audit-table privilege from maintenance.",
+      "controlWeakened": false,
+      "postCorrectionResult": "Direct audit SELECT is denied and the inserted version-2 hash recomputes exactly."
+    },
+    {
+      "problemObserved": "The S3 verified-read path had byte and digest limits but no explicit response deadline while a repair held the source-row lock.",
+      "correction": "Add a validated optional S3 verified-read timeout, abort request and stream reads, use 15 seconds in repair, and classify timeout distinctly.",
+      "controlWeakened": false,
+      "postCorrectionResult": "A local hanging HTTP endpoint is aborted and the repair maps timeout to SOURCE_OBJECT_READ_TIMEOUT."
+    }
+  ],
+  "repositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 77,
+    "testsPassed": 505,
+    "migrationsValidated": 52,
+    "migrationChainSha256": "268fbbbcd1f4678968620500abf575de77ce74e7e3097ae1a91ca0e8722c6e60",
+    "schemasValidated": 4,
+    "operationalAlertRulesValidated": 13,
+    "metricContractsValidated": 9,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "productionBuildStatus": "passed",
+    "secretScanStatus": "passed",
+    "dependencyAuditStatus": "no known vulnerabilities"
+  },
+  "sourceSha256": {
+    "packages/database/migrations/0051_source_event_classification_repair_authority.sql": "027c61cc1f415bc0cfb1a86278943ead6a8e01bdfda0dbdcde1ef16a4f37597d",
+    "infra/postgres/init/001_roles.sql": "935951286d8c27fa67beacf56fbb9a3a212b32a0fc236d95e6a6317b665a15bb",
+    "packages/database/src/source-event-classification-repair.ts": "cdcf459d54e072e9c3cbb98e29864268a7fe54d24e3499dfff4cc71a308dbaf5",
+    "apps/worker/src/source-event-classification-repair.ts": "d7eefbea4fdeef402de461aec83e2e77404af9d03f6a9ea2898494c45b700374",
+    "apps/worker/src/repair-source-event-classifications.ts": "df282e604c3c4c5478bd3212318cbe858357014daa510caeb424c4c68acac0e0",
+    "apps/worker/src/source-event-classification-repair.test.ts": "7fd53696e3a835d4948bb42cbb1d36b496b7144cfccb82d41bd4c4cbb79ebc41",
+    "apps/worker/src/source-event-classification-repair.integration.test.ts": "dffdd66748a955e5544dbc7b33623169b1f73a812ccff063cdfadf8f799e274f",
+    "apps/worker/src/repair-source-event-classifications.test.ts": "f3969bbdef51b1ca21c289ecc3efdbe0070196da6aebaed497b6b4d58325c644",
+    "packages/ingestion/src/provider-webhooks.ts": "62ad1f0d3668d9a0be9741cf04068ca13dccdf08678c63f4a7990c99e78ddd0c",
+    "packages/object-storage/src/index.ts": "56a1bb6e2a196cdc8e431a63076812b0e4bc6c67adf636940a28a5bcf927e17b",
+    "docs/adr/0051-bounded-source-event-classification-repair.md": "e0f674480865e89325df545f0ddf160dcd9bcd20237f929d462932897478539f",
+    "GOALS.md": "81b457a45e932fed219d811bce0658d0bd86e57f46b57aca4ef97ed90a53fc88",
+    "docs/goals/goal-1-vertical-slice.md": "2d8c07a1ef13401d1cf50463b84d8abb3f54b99f7742910b45453ddca4afe0bf",
+    "docs/security-review.md": "2abce01cea81caafd9965e8d0cb608dd1436065f366f2367e7388b3a308c2291",
+    "docs/threat-model.md": "771df154871c4f339efa38de929a6d6ab7cb8682b871b849033dd3a7d4b08438",
+    "docs/known-limitations.md": "b16bae418e665b987b23d7feee28b7241f24e2de58d91ec1e12537620ffb7ede"
+  },
+  "repositoryState": {
+    "jsonEvidenceArtifactsAfterThisRun": 83,
+    "migrationFiles": 52,
+    "stagedFiles": 0,
+    "runtimeEnvironmentFilesPresent": false,
+    "environmentTemplatePresent": true
+  },
+  "goalStatus": {
+    "goal": "Goal 1 — Deterministic vertical slice",
+    "status": "Active",
+    "verifiedComplete": false
+  },
+  "remainingClaimBoundary": [
+    "No authorized Shopify or Stripe provider acceptance run exists.",
+    "No mixed classification-aware/unaware writer drain or rolling-image rehearsal exists.",
+    "No representative-volume repair timing, source-row lock impact, object-store capacity, WAL/replica impact, or tenant timing evidence exists.",
+    "No hosted PostgreSQL, protected staging, production deployment, or owner-approved execution of the repair command exists.",
+    "No owner-approved retention, provider capacity, privacy transfer/disposition, alert thresholds, notification delivery, or on-call response evidence exists.",
+    "Zero classification gaps would prove only classification coverage for retained operational receipts, not provider pagination, webhook delivery, normalization, reconciliation, or source completeness."
+  ]
+}

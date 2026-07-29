@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-28T09:29:27Z",
+  "scope": "Deterministic, fail-closed validation of every external package in the pnpm production and optional dependency graph across all workspace importers and supported platforms",
+  "productionReadinessClaim": false,
+  "result": "offline_full_graph_production_license_validation_passed",
+  "priorDefect": {
+    "failedApproach": "pnpm licenses list --prod --json",
+    "errorCode": "ERR_PNPM_MISSING_PACKAGE_INDEX_FILE",
+    "affectedLocalIndex": "@fastify/cors@11.3.0",
+    "failureMode": "The release license gate depended on mutable pnpm package-store index files and could not produce a complete license decision even though the frozen dependency graph was installed.",
+    "tenantOrFinancialIntegrityImpactObserved": false
+  },
+  "implementedControls": [
+    "parse only a bounded pnpm version-9 lockfile with YAML aliases disabled",
+    "start from every importer production and optional dependency while excluding development-only and workspace-link packages",
+    "traverse lockfile snapshots to include transitive and cross-platform optional packages independent of the current host installation",
+    "require exact registry-shaped identities and sha512 integrity for every external package",
+    "reject non-registry link, workspace, file, Git, HTTP, and HTTPS dependency references",
+    "bind the sorted reviewed inventory to the SHA-256 of the complete lockfile",
+    "fail closed on missing, extra, unsorted, malformed, stale, or unapproved inventory entries",
+    "permit only explicitly reviewed exact license strings and compound expressions",
+    "validate offline without reading pnpm's mutable package-store index or contacting a registry",
+    "run the offline license validator inside both pnpm verify and the supply-chain CI job"
+  ],
+  "inventoryGenerationBoundary": {
+    "command": "CI=true pnpm license:inventory",
+    "registry": "https://registry.npmjs.org/",
+    "purpose": "Generate a review candidate after an authorized dependency change; generation does not approve a license.",
+    "networkControls": [
+      "exact package name and version reads from one fixed registry",
+      "ten-second request timeout",
+      "redirect rejection",
+      "credentials omitted",
+      "cache disabled",
+      "one-MiB response ceiling",
+      "eight-request concurrency ceiling"
+    ],
+    "registryCrossChecks": [
+      "exact package name",
+      "exact version",
+      "exact lockfile integrity",
+      "explicitly approved exact license expression"
+    ]
+  },
+  "inventory": {
+    "file": "config/production-license-inventory.json",
+    "sha256": "d1f92d79446582e1aba718dc37bde964e817ef11cc54d07de529c543203d3e26",
+    "lockfileSha256": "24da6d00a98afa0a24b237065d99c886d10ebccc34f4dce5fe65260edf3fe0c6",
+    "productionPackageCount": 209,
+    "licenses": [
+      "0BSD",
+      "Apache-2.0",
+      "Apache-2.0 AND LGPL-3.0-or-later",
+      "Apache-2.0 AND LGPL-3.0-or-later AND MIT",
+      "BSD-3-Clause",
+      "CC-BY-4.0",
+      "ISC",
+      "LGPL-3.0-or-later",
+      "MIT",
+      "OFL-1.1",
+      "Unlicense"
+    ],
+    "reciprocalLicenseNotice": "THIRD_PARTY_NOTICES.md records sharp/libvips LGPL-3.0-or-later distribution obligations; release artifacts must retain package license files and the SBOM."
+  },
+  "verification": {
+    "repositoryGate": {
+      "command": "CI=true pnpm verify",
+      "status": "passed",
+      "testFiles": 57,
+      "tests": 307,
+      "workspaceTypecheckProjects": 19,
+      "workspacePackageManifests": 20,
+      "migrationFiles": 40,
+      "migrationChainSha256": "75aaa78f514eda88526ea9dee14e894489cba2a40a91d6a9b8ad656417afe84c",
+      "productionBuild": "passed"
+    },
+    "focusedPolicyTests": {
+      "command": "./node_modules/.bin/vitest run scripts/production-license-policy.test.mjs",
+      "status": "passed",
+      "tests": 6,
+      "covered": [
+        "peer-qualified pnpm snapshot identity parsing",
+        "complete production and optional graph derivation with development/workspace exclusion, direct-URL rejection, and required sha512 integrity",
+        "deterministic sorted inventory generation and validation",
+        "registry integrity mismatch rejection",
+        "denied-license and incomplete-inventory rejection",
+        "full-lockfile drift rejection"
+      ]
+    },
+    "licenseCheck": {
+      "command": "CI=true pnpm license:check",
+      "status": "passed",
+      "packageCount": 209,
+      "executionMode": "offline"
+    },
+    "productionAudit": {
+      "command": "CI=true pnpm audit --prod",
+      "status": "passed",
+      "result": "No known vulnerabilities found"
+    },
+    "secretScan": {
+      "command": "CI=true pnpm secret:scan",
+      "status": "passed"
+    },
+    "sbom": {
+      "command": "CI=true pnpm sbom:generate",
+      "status": "passed",
+      "file": "artifacts/sbom.cdx.json",
+      "sha256": "80b0818078844ac62aa89d8571124983ec889853e8096104504de78734753d86",
+      "componentCount": 209,
+      "interpretation": "The SBOM is an independent component/provenance artifact. Its current pnpm output does not contain package license fields and is not the license decision source."
+    }
+  },
+  "operationalImpact": {
+    "databaseMigrationRequired": false,
+    "financialRuleVersionChanged": false,
+    "tenantAuthorityChanged": false,
+    "runtimeBehaviorChanged": false,
+    "dependencyUpdateProcessChanged": true,
+    "failurePolicy": "Dependency or lockfile drift blocks verification until exact registry evidence and every new license expression receive maintainer review.",
+    "rollback": "Do not restore the package-store-index-dependent validator. Correct the lockfile or regenerate and review the inventory; do not bypass the fail-closed gate."
+  },
+  "limitations": [
+    "Registry metadata is point-in-time evidence and does not replace review of shipped license texts, notices, or source-offer obligations.",
+    "This control is not legal advice and does not establish compatibility for every downstream packaging or distribution model.",
+    "The authoritative hosted CI workflow has not run because no remote publication or push was authorized.",
+    "No release, publication, production deployment, or production-readiness result is claimed."
+  ],
+  "documentation": [
+    "docs/dependency-policy.md",
+    "THIRD_PARTY_NOTICES.md",
+    "docs/security-review.md",
+    ".github/workflows/security.yml"
+  ]
+}

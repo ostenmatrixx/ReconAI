@@ -1,0 +1,248 @@
+{
+  "evidenceType": "proposal-review-decision-age-observability-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T03:31:49.258Z",
+  "scope": "Local source, tenant-API unit, repository integration-contract source, and loopback OTLP/HTTP protobuf evidence for bounded, post-commit proposal-review decision ages. No production, staging, live PostgreSQL integration run, external collector, customer data, cross-tenant scan, or source-system write was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/provider-event-freshness-observability-verification-2026-07-29.json",
+      "sha256": "01a783015dff3a0dee34f06a345a9f15a9bdad009244cd6a9609e12204f9cb0a",
+      "purpose": "The immediately preceding 44-migration, 454-test bounded provider-event freshness observability baseline."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "opentelemetryApi": "1.9.1",
+    "opentelemetryMetricsSdk": "2.10.0",
+    "opentelemetryOtlpProtoExporter": "0.221.0"
+  },
+  "decision": {
+    "governingAdr": "ADR 0040",
+    "securityReviewControl": "OBSERVABILITY-PROPOSAL-REVIEW-DECISION-AGE-001",
+    "databaseMigrationRequired": false,
+    "configurationChangeRequired": false,
+    "crossTenantRepositoryOrOperationalRoleAdded": false,
+    "permissionOrReviewThresholdChanged": false,
+    "publicApiResponseChanged": false,
+    "moneyRuleProviderScopeAuditOrAiBehaviorChanged": false,
+    "telemetryAuthoritativeForReviewOrFinancialBehavior": false,
+    "metricTemporality": "API cumulative through the existing observability pipeline"
+  },
+  "repositoryAndApiContract": {
+    "method": "ReconciliationRepository.approveProposal",
+    "tenantBoundary": "The existing withTenantTransaction boundary resolves the authorized organization from TenantContext and predicates proposal, approval, exception, and audit work by that organization.",
+    "proposalTimestampSource": "resolution_proposals.created_at from the already-authorized proposal row locked in the decision transaction",
+    "decisionTimestampSource": "approvals.created_at returned by the immutable approval insert in the same transaction",
+    "timestampRuntimeValidationRequired": true,
+    "telemetryEmittedAfterTransactionReturns": true,
+    "rolledBackUnauthorizedRejectedOrConflictingAttemptEmitsSample": false,
+    "internalRepositoryMetadata": [
+      "proposalCreatedAt",
+      "decidedAt"
+    ],
+    "internalTimestampFieldsPresentInPublicResponse": false,
+    "existingPublicDecisionFieldsPreserved": [
+      "id",
+      "decision",
+      "status",
+      "approvalCount",
+      "requiredApprovals"
+    ]
+  },
+  "proposalDecisionMetricContract": {
+    "maximumAgeSeconds": 31536000,
+    "maximumAgeDays": 365,
+    "maximumIsInclusive": true,
+    "sampleCounter": {
+      "name": "reconai.review.proposal_decision.samples",
+      "kind": "counter",
+      "unit": "{decision}",
+      "attributes": [
+        "reconai.review.decision",
+        "reconai.review.proposal.status",
+        "reconai.outcome"
+      ],
+      "outcomes": [
+        "observed",
+        "future_timestamp",
+        "outside_window",
+        "invalid_timestamp"
+      ],
+      "maximumDefensiveSeries": 48
+    },
+    "decisionAgeHistogram": {
+      "name": "reconai.review.proposal_decision.age",
+      "kind": "histogram",
+      "unit": "s",
+      "attributes": [
+        "reconai.review.decision",
+        "reconai.review.proposal.status"
+      ],
+      "acceptedOutcome": "observed",
+      "minimumSeconds": 0,
+      "maximumSecondsInclusive": 31536000,
+      "maximumDefensiveSeries": 12
+    },
+    "decisions": [
+      "approve",
+      "reject",
+      "invalid"
+    ],
+    "statuses": [
+      "pending",
+      "approved",
+      "rejected",
+      "invalid"
+    ],
+    "validDecisionStatusCombinations": [
+      "approve/pending",
+      "approve/approved",
+      "reject/rejected"
+    ],
+    "dualControlSemantics": {
+      "firstApprovalBelowThreshold": "approve/pending",
+      "thresholdCrossingApproval": "approve/approved",
+      "committedRejection": "reject/rejected",
+      "samplePerCommittedReviewerDecision": true
+    },
+    "classification": {
+      "observed": "Both timestamps are valid and decision age is between zero and 365 days inclusive; the numeric age enters the histogram.",
+      "future_timestamp": "Proposal creation timestamp is later than the approval insert timestamp; no histogram value is recorded.",
+      "outside_window": "Decision age is greater than 365 days; no histogram value is recorded.",
+      "invalid_timestamp": "Proposal creation or explicit approval timestamp fails the bounded ISO parser; no histogram value is recorded."
+    },
+    "timestampParser": {
+      "maximumStringLength": 64,
+      "requiresDateTimeSeconds": true,
+      "fractionalSecondsOptional": true,
+      "requiresZuluOrExplicitOffset": true,
+      "finiteParsedInstantRequired": true
+    },
+    "timestampStringExported": false,
+    "overWindowValueClampedIntoHistogram": false,
+    "futureValueClampedIntoHistogram": false
+  },
+  "authorityAndDeliverySemantics": {
+    "authenticatedMembershipAndResolutionsApprovePermissionPrecedeRepositoryCall": true,
+    "tenantTransactionCommitPrecedesSample": true,
+    "sampleDelivery": "at-most-once and lossy",
+    "databaseCommitFollowedByProcessOrExporterLossCanOmitSample": true,
+    "telemetryDeliveryStatePersisted": false,
+    "telemetryFailureCanRetryRollBackOrDuplicateDecision": false,
+    "globalProposalOrExceptionTableScan": false,
+    "currentExceptionQueueAgeMeasured": false,
+    "timeToFinalResolutionMeasured": false,
+    "operatorProductivityOrOutcomeMeasured": false
+  },
+  "cardinalityAndDataMinimization": {
+    "metricSeriesLimitPerInstrument": 256,
+    "organizationActorReviewerExported": false,
+    "proposalExceptionTypeSeverityExported": false,
+    "reasonCorrelationOrTimestampExported": false,
+    "amountCurrencyPaymentPayloadOrCustomerDataExported": false,
+    "dynamicSecretLikeDecisionStatusAndTimestampObservedInCapturedOtlp": false,
+    "timestampsUsedOnlyAsNumericInputs": true
+  },
+  "focusedVerification": [
+    {
+      "command": "pnpm --filter @workspace/observability typecheck; pnpm --filter @workspace/api typecheck; focused ESLint",
+      "packagesPassed": 2,
+      "lintStatus": "passed"
+    },
+    {
+      "command": "pnpm exec vitest run packages/observability/src/observability.test.ts apps/api/src/app.tenant.test.ts --maxWorkers=1",
+      "testFilesPassed": 2,
+      "testsPassed": 54,
+      "testsFailed": 0,
+      "tenantAuthorizedReviewerBoundaryCovered": true,
+      "publicResponseTimestampExclusionCovered": true,
+      "inclusiveThreeHundredSixtyFiveDayBoundaryCovered": true,
+      "allFourTimestampOutcomesCovered": true,
+      "dynamicValueSuppressionCovered": true
+    }
+  ],
+  "repositoryIntegrationContract": {
+    "sourceAssertionsAddedForFirstAndFinalDualControlApprovals": true,
+    "assertion": "The approval insert timestamp parses to an instant no earlier than the proposal creation timestamp.",
+    "livePostgresqlIntegrationExecutedForThisIncrement": false,
+    "reasonNotExecuted": "The repository has no local .env and the standard CI=true pnpm verify command does not execute the PostgreSQL integration project."
+  },
+  "otlpVerification": {
+    "transport": "HTTP protobuf",
+    "captureAddress": "ephemeral loopback HTTP server",
+    "standardMetricsPath": "/v1/metrics",
+    "contentType": "application/x-protobuf",
+    "decisionSampleInstrumentPresent": true,
+    "decisionAgeInstrumentPresent": true,
+    "allFourFixedOutcomesPresent": true,
+    "approveRejectPendingApprovedRejectedValuesPresent": true,
+    "secretLikeDynamicValuesAbsent": true,
+    "externalCollectorAccessed": false
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 70,
+    "testsPassed": 455,
+    "testsFailed": 0,
+    "migrationsValidated": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "productionDependencyAuditAtHighSeverity": {
+      "command": "pnpm audit --prod --audit-level high",
+      "status": "no known vulnerabilities found"
+    }
+  },
+  "sourceSha256": {
+    "packages/observability/src/telemetry.ts": "bcff37f45d7fd00f1d7418400c46f82c82e72c010dffdbdfda9863bd7526304f",
+    "packages/observability/src/index.ts": "4e9aaf1a3eb5b7e8f4698fb45df2a305fd41df6b45c34d6d4981a2aee5949be2",
+    "packages/observability/src/observability.test.ts": "97d7089c3bf5b424d85ce3755ae53680e9ce95e7fb4805276097c0650ec4b0a9",
+    "apps/api/src/repository.ts": "ea4afd41a3b7a1eafbdf5bb4d863a1d6f9bc7f0d029a06248b57080d0c76538e",
+    "apps/api/src/app.ts": "117a2f02b059ca02943221eb327c0875fcd9aa5647e63645bb91d734ee1a5c3e",
+    "apps/api/src/app.tenant.test.ts": "7862b3468b0ba0dd1cf83ebe457e8e6f832a040715ef091cd3446cea9011c22b",
+    "apps/api/src/repository.integration.test.ts": "48106ea171f20a0583a230e7b1c1e712f3b0349d18c9d73d3b9b6de75b7b79ac",
+    "docs/observability.md": "132e4d9c3ffb5d996a2953cb9e08ac8caff019814b82e7da06dbc87af9c27c59",
+    "docs/operations-runbook.md": "4b400372ee400f0c3b8dec312ae03d5333247d03457324bae29057fe773ba78e",
+    "docs/known-limitations.md": "d062a980848e69fef21a83b7c2d92a80359a47aeb6fcbddee29e02b92954bc5c",
+    "docs/goals/goal-1-audit-2026-07-29.md": "8aaf796a3dc56250c2eb4c6dcc6f8384e2e42cc1e4d7170f0d907d6e9be2fc60",
+    "docs/adr/README.md": "c01f08af6f4d9c906b66a087a93d2bc933202da760c3298a6f92bc3e1347d2f8",
+    "docs/adr/0040-bounded-proposal-review-decision-age.md": "d729019ad6fbc069cbd9d3e82f70017c42e4f9e5a575bfad9f35e75049be29cc"
+  },
+  "sealedPredecessorVerification": {
+    "docs/adr/0039-bounded-provider-event-freshness-samples.md": "97949a9a4f3f5b70039435779002d7468f5dff2dc37bff878e5035351c47f782",
+    "artifacts/provider-event-freshness-observability-verification-2026-07-29.json": "01a783015dff3a0dee34f06a345a9f15a9bdad009244cd6a9609e12204f9cb0a"
+  },
+  "safety": {
+    "loopbackOnly": true,
+    "syntheticDataOnly": true,
+    "productionDataUsed": false,
+    "productionOrStagingAccessed": false,
+    "liveDatabaseAccessedForIncrement": false,
+    "crossTenantReadAdded": false,
+    "sourceSystemWriteScopeChanged": false,
+    "financialOrApprovalAuthorityChanged": false,
+    "environmentFileCreated": false,
+    "repositoryFilesStaged": 0,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "The histogram measures proposal creation to each committed reviewer decision. It does not measure the current unresolved exception queue, oldest backlog, time to final resolution, operator productivity, or operator outcome.",
+    "Dual-control proposals intentionally produce separate first-stage and threshold-crossing approval samples; aggregations must not interpret every sample as a final resolution.",
+    "Samples are intentionally at-most-once and lossy. A process crash or exporter failure after database commit can omit a sample, and no telemetry retry or outbox is allowed to influence the review decision.",
+    "Ages greater than 365 days, future timestamps, and invalid timestamps are classified but excluded from the histogram. Their magnitude is not measured.",
+    "Repository integration assertions were added but no live PostgreSQL integration suite was executed for this increment. The tenant API boundary and real OTLP protobuf exporter were exercised locally with synthetic data.",
+    "No representative multi-review latency distribution, threshold selection, unresolved backlog observer, protected collector/backend, TLS/authentication, egress allowlist, retention/access policy, dashboard, silence rule, alert delivery, acknowledgement, on-call response, sustained load, staging, or production behavior was exercised.",
+    "Silent-connector/current-watermark freshness, exception-queue age, time-to-final-resolution, AI, representative business/SLO signals, and exercised alert thresholds remain separate work."
+  ],
+  "claim": "ReconAI now has locally verified, post-commit proposal-review decision-age telemetry with an inclusive 365-day numeric bound, fixed decision/status/timestamp classifications, tenant-scoped timestamp authority, unchanged public response fields, no cross-tenant scan, and no customer dimensions. This is local committed-decision evidence, not unresolved-backlog, final-resolution, staging, production, SLO, dashboard, or exercised alert evidence."
+}

@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-27T15:00:40Z",
+  "component": "tenant-raw-evidence-retention",
+  "outcome": "passed",
+  "policyContract": {
+    "defaultEnabled": false,
+    "minimumDays": 1,
+    "maximumDays": 3650,
+    "classes": [
+      "raw_import",
+      "provider_event"
+    ],
+    "legalHold": "organization-wide, reason required",
+    "retainedEvidence": [
+      "import/source metadata",
+      "canonical records",
+      "field provenance",
+      "reconciliation and review evidence",
+      "audit events",
+      "retention jobs",
+      "deletion tombstones"
+    ]
+  },
+  "migration": {
+    "file": "packages/database/migrations/0029_retention_deletion_workflow.sql",
+    "fileSha256": "2304027ff74898e26dc811df90fa1d303768074e2526382ec909f4eda5fceefb",
+    "migrationCount": 31,
+    "migrationChainSha256": "23ef90147abf01a7f768b0ec756ef892afec860e0d7b35a469196a82178731b2",
+    "drizzleSchemaDrift": false
+  },
+  "databaseVerification": {
+    "serverVersion": "PostgreSQL 17.10",
+    "package": "@embedded-postgres/darwin-arm64@17.10.0-beta.17",
+    "binarySha256": "8776e8dfcc8fd7eaaf02db978d00f225a1905b6cbe9ecdd3cf5e86cf3a00e33f",
+    "testFile": "packages/database/src/retention.integration.test.ts",
+    "testsPassed": 3,
+    "fullPostgresqlFilesPassed": 9,
+    "fullPostgresqlTestsPassed": 21,
+    "verified": [
+      "missing policy and null durations disable deletion",
+      "legal hold blocks deletion",
+      "nonterminal and not-yet-due evidence is excluded",
+      "terminal imports and provider events are eligible",
+      "policy row remains serialized through finalization",
+      "failure creates bounded retry state",
+      "application role cannot invoke worker functions",
+      "worker role cannot read retention tables directly",
+      "tenant RLS isolates policy, job, and tombstone rows",
+      "terminal tombstones reject mutation"
+    ]
+  },
+  "objectStorageVerification": {
+    "implementation": "MinIO RELEASE.2025-07-23T15-54-02Z",
+    "platform": "darwin-arm64",
+    "binarySha256": "0939ce5553ce9e6451b69e049fbf399794368276b61da8166f84cbd8c7f2d641",
+    "officialChecksumMatched": true,
+    "testFile": "packages/object-storage/src/object-storage.integration.test.ts",
+    "testsPassed": 1,
+    "requestTimeoutMilliseconds": 15000,
+    "verified": [
+      "stored checksum mismatch fails closed",
+      "delete is bound to current checksum and ETag",
+      "version ID is used when returned by storage",
+      "absence is confirmed after deletion",
+      "repeated deletion returns already_missing"
+    ]
+  },
+  "applicationVerification": {
+    "repositoryDeterministicFilesPassed": 32,
+    "repositoryDeterministicTestsPassed": 168,
+    "chromiumTestsPassed": 27,
+    "dedicatedAccessibilityTestsPassed": 10,
+    "verified": [
+      "retention:manage permission is required",
+      "BFF injects the signed selected organization for exact confirmation",
+      "browser-supplied organization authority is ignored",
+      "audit-visible reason and permanent-deletion confirmation are required",
+      "legal-hold reason and day bounds are validated",
+      "security settings explain retained evidence and external lifecycle scope"
+    ]
+  },
+  "workerVerification": {
+    "batchMaximum": 25,
+    "intervalMilliseconds": 60000,
+    "maximumAttempts": 10,
+    "maximumRetryDelaySeconds": 3600,
+    "directRetentionTableAccess": false,
+    "highCardinalityLogging": false
+  },
+  "securityVerification": {
+    "productionDependencyAudit": "no known vulnerabilities",
+    "licenseAllowlist": "passed",
+    "secretScan": "passed",
+    "credentialsRecorded": false
+  },
+  "cleanup": {
+    "postgresStopped": true,
+    "minioStopped": true,
+    "temporaryArtifactsMovedToTrash": true,
+    "verificationPortsListeningAfterRun": false
+  },
+  "limitations": [
+    "No production retention duration has been approved; the feature remains disabled until an organization explicitly opts in.",
+    "Noncurrent object versions, delete markers, caches, search, exports, replicas, and backups require separate lifecycle verification.",
+    "Canonical, provenance, audit, tombstone, and other retention durations are not selected by this workflow.",
+    "Whole-tenant and provider privacy deletion are not complete.",
+    "No protected staging deployment, backup restore, or dead-letter alert exercise was available."
+  ]
+}

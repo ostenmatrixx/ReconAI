@@ -1,0 +1,292 @@
+{
+  "evidenceType": "provider-gap-repair-freshness-observability-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T03:44:03.922Z",
+  "scope": "Local source, worker scheduler unit, repository integration-contract source, and loopback OTLP/HTTP protobuf evidence for bounded scheduled provider gap-repair scan and due-candidate freshness. No production, staging, live PostgreSQL integration run, provider sandbox, external collector, customer data, new cross-tenant query, or source-system write was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/proposal-review-decision-age-observability-verification-2026-07-29.json",
+      "sha256": "1d87098631a3500e69ed4a1bf1580125fedab0f874f7b2a10d40f73d52f02cf5",
+      "purpose": "The immediately preceding 44-migration, 455-test proposal-review decision-age observability baseline."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "opentelemetryApi": "1.9.1",
+    "opentelemetryMetricsSdk": "2.10.0",
+    "opentelemetryOtlpProtoExporter": "0.221.0"
+  },
+  "decision": {
+    "governingAdr": "ADR 0041",
+    "securityReviewControl": "OBSERVABILITY-PROVIDER-GAP-REPAIR-FRESHNESS-001",
+    "databaseMigrationRequired": false,
+    "databaseQueryFunctionOrRoleGrantChanged": false,
+    "configurationChangeRequired": false,
+    "newCrossTenantRepositoryOrOperationalRoleAdded": false,
+    "providerScopeRequestOrSourceWriteChanged": false,
+    "durableEnvelopeOrRetryBehaviorChanged": false,
+    "moneyRulePermissionAuditReviewOrAiBehaviorChanged": false,
+    "telemetryAuthoritativeForSchedulingProviderOrFinancialBehavior": false,
+    "metricTemporality": "worker delta through the existing observability pipeline"
+  },
+  "existingSchedulerAuthorityContract": {
+    "candidateFunction": "reconai_due_provider_gap_repairs",
+    "candidateFunctionChanged": false,
+    "maximumCandidatesPerScan": 100,
+    "candidateOrder": "Oldest effective coalesce(last_successful_sync_at, created_at) first, followed by organization and connection only inside the database authority boundary.",
+    "eligibleProviders": [
+      "shopify",
+      "stripe"
+    ],
+    "activeQueuedOrRunningConnectionsExcluded": true,
+    "workerOnlyFunctionAuthorityPreserved": true,
+    "organizationScopedCreationRecheckPreserved": true,
+    "cadenceIdempotencyAndAdvisoryLockPreserved": true,
+    "schedulerEnabledByDefault": false
+  },
+  "repositoryObservationContract": {
+    "resultField": "candidateObservations",
+    "maximumObservations": 100,
+    "fields": [
+      "provider",
+      "freshnessReference",
+      "disposition",
+      "ageSeconds when a prior successful sync exists"
+    ],
+    "providerValues": [
+      "shopify",
+      "stripe"
+    ],
+    "freshnessReferenceValues": [
+      "last_successful_sync",
+      "never_succeeded"
+    ],
+    "dispositionValues": [
+      "scheduled",
+      "skipped"
+    ],
+    "ageAuthority": "Validated scheduler now minus the database last_successful_sync_at returned by the existing bounded candidate function.",
+    "ageComputedInsideDatabaseRepository": true,
+    "rawTimestampReturnedForTelemetry": false,
+    "organizationConnectionAccountCredentialOrRunReturnedForTelemetry": false,
+    "structuredSchedulerLogFields": [
+      "examined",
+      "scheduled",
+      "skipped"
+    ],
+    "candidateObservationLogged": false
+  },
+  "metricContract": {
+    "maximumAgeSeconds": 31536000,
+    "maximumAgeDays": 365,
+    "maximumIsInclusive": true,
+    "scanCounter": {
+      "name": "reconai.provider.gap_repair.scans",
+      "kind": "counter",
+      "unit": "{scan}",
+      "attributes": [
+        "reconai.outcome"
+      ],
+      "outcomes": [
+        "succeeded",
+        "failed",
+        "invalid"
+      ],
+      "successfulEmptyScanIsHeartbeat": true,
+      "maximumDefensiveSeries": 3
+    },
+    "candidateCounter": {
+      "name": "reconai.provider.gap_repair.candidates",
+      "kind": "counter",
+      "unit": "{candidate}",
+      "attributes": [
+        "reconai.provider",
+        "reconai.provider.connection.freshness_reference",
+        "reconai.provider.gap_repair.disposition",
+        "reconai.outcome"
+      ],
+      "providers": [
+        "shopify",
+        "stripe",
+        "invalid"
+      ],
+      "freshnessReferences": [
+        "last_successful_sync",
+        "never_succeeded",
+        "invalid"
+      ],
+      "dispositions": [
+        "scheduled",
+        "skipped",
+        "invalid"
+      ],
+      "ageOutcomes": [
+        "observed",
+        "future_timestamp",
+        "outside_window",
+        "never_succeeded",
+        "invalid_age"
+      ],
+      "maximumDefensiveSeries": 135
+    },
+    "lastSuccessfulSyncAgeHistogram": {
+      "name": "reconai.provider.gap_repair.last_successful_sync_age",
+      "kind": "histogram",
+      "unit": "s",
+      "attributes": [
+        "reconai.provider",
+        "reconai.provider.gap_repair.disposition"
+      ],
+      "acceptedOutcome": "observed",
+      "minimumSeconds": 0,
+      "maximumSecondsInclusive": 31536000,
+      "maximumDefensiveSeries": 9
+    },
+    "classification": {
+      "observed": "A last-successful-sync reference has a finite age between zero and 365 days inclusive; the numeric age enters the histogram.",
+      "future_timestamp": "The computed age is negative; no histogram value is recorded.",
+      "outside_window": "The computed age is greater than 365 days; no histogram value is recorded.",
+      "never_succeeded": "The due candidate has no last-successful-sync timestamp; no connection-created age or histogram value is exported.",
+      "invalid_age": "Reference and numeric age are inconsistent, non-finite, or dynamically invalid; no histogram value is recorded."
+    },
+    "alternateRepositoryObservationLimit": 100,
+    "overWindowValueClampedIntoHistogram": false,
+    "futureValueClampedIntoHistogram": false
+  },
+  "authorityAndDeliverySemantics": {
+    "newTelemetryOnlyConnectionScan": false,
+    "existingBoundedCandidateScanReused": true,
+    "tenantCreationRecheckPrecedesScheduledDisposition": true,
+    "scanFailureRecordedBeforeOriginalErrorRethrown": true,
+    "candidateTelemetryRecordedOnlyAfterRepositoryScanReturns": true,
+    "telemetryDelivery": "lossy and non-authoritative",
+    "telemetryFailureCanChangeSchedulingOrProviderWork": false,
+    "candidateCountIsCompleteGlobalBacklog": false,
+    "connectionsWithActiveRunsObserved": false,
+    "perObjectProviderWatermarkMeasured": false,
+    "providerCompletenessOrRecoverySuccessProven": false
+  },
+  "cardinalityAndDataMinimization": {
+    "metricSeriesLimitPerInstrument": 256,
+    "organizationUserMembershipConnectionExported": false,
+    "accountShopRunCursorCadenceSlotExported": false,
+    "credentialSecretProviderErrorExported": false,
+    "rawTimestampPayloadObjectOrCustomerDataExported": false,
+    "amountCurrencyPaymentOrReviewDataExported": false,
+    "dynamicSecretLikeScanProviderReferenceAndDispositionObservedInCapturedOtlp": false,
+    "lastSuccessfulSyncUsedOnlyAsNumericAgeInput": true
+  },
+  "focusedVerification": [
+    {
+      "command": "pnpm --filter @workspace/database typecheck; pnpm --filter @workspace/observability typecheck; pnpm --filter @workspace/worker typecheck; focused ESLint",
+      "packagesPassed": 3,
+      "lintStatus": "passed"
+    },
+    {
+      "command": "pnpm exec vitest run packages/observability/src/observability.test.ts apps/worker/src/provider-gap-repair-scheduler.test.ts --maxWorkers=1",
+      "testFilesPassed": 2,
+      "testsPassed": 6,
+      "testsFailed": 0,
+      "boundedSchedulerInputCovered": true,
+      "identifierFreeCandidateResultCovered": true,
+      "repositoryFailurePropagationCovered": true,
+      "successfulFailedAndInvalidScanOutcomesCovered": true,
+      "inclusiveThreeHundredSixtyFiveDayBoundaryCovered": true,
+      "allFiveCandidateAgeOutcomesCovered": true,
+      "dynamicValueSuppressionCovered": true
+    }
+  ],
+  "repositoryIntegrationContract": {
+    "sourceAssertionsAdded": true,
+    "neverSucceededCandidateCountExpected": 2,
+    "lastSuccessfulSyncCandidateCountExpected": 1,
+    "exactLastSuccessfulSyncAgeSecondsExpected": 11100,
+    "emptyReplayScanReturnsNoCandidateObservations": true,
+    "livePostgresqlIntegrationExecutedForThisIncrement": false,
+    "reasonNotExecuted": "The repository has no local .env and the standard CI=true pnpm verify command does not execute the PostgreSQL integration project."
+  },
+  "otlpVerification": {
+    "transport": "HTTP protobuf",
+    "captureAddress": "ephemeral loopback HTTP server",
+    "standardMetricsPath": "/v1/metrics",
+    "contentType": "application/x-protobuf",
+    "scanInstrumentPresent": true,
+    "candidateInstrumentPresent": true,
+    "lastSuccessfulSyncAgeInstrumentPresent": true,
+    "allFixedScanAndCandidateOutcomesPresent": true,
+    "secretLikeDynamicValuesAbsent": true,
+    "externalCollectorAccessed": false
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 70,
+    "testsPassed": 456,
+    "testsFailed": 0,
+    "migrationsValidated": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "productionDependencyAuditAtHighSeverity": {
+      "command": "pnpm audit --prod --audit-level high",
+      "status": "no known vulnerabilities found"
+    }
+  },
+  "sourceSha256": {
+    "packages/database/src/provider-sync.ts": "4646f9e1dbd404527108d777c12af5764569e74bfc21205b202059d0ca9da122",
+    "packages/database/src/index.ts": "48ac1147f84621d8c217fee2e33dd6ff09e4ba11d61b767790b0bdb177686168",
+    "packages/database/src/provider-sync.integration.test.ts": "35da6a57ff23c4f49fe8b71c60468da45e2fef489cc207d486a05df81866e16b",
+    "packages/observability/src/telemetry.ts": "426236f7ec062b73d6d706d075ef31d602ad01e411b75608b7fae0c64617e976",
+    "packages/observability/src/index.ts": "2d821e425ffd571c7e74b80a13dded2ab27ed9c825414c4f27020983574965d7",
+    "packages/observability/src/observability.test.ts": "ff5f06020202fa5cac9f6356fd12a731a2be92859441b39631e6249471f40f92",
+    "apps/worker/src/provider-gap-repair-scheduler.ts": "4c3195f7b2bed112bdce848899a383f02e93fddd987d605c80d829628013ae2e",
+    "apps/worker/src/provider-gap-repair-scheduler.test.ts": "9a5815cba404ee45ead4c8ff0f8c3ab873d67735e31a87e91f7ac9763fa1f00c",
+    "docs/adr/0041-bounded-provider-gap-repair-freshness-observability.md": "dbe6f46b627429f9f5df75fa5fe1ad905001d0be9d15f71010dbff4f26d2bd74",
+    "docs/adr/README.md": "89b0f0348f924f826af06cb689df0399b1f6bb69ae67517010084a99b45c0d3a",
+    "docs/observability.md": "6c76e999706a278703bf0e02f31e55804e738e2d51c43b5f91dfd644bac7a10f",
+    "docs/operations-runbook.md": "520344e924f4a819ac155f7b6b6fb63db5237246655b932c6caa1333d07f7d3b",
+    "docs/known-limitations.md": "04daa418bc5d32a0b1b62f3041e76fead57d159d6ad224229733629a6c6bcce5",
+    "docs/goals/goal-1-audit-2026-07-29.md": "1c2d89431d7a125376015bfa67bfed11df5ad2f5d73d949edeac9059d6a2938d",
+    "docs/architecture.md": "8afef56b889dc730956594bd0ca81ce1723ffe81f4e5a64a591db2c79ac3835a",
+    "docs/security-review.md": "feeeba2612a1346b65e0ac05add4c76b4a1b6505b1408030f7edc585b85f68a8"
+  },
+  "sealedPredecessorVerification": {
+    "docs/adr/0040-bounded-proposal-review-decision-age.md": "d729019ad6fbc069cbd9d3e82f70017c42e4f9e5a575bfad9f35e75049be29cc",
+    "artifacts/proposal-review-decision-age-observability-verification-2026-07-29.json": "1d87098631a3500e69ed4a1bf1580125fedab0f874f7b2a10d40f73d52f02cf5"
+  },
+  "safety": {
+    "loopbackOnly": true,
+    "syntheticDataOnly": true,
+    "productionDataUsed": false,
+    "productionOrStagingAccessed": false,
+    "providerSandboxAccessed": false,
+    "liveDatabaseAccessedForIncrement": false,
+    "crossTenantQueryAdded": false,
+    "sourceSystemWriteScopeChanged": false,
+    "financialReviewOrApprovalAuthorityChanged": false,
+    "environmentFileCreated": false,
+    "repositoryFilesStaged": 0,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "The candidate stream is not a complete connection gauge. Each scan returns at most 100 oldest due connections and excludes queued/running work; the candidate count must not be interpreted as total backlog under saturation.",
+    "The scheduler is disabled by default. No scan heartbeat exists until it is explicitly enabled with an approved cadence/capacity policy, and no protected silence alert was configured or exercised.",
+    "A never-succeeded candidate emits a fixed classification but no connection-creation age because the existing fixed database function deliberately does not return created_at.",
+    "Ages greater than 365 days, negative ages, and invalid ages are classified but excluded from the histogram. Their magnitude is not measured.",
+    "Candidate telemetry is emitted only after the repository scan returns. If a later candidate throws after earlier per-tenant transactions committed, the scan records failure and those earlier candidate observations can be omitted.",
+    "Repository integration assertions were added but no live PostgreSQL integration suite was executed for this increment. The worker scheduler composition and real OTLP protobuf exporter were exercised locally with synthetic data.",
+    "These signals do not prove per-object provider watermarks, event completeness, active-sync progress, webhook delivery, successful repair completion, provider sandbox behavior, or a representative age distribution.",
+    "No protected collector/backend, TLS/authentication, egress allowlist, retention/access policy, threshold, dashboard, silence rule, alert delivery, acknowledgement, on-call response, sustained load, multi-replica scheduler behavior, staging, or production behavior was exercised.",
+    "Per-object provider watermarks/completeness, active-sync age, exception-queue age, time-to-final-resolution, AI, representative business/SLO signals, and exercised alert thresholds remain separate work."
+  ],
+  "claim": "ReconAI now has locally verified, bounded scheduled provider gap-repair scan and due-candidate freshness telemetry that reuses the existing maximum-100 worker-only scan, emits successful/failed heartbeats, distinguishes never-succeeded and scheduled/skipped candidates, bounds numeric last-successful-sync age to 365 days, and exports no customer dimensions or raw timestamps. This is local due-candidate evidence, not a complete connection inventory, per-object provider watermark, active-sync health, provider completeness, staging, production, SLO, dashboard, or exercised alert evidence."
+}

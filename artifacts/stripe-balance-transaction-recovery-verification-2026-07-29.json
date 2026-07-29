@@ -1,0 +1,266 @@
+{
+  "evidenceType": "stripe-balance-transaction-recovery-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T06:35:24.325Z",
+  "scope": "Local source, unit, tenant-aware ingestion, source-defined PostgreSQL, production-build, and Chromium evidence for bounded read-only Stripe charge balance-transaction recovery and processing-fee normalization. No customer data, provider credential/request, live PostgreSQL execution, source-system write, protected staging, or production environment was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/source-object-classification-correction-verification-2026-07-29.json",
+      "sha256": "ed58cff5c397b6874a83bc77f2d7ce3e0d8e3712b0a61b99d05f0de01b19a7c0",
+      "purpose": "The immediately preceding immutable 50-migration, 483-test classification artifact. Its corrected source-family authority is reused without modifying its accepted ADR or evidence."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "playwright": "1.62.0",
+    "stripeConnector": "1.1.0",
+    "stripeNormalizer": "1.1.0",
+    "reconciliationEngine": "0.7.0",
+    "reconciliationRules": "1.5.0"
+  },
+  "decision": {
+    "governingAdr": "ADR 0048",
+    "governingAdrStatus": "Accepted",
+    "governingAdrSha256": "e119effdf4b4300b3ebf8e5aeccd608da8de7eb67044d6f351a2d007e076754d",
+    "extends": [
+      "ADR 0008",
+      "ADR 0047"
+    ],
+    "securityReviewControl": "STRIPE-BALANCE-TRANSACTION-001",
+    "threatModelEntry": "TM-38",
+    "databaseMigrationRequired": false,
+    "configurationChangeRequired": false,
+    "providerPermissionReviewRequired": true,
+    "providerPermission": "balance_transaction_source_read",
+    "providerPermissionHasDocumentedImpliedReadPermissions": true,
+    "publicApiResponseChanged": false,
+    "sourceEventWriteBehaviorChanged": true,
+    "sourceEventWriteBehaviorChange": "Validated minimized Stripe balance-transaction snapshots can now enter the existing immutable receipt/classification/outbox path.",
+    "providerReadRequestAdded": true,
+    "providerReadRequestIsReadOnly": true,
+    "sourceSystemWriteAdded": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "aiReviewApprovalAuditRetentionOrCurrencyConversionBehaviorChanged": false
+  },
+  "officialProviderContract": {
+    "listBalanceTransactions": "https://docs.stripe.com/api/balance_transactions/list?api-version=2024-06-20",
+    "balanceTransactionObject": "https://docs.stripe.com/api/balance_transactions/object",
+    "expandedSourceUseCase": "https://docs.stripe.com/expand/use-cases",
+    "stripeAppPermissions": "https://docs.stripe.com/stripe-apps/reference/permissions",
+    "fixedOrigin": "https://api.stripe.com",
+    "fixedPath": "/v1/balance_transactions",
+    "method": "GET",
+    "type": "charge",
+    "expandedField": "data.source",
+    "createdWindowFromImmutableRun": true,
+    "maximumWindowDays": 30,
+    "maximumItemsPerPage": 100,
+    "maximumPagesPerRun": 100,
+    "maximumItemsPerRun": 10000,
+    "maximumResponseBytes": 2097152,
+    "interchangePlusFeeRetrievalSupported": false
+  },
+  "twoPhaseRecoveryContract": {
+    "phaseOrder": [
+      "supported Stripe Events",
+      "charge balance transactions"
+    ],
+    "legacyEventCursorAccepted": "evt_*",
+    "versionedEventCursor": "stripe-v2:events:evt_*",
+    "balanceStartCursor": "stripe-v2:balance:start",
+    "versionedBalanceCursor": "stripe-v2:balance:txn_*",
+    "emptyEventsWindowAdvancesToBalance": true,
+    "providerNeutralPhaseMarker": "source_phase",
+    "ordinaryEmptyNonterminalPageAccepted": false,
+    "terminalContinuationAccepted": false,
+    "oneProviderHttpRequestPerFetchPage": true,
+    "separateCircuitPermitPerProviderHttpRequest": true,
+    "cursorStallAccepted": false,
+    "oldWorkerCanReadVersionedCursor": false,
+    "rolloutRequirement": "Stop provider-sync admission, drain or terminally account for old runs and workers, deploy only version-1.1-aware workers, then resume.",
+    "rollbackRequirement": "Never rewrite a versioned cursor or immutable source evidence for an older worker; finish with the 1.1 reader or create a new owner-authorized bounded run from the recorded window."
+  },
+  "minimizedSnapshotContract": {
+    "schemaVersion": 1,
+    "object": "reconai.stripe_balance_transaction_snapshot",
+    "retainedBalanceTransactionFields": [
+      "id",
+      "object",
+      "amount",
+      "available_on",
+      "created",
+      "currency",
+      "fee",
+      "fee_details",
+      "net",
+      "reporting_category",
+      "source",
+      "status",
+      "type"
+    ],
+    "retainedExpandedChargeFields": [
+      "id",
+      "object",
+      "payment_intent"
+    ],
+    "configuredApiVersionRetainedWhenPresent": true,
+    "unselectedProviderFieldsStrippedBeforePersistence": true,
+    "billingDetailsEmailCustomerDescriptionCredentialOrFullListResponseRetained": false,
+    "externalEventAndObjectIdentity": "balance transaction ID",
+    "sourceTimestamp": "balance transaction created instant",
+    "sourceObjectFamily": "balance_transaction",
+    "classifierVersion": "source-object-family-v1"
+  },
+  "financialCorrectnessContract": {
+    "moneyRepresentation": "safe integer provider minor units converted to bigint canonical minor units",
+    "currencyRepresentation": "explicit uppercase ISO-style three-letter code",
+    "floatingPointMoneyUsed": false,
+    "currencyConversionPerformed": false,
+    "crossCurrencyComparisonAdded": false,
+    "authoritativeFeeField": "balance_transaction.fee",
+    "feeDetailsIndependentlySummedAsAuthority": false,
+    "amountMinusFeeMustEqualNet": true,
+    "nonconservingPageAccepted": false,
+    "canonicalKind": "processing_fee",
+    "paymentReferenceWhenPresent": "expanded Charge PaymentIntent ID",
+    "paymentReferenceWhenMissing": "expanded Charge ID",
+    "missingPaymentIntentReason": "STRIPE_CHARGE_HAS_NO_PAYMENT_INTENT",
+    "missingPaymentIntentTreatedAsCompleteMatchAuthority": false,
+    "deterministicRuleVersionChanged": false
+  },
+  "securityAndTenantContract": {
+    "tenantContextSource": "immutable provider sync run loaded under server-side organization authority",
+    "clientOrganizationOrAccountIdGrantsAuthority": false,
+    "apiReadCredentialDistinctFromWebhookSecret": true,
+    "fixedStripeAccountAndApiVersionHeaders": true,
+    "outboundRedirectAccepted": false,
+    "distributedCircuitScope": [
+      "environment",
+      "provider",
+      "organization",
+      "connection"
+    ],
+    "receiptObjectClassificationOutboxCanonicalAuditAndReconciliationTenantScoped": true,
+    "duplicateSourceCanonicalOutboxOrClassificationCreatedOnReplay": false,
+    "logsOrMetricAttributesContainCursorObjectAccountCredentialPayloadMoneyOrCurrency": false,
+    "sourceSystemWriteAuthorityAdded": false,
+    "aiFinancialApprovalAuthorityAdded": false
+  },
+  "focusedVerification": {
+    "typecheck": {
+      "command": "pnpm typecheck",
+      "workspaceProjectsPassed": 19,
+      "status": "passed"
+    },
+    "tests": {
+      "command": "pnpm exec vitest run apps/api/src/provider-authorization.test.ts packages/connector-stripe/src/stripe.test.ts packages/ingestion/src/provider-sync.test.ts packages/ingestion/src/provider-webhooks.test.ts",
+      "testFilesPassed": 4,
+      "testsPassed": 24,
+      "testsFailed": 0,
+      "emptyEventToBalanceTransitionCovered": true,
+      "fixedBalanceQueryAndPaginationCovered": true,
+      "minimizationAndBillingDataDiscardCovered": true,
+      "nonconservingPayloadRejected": true,
+      "nullPaymentIntentIncompleteFallbackCovered": true,
+      "atomicClassificationNormalizationAndDuplicateCovered": true,
+      "syncItemIdentityMismatchRejected": true,
+      "separateCircuitPermitAcrossPhaseCovered": true,
+      "ordinaryEmptyNonterminalPageRejected": true,
+      "serverOwnedConnectorVersionCovered": true
+    },
+    "focusedBrowser": {
+      "command": "CI=true pnpm --filter @workspace/web exec playwright test tests/provider-sync-runs.spec.ts --workers=1",
+      "testsPassed": 5,
+      "testsFailed": 0,
+      "accessibilityScansPassed": 1,
+      "connectorVersion110FixtureRendered": true,
+      "malformedWatermarkFailsClosed": true,
+      "classificationUnavailableDoesNotInventAbsence": true
+    }
+  },
+  "postgresqlIntegrationStatus": {
+    "checkedInTest": "packages/database/src/provider-webhook.integration.test.ts",
+    "stripeConnectionVersion110Seeded": true,
+    "balanceReceiptClassificationOutboxCanonicalPersistenceAsserted": true,
+    "processingFeeAmountAndCurrencyAsserted": true,
+    "connectorAndNormalizerVersionAsserted": true,
+    "duplicateAndProcessingReplayIdempotencyAsserted": true,
+    "foreignTenantConcealmentAsserted": true,
+    "typecheckPassed": true,
+    "executedThisIncrement": false,
+    "reason": "DATABASE_ADMIN_URL and the other restricted-role PostgreSQL URLs were absent; no .env or local PostgreSQL runtime was available.",
+    "liveTransactionRlsRoleAndQueryBehaviorClaimed": false
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 74,
+    "testsPassed": 488,
+    "testsFailed": 0,
+    "migrationsValidated": 50,
+    "migrationChainSha256": "ccef6227b9b485226ec0ddc34f18d77e636b164595a177ba26f18a8e94f586f3",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "completeBrowser": {
+      "command": "CI=true pnpm --filter @workspace/web test:e2e",
+      "testsPassed": 37,
+      "testsFailed": 0,
+      "accessibilityScansPassed": 11
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "productionDependencyAuditAtHighSeverity": {
+      "command": "pnpm audit --prod --audit-level=high",
+      "status": "no known vulnerabilities found"
+    }
+  },
+  "sourceSha256": {
+    "packages/connectors/src/index.ts": "1b07f12221fb2ddbb3ca276e167f58409c25328624463efb4c26ceed8e414379",
+    "packages/ingestion/src/provider-sync.ts": "17636fd8d1ca1e2005016348578ae0ef911971518fd30abeac38e76759ebe248",
+    "packages/ingestion/src/provider-sync.test.ts": "778fffc1efa082f4c85c8ba1d5f20cc6d383b7aca07247bf3249c06a271e55c1",
+    "packages/connector-stripe/src/index.ts": "bf72d211d98c4e856aaeb4aedec21074793fcec8b5359d5d8ee08d3c76fd87af",
+    "packages/connector-stripe/src/stripe.test.ts": "3b7f6856db41e23e262fefd2b5811fa7d1aa723adcefa4bcf9b3c513fe490e03",
+    "packages/ingestion/src/provider-webhooks.ts": "d604c36e50ad860dddef086c9ea356885e141bb936c693b262052eb46cee98ac",
+    "packages/ingestion/src/provider-webhooks.test.ts": "201aa174dc4280c1451d825a2319de24c87bc03e4b1dcb0c004a3097e2b13133",
+    "packages/database/src/provider-webhook.integration.test.ts": "b228b2b32cfc5ab3b6eb6e615b119e37640556a9c0114fc8bd2fbbdd8a32ce83",
+    "apps/api/src/provider-authorization.test.ts": "87d29a7af04900db6b3d21b189fa6232157b03a42c9e9129294b3c0a7bed5566",
+    "packages/database/src/provider-authorization.integration.test.ts": "d8cccc7c9501de989c759422ce856c72b7290e28da18faf09b8c8fe7932f1d14",
+    "apps/web/tests/provider-sync-runs.spec.ts": "8e90ca68fce74891cf0855bc9aa3d65a0bd950e748dc55c6bd052874d69f9b46",
+    "docs/adr/0048-bounded-stripe-balance-transaction-recovery.md": "e119effdf4b4300b3ebf8e5aeccd608da8de7eb67044d6f351a2d007e076754d",
+    "docs/adr/README.md": "ebb7091e2166a0746c1d32de15c5f69191fd1280cd6c9d150de85ac6cf8082da",
+    "docs/connectors.md": "8c370d9a3dcfaab0295275f12f2d747e77ca2c22c0bf00104018e451881093d2",
+    "docs/architecture.md": "1fedbb98f97c8d46d3cb596d67dbacb76cc13217f6ebfc48b2168071ab22c15d",
+    "docs/data-model.md": "a5b34d2f84c2122261363d1cf8b40b30449eb84e91f1b7b7ac6247f522048175",
+    "docs/operations-runbook.md": "4f213b6f296e5141135862f07d4ff0db08a4de07dfa661e91ddf1153f121252e",
+    "docs/upgrade-and-rollback.md": "9b9d18491a253a6f63b75557a18c27c333075e43943294b1b8fac6955b8fe772",
+    "docs/known-limitations.md": "36e0efb6272b1975572e1fe2b8dea090d7dc86ffb5c8a78a4d9a711b3953d1d0",
+    "docs/security-review.md": "ea7aae5e8567386b4d455744a65bc455c5da20a75eaaba18ddf33d4e73472ef4",
+    "docs/threat-model.md": "d0f3a159e9c2427edf867c477014d75a354921e2aa66f8e52f448ddc90c928bc",
+    "docs/goals/goal-1-vertical-slice.md": "5765290863c5ebe9a4adfd34a1b351de423a583f584ad95280beb6ace17a3b2c",
+    "docs/goals/goal-1-audit-2026-07-29.md": "08a5a7c426ed8313b55090f1cd900ed1672f5ad63b6f7ea759736ecd1556c7cf",
+    "GOALS.md": "09f04f875404ee67669c28f6f1a22f4a94d867adada955d3f8d01e48ebfdbb1a",
+    "CHANGELOG.md": "5551c266431feaaff31337eb19e4a99c6164f24fb4645cd2917fc0ee80dbdfe1"
+  },
+  "repositoryState": {
+    "priorJsonArtifactCount": 77,
+    "stagedFileCount": 0,
+    "environmentFilePresent": false,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "No Stripe credential, sandbox, test/live account, webhook, Events page, balance-transaction page, provider rate limit, or permission denial was exercised. The exact app manifest, balance_transaction_source_read and implied permissions, direct/destination-charge behavior, and provider contract remain owner-review and sandbox requirements.",
+    "The source-defined PostgreSQL integration test was not executed because the restricted-role URLs, .env, and local PostgreSQL runtime were absent. Receipt/classification/outbox/canonical atomicity, RLS, role privileges, tenant concealment, and query behavior remain unverified at runtime for this increment.",
+    "Stripe documents asynchronous balance-transaction creation. Periodic gap-repair convergence, overlap/cadence selection, late availability, settlement finality, pagination completeness, and provider-wide fee coverage are not proven by local tests.",
+    "Interchange-plus fee retrieval is explicitly unsupported. A Charge without a PaymentIntent remains incomplete and must not be treated as a deterministic payment link.",
+    "An older worker cannot read stripe-v2 cursors. Mixed-image drain, process loss at the phase boundary, rollback, duplicate overlapping windows, representative volume/timing, managed Redis, dashboards, silence behavior, alert delivery, and protected staging remain unverified.",
+    "The minimized snapshot intentionally does not preserve the full provider response. It preserves selected replay/provenance evidence but is not proof of every Stripe object field or future API compatibility.",
+    "A balance_transaction observed watermark proves only immutable intake. It does not prove normalization success, completed two-phase pagination, current provider availability, fee completeness, settlement finality, or reconciliation correctness."
+  ]
+}

@@ -1,0 +1,309 @@
+{
+  "evidenceType": "unresolved-exception-queue-age-observability-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T04:23:47.535Z",
+  "scope": "Local source, static migration/security, repository unit, worker lease, and loopback OTLP/HTTP protobuf evidence for an environment-wide oldest-unresolved exception indicator. No production, staging, live PostgreSQL integration run, protected collector, customer data, or source-system write was used.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/exception-final-resolution-age-observability-verification-2026-07-29.json",
+      "sha256": "62d1a86faaee54cf3fcdb90b169e791f2c4a08bdccca631f4fcde591a0a714c0",
+      "purpose": "The immediately preceding 44-migration, 456-test final-approved-resolution observability baseline."
+    }
+  ],
+  "versions": {
+    "node": "24.15.0",
+    "pnpm": "11.9.0",
+    "vitest": "4.1.10",
+    "opentelemetryApi": "1.9.1",
+    "opentelemetryMetricsSdk": "2.10.0",
+    "opentelemetryOtlpProtoExporter": "0.221.0"
+  },
+  "decision": {
+    "governingAdr": "ADR 0043",
+    "securityReviewControl": "OBSERVABILITY-UNRESOLVED-EXCEPTION-QUEUE-001",
+    "databaseMigrationsRequired": [
+      "0044_exception_queue_observability_index.sql",
+      "0045_exception_queue_observability_authority.sql"
+    ],
+    "configurationChangeRequired": false,
+    "newCrossTenantRepositoryOrOperationalRoleAdded": false,
+    "fixedCrossTenantDatabaseFunctionAdded": true,
+    "publicApiResponseChanged": false,
+    "approvalThresholdOrReviewTransitionChanged": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyProviderSourceWriteOrAiBehaviorChanged": false,
+    "telemetryAuthoritativeForReviewOrFinancialBehavior": false,
+    "metricTemporality": "worker delta through the existing observability pipeline"
+  },
+  "queueSemantics": {
+    "scope": "one deployment environment",
+    "unresolvedStatuses": [
+      "open",
+      "assigned",
+      "deferred",
+      "proposed",
+      "rejected"
+    ],
+    "approvedExcluded": true,
+    "approvedReason": "Approved is the reviewer-final state and remains preserved by reconciliation.",
+    "supersededExcluded": true,
+    "supersededReason": "Superseded is absent from the current authoritative source snapshot until a later run reobserves it.",
+    "stableOrder": [
+      "created_at",
+      "id"
+    ],
+    "maximumRowsHydrated": 1,
+    "unresolvedCountMeasured": false,
+    "severityDistributionMeasured": false,
+    "tenantOrExceptionLocationMeasured": false
+  },
+  "migrationContract": {
+    "partialIndex": {
+      "name": "exceptions_unresolved_oldest_idx",
+      "columns": [
+        "created_at",
+        "id"
+      ],
+      "predicateMatchesUnresolvedStatuses": true,
+      "creation": "CREATE INDEX CONCURRENTLY IF NOT EXISTS",
+      "transactional": false
+    },
+    "nonTransactionalDirective": "-- reconai:non-transactional",
+    "validatorRestriction": "Exactly one named CREATE INDEX CONCURRENTLY IF NOT EXISTS statement; block comments and additional statements are rejected.",
+    "runtimeRestrictionMatchesValidator": true,
+    "globalMigrationAdvisoryLockRetained": true,
+    "ledgerWrittenOnlyAfterCommand": true,
+    "catalogChecksRequiredBeforeLedger": [
+      "pg_index.indisready = true",
+      "pg_index.indisvalid = true"
+    ],
+    "validIndexCrashWindowRerunnable": true,
+    "invalidSameNamedIndexCanBeRecordedAsApplied": false,
+    "invalidBuildRepair": "Preserve evidence and use a reviewed forward repair to remove only the confirmed invalid index before retrying the unchanged migration.",
+    "automaticDestructiveRepairAdded": false,
+    "expectedImpact": "One O(N) concurrent table/index scan with I/O, CPU, temporary/final disk, WAL/replica load, brief start/finalization locks, and separate short function/policy/grant catalog locks.",
+    "productionPrerequisites": [
+      "restorable backup",
+      "index disk headroom",
+      "representative scan and replica-impact timing",
+      "reviewed lock and statement timeouts",
+      "interruption and resumption exercise",
+      "prior/new-worker compatibility exercise"
+    ]
+  },
+  "databaseAuthorityContract": {
+    "function": "reconai_observe_exception_queue()",
+    "language": "sql",
+    "stability": "STABLE",
+    "securityDefiner": true,
+    "rowSecurity": "on",
+    "searchPath": [
+      "pg_catalog",
+      "public"
+    ],
+    "fixedQuery": true,
+    "returnFields": [
+      "queue_state",
+      "oldest_age_seconds"
+    ],
+    "returnStates": [
+      "empty",
+      "nonempty"
+    ],
+    "ageClock": "statement_timestamp()",
+    "publicExecuteRevoked": true,
+    "applicationExecuteRevoked": true,
+    "workerExecuteGranted": true,
+    "normalWorkerUnscopedTableReadStillRlsFiltered": true,
+    "organizationExceptionStableKeyStatusSeverityTypeExported": false,
+    "assigneeEvidenceReasonTimestampExported": false,
+    "amountCurrencyPaymentOrCustomerDataExported": false
+  },
+  "repositoryContract": {
+    "implementation": "PostgresExceptionQueueObservabilityRepository",
+    "queryCallsOnlyFixedFunction": true,
+    "exactlyOneRowRequired": true,
+    "strictDiscriminatedResultValidation": true,
+    "acceptedResults": [
+      {
+        "queueState": "empty"
+      },
+      {
+        "queueState": "nonempty",
+        "oldestAgeSeconds": "number"
+      }
+    ],
+    "inconsistentDynamicNonFiniteZeroRowAndMultiRowResultsRejected": true,
+    "customerIdentifierCrossesRepositoryBoundary": false
+  },
+  "leaseAndFailureContract": {
+    "leaseReused": "existing environment/queue-scoped durable queue Redis lease",
+    "leaderDatabaseRead": true,
+    "followerDatabaseRead": false,
+    "singleFlightExecution": true,
+    "snapshotTtl": "same bounded lease TTL: max(5 seconds, min(15 minutes, 3 x monitor interval))",
+    "snapshotClearedOn": [
+      "follower result",
+      "lease or Redis failure",
+      "durable queue inspection failure",
+      "database observation failure",
+      "malformed result",
+      "future age",
+      "invalid age",
+      "TTL expiry",
+      "clean shutdown"
+    ],
+    "failurePublishesFabricatedHealthyZero": false,
+    "telemetryFailureChangesQueueReviewOrFinancialAuthority": false
+  },
+  "metricContract": {
+    "pollCounter": {
+      "name": "reconai.review.exception_queue.monitor.polls",
+      "kind": "counter",
+      "unit": "{poll}",
+      "attributes": [
+        "reconai.outcome"
+      ],
+      "outcomes": [
+        "empty",
+        "observed",
+        "future_timestamp",
+        "invalid_age",
+        "failed"
+      ],
+      "maximumDefensiveSeries": 5
+    },
+    "presenceGauge": {
+      "name": "reconai.review.exception_queue.has_unresolved",
+      "kind": "observable gauge",
+      "unit": "{queue}",
+      "attributes": [],
+      "emptyValue": 0,
+      "nonemptyValue": 1,
+      "maximumDefensiveSeries": 1
+    },
+    "oldestAgeGauge": {
+      "name": "reconai.review.exception_queue.oldest_age",
+      "kind": "observable gauge",
+      "unit": "s",
+      "attributes": [],
+      "emptyValue": 0,
+      "minimumNonemptySeconds": 0,
+      "maximumDefensiveSeries": 1
+    },
+    "futureOrInvalidValueClampedIntoGauge": false,
+    "failureOrExpiryEmitsZero": false,
+    "environmentTenantOrExceptionAttributeAdded": false
+  },
+  "focusedVerification": [
+    {
+      "command": "affected database, observability, worker, and API package typechecks plus focused ESLint",
+      "packagesPassed": 4,
+      "lintStatus": "passed"
+    },
+    {
+      "command": "pnpm exec vitest run packages/database/src/exception-queue-observability.test.ts packages/database/src/migration.tenant.test.ts packages/observability/src/observability.test.ts apps/worker/src/queue-observability.test.ts",
+      "testFilesPassed": 4,
+      "testsPassed": 48,
+      "testsFailed": 0,
+      "strictRepositoryResultValidationCovered": true,
+      "leaseOwnerAndFollowerBehaviorCovered": true,
+      "databaseFailureClearingCovered": true,
+      "allThreeInstrumentsCaptured": true,
+      "allFiveFixedPollOutcomesExercised": true,
+      "dynamicValueSuppressionCovered": true
+    },
+    {
+      "command": "pnpm exec vitest run packages/database/src/migration.tenant.test.ts packages/database/src/exception-queue-observability.test.ts",
+      "testFilesPassed": 2,
+      "testsPassed": 37,
+      "testsFailed": 0,
+      "postCommandReadyAndValidCatalogGuardCoveredStatically": true
+    }
+  ],
+  "livePostgresqlIntegrationContract": {
+    "sourceAssertionsAdded": true,
+    "freshMigrationCountExpected": 46,
+    "populatedUpgradeTransitionExpected": "0041 to 0045",
+    "applicationRoleFunctionCallExpected": "42501",
+    "workerFunctionAfterReconciliationExpected": "nonempty with nonnegative numeric age",
+    "workerDirectUnscopedExceptionReadExpectedRows": 0,
+    "livePostgresqlIntegrationExecutedForThisIncrement": false,
+    "reasonNotExecuted": "No local .env, Docker, PostgreSQL CLI, or PostgreSQL server is available; CI=true pnpm verify does not execute the integration project."
+  },
+  "otlpVerification": {
+    "transport": "HTTP protobuf",
+    "captureAddress": "ephemeral loopback HTTP server",
+    "standardMetricsPath": "/v1/metrics",
+    "contentType": "application/x-protobuf",
+    "pollInstrumentPresent": true,
+    "presenceInstrumentPresent": true,
+    "oldestAgeInstrumentPresent": true,
+    "allFixedPollOutcomesExercised": true,
+    "secretLikeDynamicValuesAbsent": true,
+    "externalCollectorAccessed": false
+  },
+  "fullVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFilesPassed": 71,
+    "testsPassed": 462,
+    "testsFailed": 0,
+    "migrationsValidated": 46,
+    "migrationChainSha256": "e406fc9fe898c01ee72a2b92139fc38570a2be9ac437220694f57bc630f015b3",
+    "schemasValidated": 4,
+    "productionLicensesValidated": 224,
+    "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+    "formatLintTypecheckBuildAndPolicyGates": "passed",
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed"
+    },
+    "productionDependencyAuditAtHighSeverity": {
+      "command": "pnpm audit --prod --audit-level high",
+      "status": "no known vulnerabilities found"
+    }
+  },
+  "sourceSha256": {
+    "packages/database/src/migrate.ts": "5b60e0a5320c611fdae3a2cefa9da906a9a01a3abe565de05eb18e615e6a4dae",
+    "scripts/validate-migrations.mjs": "290201fda7e6ad92f8abc1654f3d40079e3866c277c35dbdca62d697c0fe2478",
+    "packages/database/src/schema.ts": "9f28b2c52463c0cab265dc0610dd264f181a61418f595709ebe29f1d3da12972",
+    "packages/database/migrations/0044_exception_queue_observability_index.sql": "51441337284189df93eba76a2b4062c7b60a3b4a8dd3cdf980ebb4ae196a2244",
+    "packages/database/migrations/0045_exception_queue_observability_authority.sql": "013bd866a03e6cd336e6436be64854d9611b80d389097b41c1607e528f44b18c",
+    "packages/database/src/exception-queue-observability.ts": "79ee5b252af6cab35e0b3184c72217ff5d79d22c1b0547a7799e7c4e109988a3",
+    "packages/database/src/index.ts": "d82ca6b693b51b6a1eb7c5e09457758a6bfb2ca234119be91d2f031926c0939c",
+    "packages/database/src/exception-queue-observability.test.ts": "a4eeec2c01b1844e5284dd48aeac929e8b7be9b48d5231a9d24ea46518276913",
+    "packages/database/src/migration.tenant.test.ts": "c10dc6adcd11a66712e0bc5c96ed72cd7b8590e3119497fc49d3657b6a6cd13f",
+    "packages/database/src/upgrade.integration.test.ts": "e1bfed280ed32e378175bdf7ade08ca7b604841f66359d777a31733727c4a6bd",
+    "packages/observability/src/telemetry.ts": "b55bd79f322e48c0b7353a359cec5bc16541bc550c7af8abd20cfa9b67811c1f",
+    "packages/observability/src/index.ts": "2268d0b00e0d55087d9a2736fb9dc9d69e0fe5d5756b14614d7d41a77d90c93a",
+    "packages/observability/src/observability.test.ts": "320200c17f08817725483107392129a2eb2e386d237f937d62a80825410fab77",
+    "apps/worker/src/queue-observability.ts": "7eccd84c7bd637f0edacd138d4e90f917d29fb7fd321f88e9c2445e3ac54d835",
+    "apps/worker/src/queue-observability.test.ts": "7ce3afc5ab31fa7ca00610e4918b0e5d5744c465be7b7264c7e39dae632d14f8",
+    "apps/worker/src/main.ts": "22887b9f2dfb52ccb6e3137a52bea87de730f4606fea4525752790a488dddd32",
+    "apps/worker/src/reconciliation-run-execution.integration.test.ts": "dff3c7d388220b1eddf3b88e2bad5b540ad36a315a46c043a1be6dd7cba05d34",
+    "apps/api/src/repository.integration.test.ts": "d7492bce42056d42c7e45b6cc7bf5b5c6d3685d71a7004c58f1dc79cc751dab8",
+    "docs/adr/0043-lease-owned-unresolved-exception-queue-age.md": "d212dcd0e294347b07f37f5b249e078b73736c7f61363d400639921bd08c8ab0",
+    "docs/adr/README.md": "1dcc577270bc0044cb6e2d8ae0db430524837ec42404964922f3930c968fb75d",
+    "docs/observability.md": "e4b0d43e74a42139ddabf9097c118c621fd08b233ef955f4dfced5704092ea72",
+    "docs/architecture.md": "f6727ad4cf4b5c0429ec8b381fd6a4cc9b9119587077050e29c75969b36cafcf",
+    "docs/operations-runbook.md": "c9716d4b1dc4c7fe517b594695b1fd8901f78acb83ffac0d18bff76ee265730a",
+    "docs/known-limitations.md": "e016c5edcc775f9079c75c6bedc1145530bc1aadb8ad9a5bf484355d94d2312a",
+    "docs/security-review.md": "694d0f43b5579eebf95aba631cecbb343e4016c206b382167aca3b122813cfe5",
+    "docs/migrations.md": "c9d3af328595003eddb4c5be4f83603857ce3acc6753fc1c5eb3fe8fcdcdfdc3",
+    "docs/upgrade-and-rollback.md": "bed4d6fcfebd8901c0d7329a9c965a043faa8f4559abc4bce54017614b642078"
+  },
+  "repositoryState": {
+    "stagedFileCount": 0,
+    "environmentFilePresent": false,
+    "commitCreated": false,
+    "pushOrDeploymentPerformed": false
+  },
+  "limitations": [
+    "The live PostgreSQL integration suite was not executed because no local database runtime or .env is available.",
+    "The online index build, invalid-index interruption/recovery path, restricted role grants, and populated 0041-to-0045 upgrade remain source-defined rather than live-verified.",
+    "The signal is environment-wide and deliberately cannot identify a tenant or exception; authorized investigation must use tenant-scoped views.",
+    "The signal does not count unresolved exceptions, describe severity, measure reviewer productivity, or prove resolution accuracy.",
+    "No protected collector/backend, threshold, dashboard, silence behavior, alert delivery, representative-volume index timing, staging, production, or customer-data evidence exists."
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "evidenceType": "goal-1-requirement-audit-2-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T07:42:05.000Z",
+  "scope": "Immutable point-in-time requirement-to-evidence audit for the Milestone 1 deterministic vertical slice after the source-classification, Stripe balance-transaction, privacy-package browser-receipt, and production-disabled operational-alert-policy increments. This artifact audits claims and blockers; it does not add runtime behavior or claim provider, staging, production, legal, SLO, or alert-delivery evidence.",
+  "priorEvidence": [
+    {
+      "path": "artifacts/production-disabled-operational-alert-policy-verification-2026-07-29.json",
+      "sha256": "2efa8a1553e8def6ae3a08ddfae466337112e9b3c3da7851532f407ad316e99b",
+      "purpose": "The immediately preceding immutable 80-artifact, 51-migration, 499-test source-policy evidence and current full repository gate."
+    },
+    {
+      "path": "docs/goals/goal-1-audit-2026-07-29.md",
+      "sha256": "5bb1f95d1fc52285f5dbde51db1bb73e7934e4549de77fac74b03ce6c3b3d4be",
+      "purpose": "The earlier immutable requirement audit retained without modification."
+    }
+  ],
+  "goalStatus": {
+    "goal": "Goal 1 — Deterministic vertical slice",
+    "status": "Active",
+    "verifiedComplete": false,
+    "localRepositoryAcceptanceSurfacesImplemented": true,
+    "fullCheckedInGatePassed": true,
+    "providerAcceptanceClaimed": false,
+    "protectedStagingClaimed": false,
+    "productionReadinessClaimed": false
+  },
+  "requirementMatrix": {
+    "areasAudited": 17,
+    "localPassAreas": [
+      "authentication",
+      "organizations",
+      "permissions and tenancy",
+      "Shopify connector source contract",
+      "Stripe connector source contract",
+      "accounting CSV",
+      "canonical records",
+      "deterministic reconciliation",
+      "exception workspace",
+      "human review",
+      "audit history",
+      "queue and recovery",
+      "connector freshness",
+      "operational alert policy",
+      "API and edge readiness"
+    ],
+    "localTechnicalPartialAreas": [
+      "privacy and retention"
+    ],
+    "notStartedAreas": [
+      "owner-authorized protected staging deployment"
+    ],
+    "localPassMeaning": "The checked-in acceptance surface has reviewable local source/runtime evidence; external provider, distributed, owner, legal, staging, SLO, and production claims remain excluded."
+  },
+  "exactCompletionBlockers": {
+    "currentDatabaseRuntime": {
+      "dockerCommandAvailable": false,
+      "postgresCommandAvailable": false,
+      "DATABASE_ADMIN_URL": "absent",
+      "DATABASE_MIGRATION_URL": "absent",
+      "DATABASE_URL": "absent",
+      "DATABASE_WORKER_URL": "absent",
+      "liveExecutionStillRequired": [
+        "migration 0049 source-event classification with restricted roles and populated repair",
+        "migration 0050 privacy-package receipt function, RLS, grants, idempotence, and audit atomicity"
+      ]
+    },
+    "providerAuthority": {
+      "authorizedShopifyInstallationOrSandbox": false,
+      "authorizedStripeInstallationOrSandbox": false,
+      "ownerApprovedScopesKeysCadenceCapacity": false,
+      "syntheticContractEvidenceSubstitutesForProviderAcceptance": false
+    },
+    "protectedStagingAuthority": {
+      "targetOrDeploymentCredentialsAvailable": false,
+      "ownerDeploymentAuthorizationRecorded": false,
+      "approvedProductionLikeTopologySecretsKmsBackupCollectorAvailable": false
+    },
+    "operationalCoordination": {
+      "collectorOrBackendSelected": false,
+      "notificationIntegrationOrOnCallRosterAvailable": false,
+      "ownerApprovedThresholdOrSlo": false,
+      "sourceAlertPolicyProductionEnabled": false
+    },
+    "ownerAndLegalDecisions": [
+      "retention and complete data-disposition durations",
+      "provider repair cadence and capacity",
+      "Stripe balance-source and fee-product semantics",
+      "secure merchant/customer privacy transfer and recipient acknowledgement",
+      "downloaded/noncurrent/cache/search/export/replica/backup copy disposition",
+      "whole-tenant deletion scope"
+    ],
+    "representativeDistributedEvidence": [
+      "sustained multi-replica load",
+      "multi-host partitions",
+      "managed Redis failure and recovery",
+      "ingress disconnect and supervisor recovery",
+      "provider capacity and rate behavior"
+    ]
+  },
+  "verificationBasis": {
+    "currentFullGate": {
+      "sourceArtifact": "artifacts/production-disabled-operational-alert-policy-verification-2026-07-29.json",
+      "command": "CI=true pnpm verify",
+      "status": "passed",
+      "testFilesPassed": 75,
+      "testsPassed": 499,
+      "migrationsValidated": 51,
+      "migrationChainSha256": "65f50eb6d241c9e5b510cdfdb90277c41a401f4d803357c1752f762de3e1d7d1",
+      "productionLicensesValidated": 224,
+      "productionLicenseLockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+      "rerunForDocumentationOnlyAudit": false,
+      "reasonNotRerun": "This audit changes only Markdown evidence mapping; the immediately preceding sealed artifact records the current full source gate."
+    },
+    "browserBasis": {
+      "lastCompleteChromiumTestsPassed": 38,
+      "lastAccessibilityScansPassed": 11,
+      "rerunForDocumentationOnlyAudit": false
+    },
+    "auditSpecificChecks": {
+      "formatCommand": "pnpm format:check",
+      "formatStatus": "passed",
+      "secretScanCommand": "pnpm secret:scan",
+      "secretScanStatus": "passed",
+      "referencedLocalEvidenceAndDocumentPathsExist": true,
+      "earlierAuditHashPreserved": true,
+      "goalStatusRemainsActive": true
+    }
+  },
+  "sourceSha256": {
+    "docs/goals/goal-1-audit-2026-07-29-2.md": "336b7a3c3ebe68a23aa32ac4376156b38fca4938f8510d3552b2939f007d4cae",
+    "docs/goals/goal-1-vertical-slice.md": "3323c26c921a78571324dfdc80d44ab18cc41fac2b17102bbb772f3c9cb2ab43"
+  },
+  "repositoryState": {
+    "jsonEvidenceArtifactsAfterThisAudit": 81,
+    "migrationFiles": 51,
+    "publicApiRouteInventory": 48,
+    "stagedFiles": 0,
+    "environmentFilesPresent": false
+  },
+  "claimBoundary": "Goal 1 remains Active. This audit establishes the current local evidence boundary and exact external inputs still required; it does not convert missing provider, runtime, owner, distributed, alert, or staging evidence into a pass."
+}

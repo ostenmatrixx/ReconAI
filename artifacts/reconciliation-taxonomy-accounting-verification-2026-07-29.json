@@ -1,0 +1,178 @@
+{
+  "evidenceType": "reconciliation-taxonomy-accounting-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-28T17:54:27Z",
+  "scope": "Local source, deterministic test, evaluator, static security, and build evidence for the canonical exception taxonomy and unique bounded refund/accounting linkage. This is not staging or production-readiness evidence.",
+  "versions": {
+    "engine": "0.6.0",
+    "ruleSet": "1.4.0",
+    "rule": "1.4.0"
+  },
+  "taxonomy": {
+    "canonicalExceptionTypeCount": 19,
+    "everyCanonicalTypeExercised": true,
+    "types": [
+      "paid_order_missing_payment",
+      "payment_missing_order",
+      "order_payment_amount_mismatch",
+      "currency_mismatch",
+      "shopify_refund_missing_stripe_refund",
+      "refund_missing_accounting_entry",
+      "refund_amount_mismatch",
+      "partial_refund_discrepancy",
+      "missing_processing_fee",
+      "duplicate_order",
+      "duplicate_payment",
+      "duplicate_refund",
+      "duplicate_processing_fee",
+      "duplicate_accounting_entry",
+      "missing_identifier",
+      "malformed_identifier",
+      "delayed_source_record",
+      "ambiguous_identity",
+      "incomplete_source_record"
+    ],
+    "duplicateClassificationExhaustiveByCanonicalKind": true,
+    "processingFeeDuplicateType": "duplicate_processing_fee",
+    "rejectedCsvRowsRemainPreCanonicalOutcomes": true
+  },
+  "refundAccounting": {
+    "eligibleEntryType": "refund",
+    "referenceComparison": "provider-neutral normalized external, refund, or order reference",
+    "currencyMustMatch": true,
+    "amountUsesIntegerMinorUnits": true,
+    "amountToleranceCapturedFromPolicy": true,
+    "uniqueMatch": {
+      "ruleId": "refund-accounting",
+      "reasonCode": "REFUND_ACCOUNTING_ENTRY_MATCHED",
+      "recordsImmutableVersionsAndMoneyEvidence": true
+    },
+    "zeroCandidateException": "refund_missing_accounting_entry",
+    "multipleOrReusedCandidateException": "ambiguous_identity",
+    "multipleOrReusedReasonCode": "REFUND_ACCOUNTING_IDENTITY_AMBIGUOUS",
+    "entryReuseAllowed": false,
+    "candidateEvaluationLimitPerRefund": 500,
+    "overflowReasonCode": "REFUND_ACCOUNTING_CANDIDATE_SET_EXCEEDS_LIMIT",
+    "overflowEligibleCountIsConservativeLowerBound": true,
+    "overflowEmitsMatch": false,
+    "allOverflowingRefundLookupKeysTaintedAcrossAmountInterval": true,
+    "mixedKeyTaintReasonCode": "REFUND_ACCOUNTING_CANDIDATE_TAINTED_BY_OVERFLOW",
+    "splitOrAggregatedEntriesAutomaticallySummed": false
+  },
+  "verification": {
+    "focusedReconciliation": {
+      "command": "pnpm test:reconciliation",
+      "testFilesPassed": 1,
+      "testsPassed": 46
+    },
+    "taxonomyEvaluator": {
+      "command": "pnpm --filter @workspace/reconciliation evaluate:taxonomy",
+      "passed": true
+    },
+    "fullVerify": {
+      "command": "CI=true pnpm verify",
+      "passed": true,
+      "testFilesPassed": 67,
+      "testsPassed": 395,
+      "format": "passed",
+      "lint": "passed",
+      "typecheck": "passed",
+      "build": "passed",
+      "migrationsValidated": 43,
+      "migrationChainSha256": "c07ba83a547f14064d460f173f65cf2f5bf6218d55585dcef20c8990e2b6a3da",
+      "contractEntrypointsValidated": 4,
+      "containerChecks": "3 Dockerfiles, 5 Compose images, 3 workflow images, 25 action pins, and non-publishing candidate controls passed",
+      "dependencyManifestsValidated": 20,
+      "productionLicensesValidated": 224,
+      "lockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94"
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "passed": true
+    },
+    "productionDependencyAudit": {
+      "command": "pnpm audit --prod --audit-level high",
+      "passed": true,
+      "result": "No known vulnerabilities found"
+    }
+  },
+  "evaluations": {
+    "completeDataset": {
+      "artifact": "artifacts/reconciliation-benchmark-engine-0.6.0-2026-07-29.json",
+      "inputRecords": 99999,
+      "matches": 33333,
+      "exceptions": 0,
+      "durationMs": 1203.35,
+      "rssDeltaBytes": 244580352
+    },
+    "ambiguousPaymentCollisions": {
+      "artifact": "artifacts/reconciliation-collision-evaluation-engine-0.6.0-2026-07-29.json",
+      "eligiblePopulations": [
+        500,
+        501,
+        10000
+      ],
+      "completeAtOrBelowLimit": true,
+      "noPartialShortlistAboveLimit": true,
+      "permutationReplayEquivalent": true
+    },
+    "identifierSafety": {
+      "artifact": "artifacts/reconciliation-malformed-identifier-evaluation-engine-0.6.0-2026-07-29.json",
+      "unsafeCategoriesPassed": 7,
+      "visibleUnicodeAccepted": true,
+      "permutationReplayEquivalent": true
+    },
+    "taxonomyAndAccounting": {
+      "artifact": "artifacts/reconciliation-taxonomy-accounting-evaluation-2026-07-29.json",
+      "canonicalExceptionTypes": 19,
+      "normalizedUniqueReferenceMatched": true,
+      "multipleCandidatesFailedClosed": true,
+      "sharedEntryReused": false,
+      "evaluationLimit": 500,
+      "boundaryFullyEvaluated": true,
+      "overflowEligibleCountLowerBound": 501,
+      "mixedKeyOverflowTaintPreventedHiddenReuse": true,
+      "permutationReplayEquivalent": true
+    }
+  },
+  "sourceSha256": {
+    "packages/reconciliation/src/index.ts": "3feca09626a04582ad196c0c3c05b7270289041f244587f6b9ba52b20a0ead02",
+    "packages/reconciliation/src/reconciliation.test.ts": "02f71be881feebaac029ae47ed0dcd39a379de9a2e90a055daddb71c6610d199",
+    "packages/reconciliation/src/taxonomy-evaluation.ts": "2bc6678f59c6348080dfeb1b61fcc79c7d1edb5a4109a5a88180cee7ef0abe10",
+    "packages/reconciliation/package.json": "72579cdb73477cedcca4170995d3c6d52f77d5a71571fc523b8cf2ee62b8eef8",
+    "apps/api/src/app.tenant.test.ts": "4d6aa907af7e069f2a7a177a23643c98672332a0b4664896eb78dee8308785b6",
+    "apps/web/tests/reconciliation-runs.spec.ts": "236bbb49f6b4b09cda3e9fa11403f924e7d891eedbf9c987fbd5360acbee51f3",
+    "apps/web/tests/exception-queue-workflow.spec.ts": "153d8a58ec3127d4b3f17baa8ed4610960b1174bb91c8b07306608c9860c4048",
+    "PRD.md": "8e03d50eb4ada50ad03033fc828ab7b9e26e7d1df114ded796b4694165cb000e",
+    "docs/adr/0027-unique-refund-accounting-linkage.md": "98e9608e268fb0d73b8ef4017028c58b8d90c0420d34e334fecec06499a380d8",
+    "docs/reconciliation-engine.md": "29cd33258525c1996139208ccf21ec319a1792f656aaa5adffe903949b57cdd1",
+    "artifacts/reconciliation-benchmark-engine-0.6.0-2026-07-29.json": "2eddc2737bf7d29afd81814a7751e25a3a1e3844110066122ab92964b7775572",
+    "artifacts/reconciliation-collision-evaluation-engine-0.6.0-2026-07-29.json": "bc09d0e8e793f3eab736429942751a946d127868afb1602936f7f6ab6f926be7",
+    "artifacts/reconciliation-malformed-identifier-evaluation-engine-0.6.0-2026-07-29.json": "775aef01323a5ac83bb96974a0fed9c7748bb949d192585c89263510d6f59577",
+    "artifacts/reconciliation-taxonomy-accounting-evaluation-2026-07-29.json": "fc83d3c65b78223ea82edcbc4f0088aac4de248b98de9ea6645161ca29353642"
+  },
+  "database": {
+    "migrationRequired": false,
+    "reason": "The new exception type remains tenant-scoped text and rule evidence remains JSON under existing RLS; no table, constraint, policy, index, or grant change is required.",
+    "liveDatabaseExecutedForThisRule": false
+  },
+  "safety": {
+    "tenantIsolationChanged": false,
+    "moneyUsesBinaryFloatingPoint": false,
+    "currencyConversionAdded": false,
+    "sourceSystemWritesAdded": false,
+    "financialApprovalAuthorityAdded": false,
+    "aiAuthorityChanged": false,
+    "productionDataUsed": false,
+    "externalMessagesSent": false,
+    "deploymentPerformed": false,
+    "gitStageCommitPushPerformed": false
+  },
+  "limitations": [
+    "No PostgreSQL-backed worker persistence or exception-queue operator journey for rule set 1.4.0 was executed.",
+    "Split or aggregated accounting entries are not automatically summed and require a separately versioned conservation policy.",
+    "No representative provider/accounting distribution, concurrency, alert, operator-outcome, or false-positive measurement exists.",
+    "No protected staging rollout, mixed-image drain, or rollback exercise was authorized or performed.",
+    "Benchmark and evaluator timings are single local synthetic regression data, not SLO, accuracy, or capacity evidence."
+  ]
+}

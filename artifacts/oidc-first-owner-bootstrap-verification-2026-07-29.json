@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 2,
+  "recordedAt": "2026-07-28T20:51:16.862Z",
+  "component": "oidc-first-owner-and-two-identity-access-lifecycle",
+  "outcome": "local_isolated_real_oidc_browser_and_relay_journey_passed",
+  "productionReadinessClaim": false,
+  "sourceState": "uncommitted working tree; no repository commit exists",
+  "checkedInVerifier": "pnpm verify:live-oidc-bootstrap",
+  "scope": {
+    "boundaries": [
+      "Keycloak authorization-code flow with PKCE for two distinct verified identities",
+      "temporary-password required action for both identities",
+      "encrypted HttpOnly NextAuth sessions with no browser-readable provider credentials",
+      "empty-membership first-owner bootstrap raced by two same-session browser tabs",
+      "same-origin organization-bootstrap and invitation-acceptance BFFs",
+      "subject-bound HttpOnly organization-context cookies after bootstrap and invitation acceptance",
+      "bearer-authenticated API authority and restricted PostgreSQL application role",
+      "serialized identity-bound first-owner database function",
+      "tenant-scoped digest-only invitation creation, acceptance, revocation, and replay denial",
+      "authenticated bounded local HTTP invitation-email relay with accepted and rejected outcomes",
+      "reason-audited auditor-to-administrator-to-deactivated-to-reviewer membership lifecycle",
+      "permission re-resolution on every request and append-only canonical audit-chain evidence"
+    ],
+    "customerDataUsed": false,
+    "providerSystemsContacted": [
+      "isolated local Keycloak only",
+      "isolated local HTTP invitation relay only"
+    ],
+    "externalIdentityFederationExercised": false,
+    "thirdPartyEmailDeliveryExercised": false
+  },
+  "runtime": {
+    "topology": "isolated host processes over loopback",
+    "host": {
+      "operatingSystemKernel": "Darwin 25.5.0",
+      "architecture": "arm64",
+      "node": "v24.15.0",
+      "pnpm": "11.9.0"
+    },
+    "web": {
+      "origin": "http://localhost:3000",
+      "server": "Next.js 16.2.12 development server using webpack",
+      "productionTlsClaim": false
+    },
+    "api": {
+      "origin": "http://127.0.0.1:4000",
+      "applicationRole": "reconai_app"
+    },
+    "identityProvider": {
+      "product": "Keycloak",
+      "version": "26.7.0",
+      "issuer": "http://127.0.0.1:58080/realms/reconai-development",
+      "java": "Eclipse Temurin 21.0.11+10 LTS",
+      "realmFixture": "infra/keycloak/reconai-development-realm.json",
+      "syntheticVerifiedIdentities": 2
+    },
+    "emailRelay": {
+      "origin": "http://127.0.0.1:58100",
+      "transport": "loopback HTTP",
+      "authentication": "runtime-generated bearer credential compared in constant time",
+      "requestBodyLimitBytes": 65536,
+      "requestTimeoutMilliseconds": 2000
+    },
+    "postgresql": {
+      "version": "17.10",
+      "listenAddress": "127.0.0.1",
+      "port": 55463,
+      "dataChecksums": "on",
+      "authentication": "isolated loopback trust at the server boundary; migrator, application, and worker URLs used separate non-superuser roles"
+    }
+  },
+  "runtimeSourceVerification": {
+    "keycloak": {
+      "officialArchive": "https://github.com/keycloak/keycloak/releases/download/26.7.0/keycloak-26.7.0.tar.gz",
+      "archiveSha256Observed": "f771df0aa1e4820f57d56f7d6d015beb6415487b43f8de7e5a6d48f8a7fe118a",
+      "runtimeVersionCommand": "Keycloak 26.7.0"
+    },
+    "java": {
+      "distribution": "Eclipse Temurin",
+      "archiveSha256Observed": "6ebcf221c9b41507b14c098e93c6ead6440b8d9bd154f8ec666c4c73abbdb201",
+      "runtimeVersion": "21.0.11+10 LTS"
+    },
+    "postgresql": {
+      "officialSourceVersion": "17.10",
+      "serverBinarySha256Observed": "8c5eec2f2da34b18a119b29b4d59ac18d7ec73ec5ff8264b8f872d5b1c050c77",
+      "sourceVerificationEvidence": "artifacts/reconciliation-continuous-journey-verification-2026-07-29.json"
+    },
+    "realmFixtureSha256": "4fbfc8a1ed62288b56f4719275ac25a3e342eeeb865d407940fcc3b31c3f6c8b",
+    "oidcValidatorSha256": "9f01e29b1d5c6cce442a8bf46f7cc1bc4a4e42cfc7b2db8184591bf8c1bb4dc5",
+    "verifierSha256": "903452e41d804b45b65ab7aa7421d37bd11b1964c58257f7a4b0b49c6d0fbfe4",
+    "invitationAcceptanceRouteSha256": "46b24880fb16a323a05c32586d4a83f43aa666629f255d364a17e701834b3e74",
+    "invitationAcceptanceRouteTestSha256": "d18a4473b1402538fc5bb3b0c1163448c4158cd3ad95fec3b08aabb956e502db",
+    "lockfileSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94"
+  },
+  "browserJourney": {
+    "authorizationCodePkceLoginsCompleted": 2,
+    "temporaryPasswordRequiredActionsCompleted": 2,
+    "providerVerifiedEmailsPersisted": 2,
+    "emptyMembershipStateRenderedInBothBootstrapTabs": true,
+    "concurrentBootstrapStatuses": [
+      201,
+      409
+    ],
+    "winningOrganizationName": "OIDC Concurrent Tenant B",
+    "bothFreshSameSessionDashboardViewsResolvedWinningOrganization": true,
+    "secondVerifiedIdentityAcceptedInvitation": true,
+    "invitationFragmentRemovedBeforeAcceptance": true,
+    "invitationAcceptanceSelectedOrganizationContext": true,
+    "auditorMemberDirectoryStatus": 404,
+    "administratorMemberDirectoryStatus": 200,
+    "administratorDirectoryMemberCount": 2,
+    "deactivatedMemberSummaryStatus": 404,
+    "reactivatedReviewerSummaryStatus": 200,
+    "reviewerMemberDirectoryStatus": 404,
+    "acceptedInvitationReplayStatus": 404,
+    "revokedInvitationAcceptanceStatus": 404,
+    "expectedConflictConsoleErrors": 4,
+    "unexpectedBrowserErrors": 0
+  },
+  "emailDelivery": {
+    "acceptedRelayRequests": 1,
+    "rejectedRelayRequests": 1,
+    "relayValidationErrors": 0,
+    "acceptedProviderStatus": 202,
+    "rejectedProviderStatus": 503,
+    "providerRejectionExposedOneTimeManualFallback": true,
+    "tokenDeliveredInRequestBodyFragmentLink": true,
+    "tokenEnteredRelayRequestTarget": false,
+    "correlationMetadataBoundToRequest": true,
+    "deliveryOutcomeAuditContainsToken": false
+  },
+  "persistence": {
+    "appliedMigrations": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "initialCustomerOwnedCounts": {
+      "users": 0,
+      "organizations": 0,
+      "memberships": 0,
+      "organizationBootstrapRequests": 0,
+      "organizationInvitations": 0,
+      "auditEvents": 0
+    },
+    "firstOwnerCheckpoint": {
+      "users": 1,
+      "organizations": 1,
+      "memberships": 1,
+      "organizationBootstrapRequests": 1,
+      "auditEvents": 1,
+      "ownerRole": "owner",
+      "ownerStatus": "active",
+      "organizationAiEnabled": false
+    },
+    "terminalCounts": {
+      "users": 2,
+      "organizations": 1,
+      "memberships": 2,
+      "organizationBootstrapRequests": 1,
+      "organizationInvitations": 2,
+      "auditEvents": 10
+    },
+    "terminalMemberships": [
+      {
+        "syntheticIdentity": "owner",
+        "role": "owner",
+        "status": "active"
+      },
+      {
+        "syntheticIdentity": "reviewer",
+        "role": "reviewer",
+        "status": "active"
+      }
+    ],
+    "terminalInvitations": [
+      {
+        "syntheticRecipient": "relay failure",
+        "initialRole": "auditor",
+        "status": "revoked",
+        "digestLength": 64
+      },
+      {
+        "syntheticRecipient": "reviewer",
+        "initialRole": "auditor",
+        "status": "accepted",
+        "digestLength": 64
+      }
+    ],
+    "auditActionCounts": {
+      "organization.created": 1,
+      "organization.invitation.accepted": 1,
+      "organization.invitation.created": 2,
+      "organization.invitation.delivery.accepted": 1,
+      "organization.invitation.delivery.failed": 1,
+      "organization.invitation.revoked": 1,
+      "organization.membership.updated": 3
+    },
+    "canonicalAuditIntegrity": {
+      "hashVersion": 2,
+      "events": 10,
+      "genesisEvents": 1,
+      "distinctHashes": 10,
+      "missingPredecessors": 0
+    },
+    "invitationTokensStoredAsDigestsOnly": true,
+    "rawInvitationTokensInAuditEvidence": false
+  },
+  "browserSecurity": {
+    "ownerBrowserReadableProviderCredentialDisclosure": false,
+    "inviteeBrowserReadableProviderCredentialDisclosure": false,
+    "ownerSessionCookieChunks": 2,
+    "inviteeSessionCookieChunks": 2,
+    "allSessionCookieChunksHttpOnly": true,
+    "ownerOrganizationContextCookieHttpOnly": true,
+    "ownerOrganizationContextCookieSameSite": "Lax",
+    "inviteeOrganizationContextCookieHttpOnly": true,
+    "inviteeOrganizationContextCookieSameSite": "Lax",
+    "authorizationCodeRecorded": false,
+    "oidcStateRecorded": false,
+    "sessionCookieValueRecorded": false,
+    "invitationTokenRecorded": false,
+    "passwordRecorded": false,
+    "emailRelayCredentialRecorded": false
+  },
+  "defectsClosedDuringVerification": [
+    {
+      "boundary": "successful invitation acceptance",
+      "observed": "The acceptance BFF returned the accepted membership but did not select the organization, so the invited identity reached a context-required dashboard instead of its authorized tenant.",
+      "resolution": "The BFF now strictly validates the successful upstream response and issues the existing subject-bound, HttpOnly, SameSite=Lax organization-context cookie only for a valid 201 result. Rejected and malformed upstream responses never receive a context cookie."
+    },
+    {
+      "boundary": "successful acceptance response validation",
+      "observed": "A nominal upstream success was not runtime-validated before becoming browser authority.",
+      "resolution": "The BFF now rejects malformed success payloads with a private 502 response and tests valid, rejected, malformed, cross-site, subjectless, expired, and malformed-request paths."
+    },
+    {
+      "boundary": "local identity fixture",
+      "observed": "The original realm and validator represented only the first owner identity.",
+      "resolution": "The isolated realm now contains exactly two reserved, enabled, verified synthetic identities with temporary passwords, and the validator fails on extra, missing, unverified, disabled, or non-reserved users."
+    },
+    {
+      "boundary": "ephemeral browser evidence under the development compiler",
+      "observed": "First compilation of the state-changing BFF could refresh the settings component after a one-time invitation token was returned.",
+      "resolution": "The verifier compiles the BFF boundary before requesting the only browser copy of an invitation token and uses response-bound, uniquely scoped membership and invitation assertions."
+    }
+  ],
+  "repositoryVerification": {
+    "command": "CI=true pnpm verify",
+    "status": "passed",
+    "testFiles": 68,
+    "tests": 402,
+    "migrationFiles": 44,
+    "migrationChainSha256": "33d151e4867a283d561952565678cd18108ac2f76141f0aefe29b1a8dde34c32",
+    "contractEntrypoints": 4,
+    "productionPackageLicenses": 224,
+    "format": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "schemaConfigEdgeOidcContainerDependencyChecks": "passed",
+    "secretScan": "passed",
+    "productionDependencyAudit": "no known vulnerabilities"
+  },
+  "cleanup": {
+    "apiStoppedByVerifier": true,
+    "webStoppedByVerifier": true,
+    "emailRelayStoppedByVerifier": true,
+    "browserClosedByVerifier": true,
+    "keycloakStoppedAfterEvidenceCapture": true,
+    "postgresqlStoppedAfterEvidenceCapture": true,
+    "preexistingWebBuildCacheRestored": true,
+    "postgresqlOfflineChecksum": {
+      "filesScanned": 5094,
+      "blocksScanned": 13014,
+      "badChecksums": 0,
+      "dataChecksumVersion": 1
+    },
+    "portsClosed": [
+      3000,
+      4000,
+      58100,
+      58080,
+      9000,
+      55463
+    ],
+    "temporaryStateMovedToTrash": "<local-home>/.Trash/reconai-oidc-membership.751uoD",
+    "temporaryStateRecoverableUntilTrashIsEmptied": true
+  },
+  "claimsExcluded": [
+    "No staging, production, ingress, reverse-proxy, TLS, multi-host, or multi-replica behavior is claimed.",
+    "No external or production identity federation, provider availability, production client registration, MFA, or account-recovery behavior is claimed.",
+    "No third-party email provider, recipient inbox, asynchronous bounce, complaint, or provider-availability behavior is claimed.",
+    "No real identity with multiple organization memberships or more than 100 memberships was exercised.",
+    "No concurrent administrative mutation, representative abuse/query timing, load distribution, or prior/new-image rolling deployment was exercised.",
+    "Provider-initiated logout delivery across multiple Redis-backed web replicas remains separate open evidence."
+  ],
+  "credentialsOrCustomerDataRecorded": false
+}

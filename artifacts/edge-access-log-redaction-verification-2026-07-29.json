@@ -1,0 +1,262 @@
+{
+  "schemaVersion": "reconai-evidence-v1",
+  "evidenceType": "edge-access-log-redaction-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T14:56:50Z",
+  "status": "local_pass_query_free_reference_edge_external_logging_and_staging_gates_open",
+  "scope": "Static negative validation plus one fresh, isolated, synthetic, loopback-only Nginx 1.30.4 exercise of the exact canonical reference edge. It proves bounded JSON access logging without callback query, referrer, cookie, authorization, user-agent, or arbitrary request fields while repeating forwarding, routing, request-ceiling, response-header, version-hiding, and outer-rate controls. It is not external load-balancer, CDN, hosting-platform, collector, TLS/ingress, multi-host, protected-staging, production, compliance, reliability, penetration-test, or production-readiness evidence.",
+  "finding": {
+    "id": "EDGE-LOG-QUERY-001",
+    "priorSourceState": "The reference Nginx configuration did not select an access-log format, so a deployment would inherit the default combined format whose $request field contains the complete request target and query string.",
+    "credentialClassAtRisk": [
+      "OIDC authorization code",
+      "OIDC state",
+      "provider OAuth authorization code",
+      "provider OAuth state",
+      "other future query credentials"
+    ],
+    "observedProductionIncident": false,
+    "customerOrProductionCredentialObserved": false,
+    "currentState": "remediated on the checked-in reference-edge source/runtime acceptance surface",
+    "decision": "ADR 0060",
+    "threatModelEntry": "TM-50"
+  },
+  "edgeAccessLogContract": {
+    "formatName": "reconai_access",
+    "encoding": "Nginx escape=json",
+    "allowedFields": [
+      "time",
+      "request_id",
+      "client_ip",
+      "method",
+      "path",
+      "protocol",
+      "status",
+      "response_bytes",
+      "request_seconds"
+    ],
+    "pathVariable": "$uri",
+    "pathExcludesQuery": true,
+    "forbiddenVariablesAndFormats": [
+      "$request",
+      "$request_uri",
+      "$args",
+      "$query_string",
+      "$http_referer",
+      "$http_cookie",
+      "$http_authorization",
+      "$http_user_agent",
+      "combined access-log format"
+    ],
+    "arbitraryUnknownFieldsAllowed": false,
+    "externalLoggingPolicyClaim": false
+  },
+  "runtimeInputs": {
+    "nginx": {
+      "version": "1.30.4",
+      "officialSourceRepository": "https://github.com/nginx/nginx.git",
+      "sourceTag": "release-1.30.4",
+      "sourceTagObject": "bcf342539875c809e59348561856130b52ae29ce",
+      "sourceCommit": "017cf98dcce217946572a896f0992370475e189f",
+      "sourceCommitMatchedPriorReviewedValue": true,
+      "compiler": "Clang 21.0.0",
+      "buildOptions": [
+        "--without-http_rewrite_module",
+        "--without-http_gzip_module"
+      ],
+      "pcreLinked": false,
+      "opensslLinked": false,
+      "zlibLinked": false,
+      "binarySha256": "d0f06430043fa2cc44a846212bf3d29fc4ee895adc6452d639cc6bf868274db4"
+    },
+    "canonicalConfiguration": {
+      "path": "infra/nginx/reconai.conf",
+      "sha256": "5a0797b4dc4c46a186c78c9cc26a7e39b8f79fe3f56e1a2fc6d1b23fb49e5893"
+    },
+    "isolation": {
+      "transport": "loopback development HTTP",
+      "nginxProcesses": 1,
+      "fastifyUpstreamProcesses": 2,
+      "webFixtureProcesses": 1,
+      "dockerUsed": false,
+      "customerDataUsed": false,
+      "productionCredentialUsed": false,
+      "repositoryEnvironmentFileCreated": false,
+      "sourceBuildDirectoryDisposition": "moved to the workstation Trash after verifier cleanup",
+      "sourceBuildDirectoryRecoverableUntilTrashEmptied": true
+    }
+  },
+  "staticValidation": {
+    "entrypoint": "pnpm edge:check",
+    "status": "passed",
+    "requiredControls": [
+      "escape=json log format",
+      "query-free normalized $uri path",
+      "explicit reviewed access-log format",
+      "connected-peer forwarding metadata",
+      "BFF/API routing split",
+      "outer request rate and body ceilings"
+    ],
+    "negativeSelfTests": [
+      {
+        "fixture": "replace $uri with $request_uri",
+        "rejected": true
+      },
+      {
+        "fixture": "add default combined access log",
+        "rejected": true
+      },
+      {
+        "fixture": "append client X-Forwarded-For chain",
+        "rejected": true
+      },
+      {
+        "fixture": "copy client Forwarded header",
+        "rejected": true
+      }
+    ]
+  },
+  "liveAssertions": {
+    "canonicalConfigurationParsedByNginx": true,
+    "accessLogStructuredJson": true,
+    "accessLogQueryDataOmitted": true,
+    "accessLogCookieAuthorizationAndReferrerFieldsOmitted": true,
+    "clientForwardingChainDiscarded": true,
+    "clientForwardedHostAndProtoOverwritten": true,
+    "standardizedForwardedHeaderRemoved": true,
+    "catchAllWebForwardingMetadataSanitized": true,
+    "fastifyResolvedObservedPeer": true,
+    "attackerRequestIdDiscarded": true,
+    "browserApiRoutedOnlyToWebBoundary": true,
+    "versionedApiDistributedAcrossBothReplicas": true,
+    "pathPreserved": true,
+    "securityHeadersPresentOn200413And429": true,
+    "nginxVersionHidden": true,
+    "oversizedBodyRejectedBeforeUpstream": true,
+    "forgedForwardingAddressesDidNotSplitOuterBudget": true,
+    "rateLimitedRequestsDidNotReachUpstreams": true,
+    "nginxStoppedAfterVerification": true
+  },
+  "liveObservations": {
+    "accessLog": {
+      "entriesParsed": 13,
+      "queryBearingProbePathRecordedAs": "/api/edge-probe",
+      "syntheticAuthorizationCodePersisted": false,
+      "syntheticAuthorizationStatePersisted": false,
+      "queryDelimiterPresentInAnyRecordedPath": false,
+      "cookieAuthorizationReferrerOrUserAgentFieldsConfigured": false
+    },
+    "routing": {
+      "apiReplicasObserved": [
+        "api-replica-1",
+        "api-replica-2"
+      ],
+      "browserApiUpstream": "web"
+    },
+    "requestBodyCeiling": {
+      "configuredBytes": 12582912,
+      "attemptedBytes": 12582913,
+      "status": 413,
+      "upstreamRequestsAdded": 0
+    },
+    "outerBurst": {
+      "attempted": 100,
+      "admitted": 41,
+      "rejected": 59,
+      "rejectedStatus": 429,
+      "distinctForgedForwardingAddresses": 100,
+      "upstreamRequestsAdded": 41
+    }
+  },
+  "sourceSha256": {
+    "infra/nginx/reconai.conf": "5a0797b4dc4c46a186c78c9cc26a7e39b8f79fe3f56e1a2fc6d1b23fb49e5893",
+    "scripts/validate-edge-security.mjs": "6bf9e90ff6db96e800515014650c9005c3a58994be8dbfa62abf6c291aae01d9",
+    "scripts/verify-live-edge.mjs": "56bedebfbbb09f6393b44f26701d51cf0fefc3717cdad2d9d2c3df9424c6f096",
+    "docs/adr/0060-query-free-structured-edge-access-logs.md": "e81b50ef2aa28e60bad39e6991f4868b3e9e28a55573df0ff8c64d091a134c9c",
+    "docs/goals/goal-1-audit-2026-07-29-15.md": "e5cd3428c60a6518b29c8894d5098cb029a10389fe1dc71a3895becb852bceff",
+    "package.json": "2a69bf603dbbdb5d367274d9f1fab88cf6758e1aee503a3e8a4d47a303e5a58f",
+    "pnpm-lock.yaml": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0"
+  },
+  "verification": {
+    "staticEdgeGate": {
+      "command": "pnpm edge:check",
+      "status": "passed"
+    },
+    "liveEdgeGate": {
+      "command": "LIVE_EDGE_NGINX_BIN=<exact-isolated-binary> pnpm verify:live-edge",
+      "status": "passed",
+      "completedAt": "2026-07-29T14:56:50Z",
+      "assertionsFailed": 0
+    },
+    "productionDependencyAudit": {
+      "command": "pnpm audit --prod --audit-level=high",
+      "status": "passed",
+      "knownVulnerabilitiesReported": 0
+    },
+    "secretScan": {
+      "command": "pnpm secret:scan",
+      "status": "passed",
+      "secretsReported": 0
+    },
+    "finalRepositoryGate": {
+      "command": "CI=true pnpm verify",
+      "status": "passed",
+      "testFilesPassed": 85,
+      "testsPassed": 561,
+      "testsFailed": 0,
+      "deterministicSuiteDurationSeconds": 2.96,
+      "migrationsValidated": 55,
+      "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+      "contractEntrypointsValidated": 4,
+      "sourceFilesValidated": 547,
+      "sourceRootsValidated": 7,
+      "dockerfilesValidated": 3,
+      "composeImagesValidated": 5,
+      "workflowImagesValidated": 3,
+      "actionPinsValidated": 25,
+      "operationalAlertRulesValidated": 13,
+      "metricContractsValidated": 9,
+      "evidenceFilesValidated": 101,
+      "packageManifestsPolicyValidated": 20,
+      "productionLicensesValidated": 224,
+      "productionLockSha256": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0",
+      "productionBuildPassed": true
+    }
+  },
+  "securityDisposition": {
+    "edgeLogQueryFindingState": "remediated locally",
+    "secM003State": "open Medium; external TLS ingress, load balancer/CDN/hosting logs, collector policy, multi-host behavior, and alert evidence remain unverified",
+    "openCriticalChanged": false,
+    "openHighChanged": false,
+    "openMediumChanged": false,
+    "openLowChanged": false,
+    "productionPenetrationTestClaim": false
+  },
+  "decisionBoundaries": {
+    "authenticationOrAuthorizationAuthorityChanged": false,
+    "tenantAuthorityChanged": false,
+    "databaseMigrationAdded": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyNormalizationOrToleranceChanged": false,
+    "financialOrApprovalAuthorityAdded": false,
+    "sourceSystemWriteOrProviderScopeAdded": false,
+    "aiAuthorityOrEnablementChanged": false
+  },
+  "limitations": [
+    "This is one isolated local source build with loopback HTTP and synthetic callback values, not a deployed container-image, external TLS ingress, load-balancer, CDN, hosting-platform, collector, protected-staging, production, compliance, reliability, penetration-test, or production-readiness result.",
+    "The local binary omits rewrite, gzip, PCRE, OpenSSL, and zlib because the exercise needs only the core HTTP/proxy/log modules. Exact container-image composition and deployed TLS behavior remain separate evidence.",
+    "The reference Nginx policy cannot control access logs emitted by upstream load balancers, CDNs, hosting platforms, sidecars, or collectors. Each must prove equivalent query omission, least-privileged access, and approved retention.",
+    "The normalized path can still contain resource identifiers and the connected address is identifying operational data; least-privileged access, tenant-aware investigation, retention, and deletion policy remain required.",
+    "The 100-request loopback burst is a bounded control check, not representative capacity, latency, availability, or denial-of-service resistance evidence.",
+    "No database or reconciliation behavior changed, and no new fresh database result is claimed.",
+    "No file was staged, committed, pushed, published, or deployed, and no runtime .env file was created."
+  ],
+  "sourceControlState": {
+    "repositoryHasNoInitialCommit": true,
+    "filesStaged": false,
+    "commitCreated": false,
+    "pushOrPublishPerformed": false,
+    "deploymentPerformed": false,
+    "repositoryEnvironmentFilesPresent": false
+  }
+}

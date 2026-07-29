@@ -1,0 +1,233 @@
+{
+  "schemaVersion": "reconai-evidence-v1",
+  "evidenceType": "restricted-support-browser-tools-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T10:48:01Z",
+  "status": "local_pass_external_gates_open",
+  "scope": "Local source, BFF, browser, accessibility, strict static checks, production build, secret scan, and production dependency audit evidence for the organization-blind restricted support console and the separate tenant-owner grant controls. Synthetic identities, identifiers, grants, and diagnostics only. No customer data, provider credential or request, source-system write, real support identity, real IdP/MFA enforcement, ticket-system integration, customer notification, protected staging, deployment, legal approval, compliance, or production-readiness claim is included.",
+  "decisions": {
+    "backendBoundary": {
+      "governingAdr": "ADR 0053",
+      "evidenceArtifact": "artifacts/restricted-support-access-verification-2026-07-29.json",
+      "evidenceArtifactSha256": "24c22b31862c2ef11267361996f04639268361fe0f95dbb6511ff4e05e8d7055"
+    },
+    "browserBoundary": {
+      "governingAdr": "ADR 0054",
+      "governingAdrStatus": "Accepted",
+      "governingAdrSha256": "d9472c2b217168a3d4e80ce59251bb6c63b83f24a516fb836ebce263668d39f0"
+    },
+    "threatModelEntry": "TM-17",
+    "securityReviewControl": "RESTRICTED-SUPPORT-ACCESS-001",
+    "databaseMigrationAdded": false,
+    "apiRouteInventoryChanged": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyNormalizationOrToleranceChanged": false,
+    "financialApprovalAuthorityAdded": false,
+    "sourceSystemWriteOrProviderScopeAdded": false,
+    "aiAuthorityOrEnablementChanged": false,
+    "supportTenantMembershipOrImpersonationAdded": false
+  },
+  "supportBrowserBoundary": {
+    "path": "/support",
+    "sessionRequired": true,
+    "supportGroupAndMfaAuthorityEnforcedByApi": true,
+    "tenantNavigationPresent": false,
+    "organizationDirectoryPresent": false,
+    "organizationSelectorPresent": false,
+    "organizationSearchPresent": false,
+    "impersonationPresent": false,
+    "identifierBearingUrlUsed": false,
+    "requestCodeStorage": "React component memory only",
+    "requestCodeLocalStoragePersisted": false,
+    "requestCodeSessionStoragePersisted": false,
+    "requestCodeCookiePersisted": false,
+    "requestCodeUrlPersisted": false,
+    "requestCodeClearedByExplicitControl": true,
+    "requestCodeDiscardedOnNavigationOrReload": true,
+    "diagnosticInputAuthority": [
+      "exact organization UUID supplied through the authenticated ticket",
+      "exact grant UUID supplied through the authenticated ticket"
+    ],
+    "diagnosticSchema": "support-diagnostics-v1",
+    "diagnosticOutput": "fixed capped aggregate counts and timestamps only",
+    "wrongOrganizationIdentityExpiredRevokedOrMalformedDistinguished": false
+  },
+  "supportBffBoundary": {
+    "path": "/api/recon/support",
+    "selectedOrganizationCookieRead": false,
+    "browserCookiesForwardedUpstream": false,
+    "upstreamAuthority": "encrypted web-session bearer token only",
+    "allowedOperations": [
+      {
+        "browserMethod": "POST",
+        "upstreamPath": "/v1/support/access-requests",
+        "body": "requestedDurationMinutes integer from 5 to 60 only",
+        "sameOriginCsrfRequired": true
+      },
+      {
+        "browserMethod": "GET",
+        "upstreamPath": "/v1/support/organizations/:organizationId/diagnostics?grantId=:grantId",
+        "query": "exactly organizationId UUID and grantId UUID",
+        "sameOriginCsrfRequired": false
+      }
+    ],
+    "callerSelectedUpstreamPath": false,
+    "upstreamTimeoutMilliseconds": 8000,
+    "maximumUpstreamJsonBytes": 65536,
+    "privateNoStoreResponse": true,
+    "strictSuccessSchemaWhitelisting": true,
+    "unknownFieldsAreNotForwardedToBrowser": true,
+    "malformedExpandedOrOversizedUpstreamFailsClosed": true,
+    "sourceSha256": "5a7a5537c3c3ee667463d3c979a1c96050a59a5d5090c9445ae1be98c23cb002"
+  },
+  "tenantOwnerBoundary": {
+    "surface": "/dashboard/security",
+    "selectedOrganizationSource": "HttpOnly HMAC-signed subject-bound organization context",
+    "membershipAndPermissionReresolvedByApi": true,
+    "requiredPermission": "support:manage",
+    "requiredRole": "active owner",
+    "grantListMaximumItems": 50,
+    "approvalRequires": [
+      "43-character base64url request code",
+      "bounded ticket reference without control characters",
+      "bounded audit-visible reason without control characters",
+      "explicit selected-organization confirmation"
+    ],
+    "browserRequestCodeClearedOnSubmission": true,
+    "serverInjectedApprovalOrganizationConfirmation": true,
+    "revocationRequiresReasonAndConfirmation": true,
+    "serverInjectedRevocationOrganizationConfirmation": true,
+    "grantListStrictSuccessSchemaWhitelisting": true,
+    "supportActionSuccessResponseMinimizedToAcceptedBoolean": true,
+    "diagnosticDataRenderedInTenantSurface": false,
+    "readBffSourceSha256": "38801092ba2f14706e7055950d1140343a1bb93cab185d52caf14710f98aae2b",
+    "actionBffSourceSha256": "bf157fe05c9dbc48ff16c9bdc4716e34ad33f372dfb67dcf6f79810f987b845a",
+    "sharedActionUpstreamJsonCeilingBytes": 1048576
+  },
+  "renderedCapabilities": {
+    "allowed": [
+      "create organization-unbound approval request",
+      "copy or clear one-time request code",
+      "load one exact approved aggregate diagnostic result",
+      "list selected-organization grant metadata",
+      "approve selected-organization aggregate-diagnostic grant",
+      "revoke selected-organization aggregate-diagnostic grant"
+    ],
+    "tenantDirectoryExposed": false,
+    "financialAmountsOrCurrenciesExposed": false,
+    "normalizedOrCanonicalRecordsExposed": false,
+    "rawPayloadsObjectKeysOrDigestsExposed": false,
+    "providerAccountsCustomerIdentifiersOrCredentialsExposed": false,
+    "exportsNotesOrReviewActionsExposed": false,
+    "tenantOrSourceSystemWritesExposed": false,
+    "supportConsoleSourceSha256": "65b651fb8073588f0c75f3e013240e89c8ca2ce8154d8a1b17b6ddb267ce63ed",
+    "tenantGrantControlSourceSha256": "c9ee7cb11900d08365f7dd01fbc09dbf1686f95ac7223f187dc2f9676fcfa27d"
+  },
+  "verification": {
+    "repositoryGate": {
+      "command": "CI=true pnpm verify",
+      "status": "passed",
+      "testFilesPassed": 81,
+      "testsPassed": 527,
+      "migrationsValidated": 55,
+      "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+      "contractEntrypointsValidated": 4,
+      "routeInventoryCount": 53,
+      "oidcValidatorIncludesSupportBoundary": true,
+      "dockerfilesValidated": 3,
+      "composeImagesValidated": 5,
+      "workflowImagesValidated": 3,
+      "actionPinsValidated": 25,
+      "operationalAlertRulesValidated": 13,
+      "metricContractsValidated": 9,
+      "packageManifestsPolicyValidated": 20,
+      "productionLicensesValidated": 224,
+      "productionLockSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+      "productionBuildPassed": true,
+      "productionRoutesObserved": [
+        "/api/recon/support",
+        "/support"
+      ]
+    },
+    "browserGate": {
+      "command": "pnpm --filter @workspace/web test:e2e",
+      "status": "passed",
+      "browser": "Chromium",
+      "testsPassed": 42,
+      "testsFailed": 0,
+      "accessibilityScansPassed": 13,
+      "supportBrowserTestsAdded": 4,
+      "supportAccessibilityScansAdded": 2,
+      "supportSpecSha256": "1410d7d370f65f6a54a04877c82ac274e540859173385efd9d829cb65c91c1bc",
+      "supportAssertions": [
+        "request creation submits only action and requested duration",
+        "the raw request code appears for transfer but neither browser storage area contains it",
+        "diagnostic lookup sends exactly the supplied organization and grant UUIDs",
+        "only the fixed aggregate ledger is rendered",
+        "rejected diagnostic authority uses one unavailable state",
+        "tenant approval sends explicit confirmation and clears the browser code",
+        "tenant revocation sends exact grant, reason, and confirmation",
+        "support and tenant grant surfaces pass automated accessibility scans"
+      ]
+    },
+    "productionDependencyAudit": {
+      "command": "pnpm audit --prod --audit-level high",
+      "status": "passed",
+      "result": "No known vulnerabilities found",
+      "highSeverityOrGreater": 0
+    },
+    "secretScan": {
+      "command": "pnpm exec secretlint '**/*' --secretlintignore .gitignore",
+      "status": "passed"
+    },
+    "nodeVersion": "24.15.0",
+    "pnpmVersion": "11.9.0"
+  },
+  "verificationCorrections": [
+    {
+      "problemObserved": "The first focused browser pass expected both browser storage areas to be completely empty, but the authenticated session library legitimately created one unrelated session-storage entry.",
+      "correction": "Assert the security invariant directly by examining every storage value and proving that neither storage area contains the one-time request code.",
+      "controlWeakened": false,
+      "postCorrectionResult": "All four support browser tests and both support accessibility scans pass."
+    },
+    {
+      "problemObserved": "The first full repository gate stopped because eight changed source and documentation files were not in canonical Prettier form.",
+      "correction": "Apply the pinned repository formatter to only the reported files and rerun the complete verification command from the beginning.",
+      "controlWeakened": false,
+      "postCorrectionResult": "Formatting, lint, typecheck, 527 tests, every validator, and the production build pass."
+    },
+    {
+      "problemObserved": "The existing shared tenant mutation BFF parsed upstream JSON without a byte ceiling.",
+      "correction": "Use the existing streaming bounded-response reader with a one MiB ceiling and add an oversized support-approval response negative test.",
+      "controlWeakened": false,
+      "postCorrectionResult": "The oversized response fails closed with a private 502, and the complete repository gate passes."
+    },
+    {
+      "problemObserved": "Final contract review found that client-side parsers discarded unknown upstream properties only after the complete payload had already reached the browser.",
+      "correction": "Add strict success schemas to the organization-blind support BFF and tenant grant-list BFF, re-emit only whitelisted fields, minimize successful support-action responses, keep strict client validation, and add expanded-payload negative assertions.",
+      "controlWeakened": false,
+      "postCorrectionResult": "Expanded diagnostic or grant-list payloads fail closed before browser delivery; 21 focused BFF tests, 42 Chromium tests, and the complete repository gate pass."
+    }
+  ],
+  "knownLimitations": [
+    "No real IdP group, acr mapping, MFA challenge, bypass negative, recovery flow, or support offboarding was exercised.",
+    "The ticket reference is supplied by the approving owner and is not validated against a ticket system.",
+    "No customer notification or grant-use notification workflow exists.",
+    "The one-time code is necessarily visible in the DOM during transfer; clipboard history, screenshots, browser extensions, endpoint compromise, and screen sharing are outside this local application proof.",
+    "The 12-hex support identity reference is display-only; authorization uses the full keyed digest.",
+    "Expired unclaimed request rows are retained because no approved purge policy exists.",
+    "HMAC-key rotation has no overlap window; the documented procedure disables access, revokes or drains grants, waits the maximum lifetime, then rotates.",
+    "Multi-replica key consistency, response timing, periodic access review, incident response, protected staging, and production alerting are unverified."
+  ],
+  "sourceControlState": {
+    "repositoryHasNoInitialCommit": true,
+    "filesStaged": false,
+    "commitCreated": false,
+    "pushOrPublishPerformed": false,
+    "deploymentPerformed": false,
+    "repositoryEnvironmentFilesPresent": false,
+    "syntheticVisualReviewScreenshotsStoredOutsideRepository": true,
+    "jsonEvidenceArtifactsIncludingThisOne": 86
+  },
+  "conclusion": "The organization-blind support console and separate tenant-owner grant controls pass their checked-in local acceptance surface without expanding the ADR 0053 diagnostic authority. This is local technical evidence only. Goal 1 remains active and restricted support must not be enabled in production until the stated identity, ticketing, notification, endpoint, access-review, rotation, incident, timing, and protected-staging gates are satisfied."
+}

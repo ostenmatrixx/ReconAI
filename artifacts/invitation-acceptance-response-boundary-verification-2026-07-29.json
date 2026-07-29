@@ -1,0 +1,181 @@
+{
+  "schemaVersion": "reconai-evidence-v1",
+  "evidenceType": "invitation-acceptance-response-boundary-verification",
+  "localDate": "2026-07-29",
+  "completedAt": "2026-07-29T12:12:31Z",
+  "status": "local_pass_protected_runtime_gate_open",
+  "scope": "Local source, invitation/shared-reader/shared-error tests, complete Chromium workflows, strict static checks, policy validators, and production-build evidence for the invitation-acceptance BFF success-response boundary. Synthetic identities, invitations, memberships, sessions, errors, and payloads only. No customer data, provider system, protected ingress, staging deployment, compliance, or production-readiness claim is included.",
+  "decisions": {
+    "threatModelEntry": "TM-45",
+    "securityReviewControl": "BFF-INVITATION-SUCCESS-BOUNDARY-001",
+    "apiRouteInventoryChanged": false,
+    "databaseMigrationAdded": false,
+    "invitationOrMembershipAuthorityAdded": false,
+    "tenantSelectionSemanticsChanged": false,
+    "reconciliationRuleOrVersionChanged": false,
+    "moneyCurrencyNormalizationOrToleranceChanged": false,
+    "financialAuthorityAdded": false,
+    "sourceSystemWriteOrProviderScopeAdded": false,
+    "aiAuthorityOrEnablementChanged": false
+  },
+  "boundary": {
+    "browserRoute": "/api/recon/invitations/accept",
+    "method": "POST",
+    "fixedUpstreamPath": "/v1/invitations/accept",
+    "requiredSuccessStatus": 201,
+    "maximumBrowserRequestBytes": 65536,
+    "maximumSuccessJsonBytes": 65536,
+    "maximumInternalApiErrorBytes": 65536,
+    "successfulJsonDecoding": "fatal UTF-8",
+    "strictSuccessfulBrowserOutput": [
+      "data.organizationId",
+      "data.invitationId",
+      "data.membershipId",
+      "data.userId",
+      "data.role",
+      "meta.correlationId"
+    ],
+    "organizationContextIssuance": {
+      "issuedOnlyAfterCompleteBoundedDecodeParseStatusAndSchemaValidation": true,
+      "subjectBound": true,
+      "httpOnly": true,
+      "sameSite": "lax",
+      "path": "/",
+      "maximumAgeSeconds": 28800
+    },
+    "acceptedErrors": {
+      "AUTHENTICATION_REQUIRED": 401,
+      "VERIFIED_EMAIL_REQUIRED": 403,
+      "RESOURCE_NOT_FOUND": 404,
+      "RATE_LIMITED": 429
+    },
+    "rejectedConditions": [
+      "cross-site request",
+      "missing session subject or API access token",
+      "expired API access token",
+      "malformed invitation token",
+      "unexpected successful status",
+      "expanded or malformed successful response",
+      "invalid response identifier or role",
+      "malformed JSON",
+      "invalid UTF-8",
+      "non-JSON content type",
+      "invalid content-length syntax",
+      "declared success body above 64 KiB",
+      "streamed success body above 64 KiB",
+      "unknown internal API error code",
+      "internal API error code/status mismatch",
+      "expanded internal API error",
+      "upstream redirect"
+    ],
+    "rejectedOutcome": {
+      "status": 502,
+      "privateNoStore": true,
+      "organizationContextCookieIssued": false,
+      "upstreamStatusPreservedOnContractFailure": false,
+      "upstreamBodyPreservedOnContractFailure": false
+    },
+    "upstreamFetchContainment": {
+      "configuredFixedOrigin": true,
+      "fixedPath": true,
+      "browserCookiesForwarded": false,
+      "ambientCredentials": "omit",
+      "redirect": "error",
+      "timeoutMilliseconds": 8000
+    },
+    "unchangedAuthority": {
+      "acceptanceStillRequiresAuthenticatedSubject": true,
+      "providerVerifiedEmailEnforcedByApi": true,
+      "tokenDigestEmailPendingExpiryAndReplayChecksRemainApiDatabaseControls": true,
+      "clientOrganizationIdGrantsNoAuthority": true,
+      "contextCookieRemainsNavigationState": true,
+      "tenantRoutesStillResolveLiveMembershipAndPermissions": true
+    }
+  },
+  "source": {
+    "routeAndSharedBoundarySha256": {
+      "apps/web/src/app/api/recon/invitations/accept/route.ts": "b8dceeeff7e7821eb86826ec288741e8d1520d8888a60fa95838b5b4de2cab95",
+      "apps/web/src/app/api/recon/invitations/accept/route.test.ts": "b4da8561de4608e292de4a8dc80926da2fce52327ff33a5aa358ee29b6a446e2",
+      "apps/web/src/bounded-response.ts": "99dcbe5f332c03f33e18532c728af6d8d2b74f3b8dea5e11a0482f36617cc9ac",
+      "apps/web/src/bounded-response.test.ts": "59b9009761d5aec34770a86d1c805ccb6bb39e1897bca379791009a13ce949f1",
+      "apps/web/src/upstream-api-error.ts": "9bb186a4fdb2775780f2a363547c55d7244f33dd40e4aeea799f602a7ffb4dee",
+      "apps/web/src/upstream-api-error.test.ts": "af3326b08d1281b59c265f9024e1cbbde9b827dadd092a15fec6308b0e1836e7"
+    },
+    "documentationSha256": {
+      "docs/architecture.md": "409468dfe0f70076b069648e44548566d9435ce91181e1cbc228a4014c805518",
+      "docs/threat-model.md": "532b3f0de84a572661d5c0718404fb94b0376de78779dcdeb39b7713c86f671f",
+      "docs/security-review.md": "e566bbe76fa7a5ae4fe8b21d72fb31c96cec6e7c4ac0b5c84c51e5971c1d5518",
+      "docs/goals/goal-1-vertical-slice.md": "b601bd60ce2cab5c3426906dcd91e13eacc0bd70b5a944bb99c012d5cafad9fb",
+      "docs/goals/goal-1-audit-2026-07-29-9.md": "ebeded0c5a7766d9cfcb1ade954ac7f3a4e943a1a3aafcd6393f6424ad2b1f77"
+    }
+  },
+  "verification": {
+    "focusedGate": {
+      "command": "pnpm exec vitest run apps/web/src/app/api/recon/invitations/accept/route.test.ts apps/web/src/bounded-response.test.ts apps/web/src/upstream-api-error.test.ts",
+      "status": "passed",
+      "testFilesPassed": 3,
+      "testsPassed": 14,
+      "testsFailed": 0
+    },
+    "browserGate": {
+      "command": "pnpm test:e2e",
+      "status": "passed",
+      "browser": "Chromium",
+      "testsPassed": 42,
+      "invitationWorkflowTestsPassed": 4,
+      "accessibilityScannedTestsPassedWithinSuite": 11,
+      "testsFailed": 0
+    },
+    "accessibilityGate": {
+      "command": "pnpm test:accessibility",
+      "status": "passed",
+      "browser": "Chromium",
+      "testsPassed": 11,
+      "testsFailed": 0,
+      "automaticallyDetectedViolations": 0
+    },
+    "repositoryGate": {
+      "command": "RECONAI_PENDING_EVIDENCE_PATH=artifacts/invitation-acceptance-response-boundary-verification-2026-07-29.json CI=true pnpm verify",
+      "status": "passed",
+      "testFilesPassed": 83,
+      "testsPassed": 547,
+      "migrationsValidated": 55,
+      "migrationChainSha256": "03b184c9e1cc2167863150962f5a66d1ceab80de26c65c83964b4d0f096167b1",
+      "contractEntrypointsValidated": 4,
+      "sourceFilesValidated": 532,
+      "sourceRootsValidated": 7,
+      "dockerfilesValidated": 3,
+      "composeImagesValidated": 5,
+      "workflowImagesValidated": 3,
+      "actionPinsValidated": 25,
+      "operationalAlertRulesValidated": 13,
+      "metricContractsValidated": 9,
+      "packageManifestsPolicyValidated": 20,
+      "productionLicensesValidated": 224,
+      "productionLockSha256": "d6079bdcf92143b9a2256fecac3ff0b8b5cca364a40d2f15be956f4964620f94",
+      "productionBuildPassed": true,
+      "productionRouteObserved": "/api/recon/invitations/accept"
+    },
+    "nodeVersion": "24.15.0",
+    "pnpmVersion": "11.9.0",
+    "gitVersion": "2.50.1"
+  },
+  "knownLimitations": [
+    "This local proof does not exercise a compromised web process, protected ingress, production internal API, sustained response-stream interruption, or representative web-tier memory pressure.",
+    "The organization-context cookie is tenant-navigation state rather than tenant authority; every tenant route must continue to resolve current membership and permissions server-side.",
+    "The strict success and error policies must be updated deliberately when the invitation-acceptance contract changes; unknown contract drift fails closed.",
+    "The 64 KiB ceiling is a transport maximum, not evidence that ordinary acceptance responses should approach that size.",
+    "This increment does not migrate the openid-client dependency path, close provider sandbox or release-integrity findings, or satisfy protected-staging evidence.",
+    "One local workstation run is not CI, staging, reliability, capacity, compliance, legal-fulfillment, or production-readiness evidence."
+  ],
+  "sourceControlState": {
+    "repositoryHasNoInitialCommit": true,
+    "filesStaged": false,
+    "commitCreated": false,
+    "pushOrPublishPerformed": false,
+    "deploymentPerformed": false,
+    "repositoryRuntimeEnvironmentFilesPresent": false,
+    "evidenceFilesIncludingThisOne": 95
+  },
+  "conclusion": "Invitation acceptance now applies a 64 KiB declared/streamed success ceiling and fatal UTF-8 decoding before its exact-status and strict-schema checks can issue subject-bound organization context. This closes BFF-INVITATION-SUCCESS-BOUNDARY-001 locally without expanding invitation, membership, tenant, financial, provider, source-system, or AI authority. Goal 1 remains active; provider, owner, distributed-runtime, authentication-stack, and protected-staging gates remain open."
+}

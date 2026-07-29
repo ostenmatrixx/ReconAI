@@ -9,8 +9,8 @@ remain. This is a pre-release source review, not a penetration test or productio
 
 ## Evidence and limitations
 
-Executed locally during this work: exact locked install; formatting; strict lint/typecheck; 611
-unit/property/tenant/reconciliation tests in 89 files; 45 Chromium tests, including 14 accessibility
+Executed locally during this work: exact locked install; formatting; strict lint/typecheck; 634
+unit/property/tenant/reconciliation tests in 91 files; 45 Chromium tests, including 14 accessibility
 scans; a separate local production Chromium CSP render with zero console errors; production build;
 schema/config/edge/dependency/migration validators; prior Drizzle no-drift generation through the
 snapshot-managed schema chain; static custom-migration/schema alignment for the current
@@ -48,10 +48,11 @@ commit; a seven-root source validator now prevents that class of omission. A tem
 Git-ignore-clean candidate-source export completed its frozen install, Secretlint, high-severity
 production audit, full static verification/build, and Chromium suite without modifying or creating a
 publishable file. Evidence: `artifacts/clean-source-export-verification-2026-07-29.json`; decision:
-ADR 0055. Because no initial commit exists, this is not a remote-clone, hosted-CI, staging, or
-production result. A separate rootless Podman Compose quick start now exercises the digest-pinned
-development dependency network, current migrations/fixtures, host applications, and real local
-OIDC/API/BFF/browser smoke; it does not replace that revision-bound proof. Evidence:
+ADR 0055. The historical artifact predates the initial commit, so a new literal remote-clone
+verification remains pending. It is not staging or production evidence. A separate rootless Podman
+Compose quick start now exercises the digest-pinned development dependency network, current
+migrations/fixtures, host applications, and real local OIDC/API/BFF/browser smoke; it does not
+replace that revision-bound proof. Evidence:
 `artifacts/local-podman-compose-quickstart-verification-2026-07-30.json`; decision: ADR 0062.
 
 A separate isolated Keycloak 26.7.0/PostgreSQL 17.10/Chromium verifier now covers two provider-
@@ -112,13 +113,14 @@ validated each OCI archive, passed checksum-verified Trivy 0.72.0 at zero fixed 
 Critical, and generated hashed CycloneDX 1.7 summaries. These results are not Docker, the hosted
 amd64 BuildKit/provenance/attestation path, trusted external TLS/identity, complete backup/restore,
 hosted CI, protected staging, or deployment proof. Remote image inputs are immutable-digest pinned
-and the non-publishing candidate workflow is statically validated, but GitHub workflows have no
-authoritative hosted run because no remote was authorized. Separately, Redis 8.2.8 was built from
-the official source archive after its SHA-256 matched Redis's published hash. An authenticated,
-protected-mode, loopback-only server passed four queue, distributed-rate-limit, and
-distributed-session-revocation tests across three files; the test namespaces were removed and the
-database was empty afterward. This host-process result does not execute the pinned OCI image or
-Compose network.
+and the non-publishing candidate workflow is statically validated. The hosted baseline Security
+workflow passed; CI failed on the configuration/test drift described below, and the candidate
+workflow failed parsing before job creation. No successful hosted candidate run exists. Separately,
+Redis 8.2.8 was built from the official source archive after its SHA-256 matched Redis's published
+hash. An authenticated, protected-mode, loopback-only server passed four queue,
+distributed-rate-limit, and distributed-session-revocation tests across three files; the test
+namespaces were removed and the database was empty afterward. This host-process result does not
+execute the pinned OCI image or Compose network.
 
 A separate authenticated loopback Redis 8.8.0 process with two independent clients passed the
 provider-circuit integration file. It proved cross-client opening/denial, tenant/connection
@@ -159,6 +161,24 @@ initially empty authenticated Redis 8.2.8 database, retained ten under duplicate
 rejected non-empty Redis plus a wrong restored-system identifier. The exercise does not establish an
 atomic database/object/Redis recovery point, migration timing, prior-image runtime compatibility,
 production-like restored data, staging cutover, alerts, RPO, or RTO.
+
+The cross-layer tenant audit now has a fail-closed exact manifest rather than relying on scattered
+prose counts. Independent discovery currently reconciles 43 executable schema tables and their
+enabled/forced-RLS migration authority, 55 Fastify contracts, 13 Next.js API/BFF routes, four
+tenant-bound job discriminators, three object-key builders and nine verified object operations, 19
+Redis/BullMQ/in-memory state source files, two exports, and 39 evidence references. New or stale
+surfaces, missing evidence, missing forced RLS, tenant telemetry identifiers, and support enablement
+drift fail the ordinary verification path. Tenant object keys now parse branded organization IDs and
+every bounded segment. The unused stable tenant-telemetry pseudonym helper was removed.
+
+The first hosted baseline run replaces the prior absence of remote evidence. Security passed; CI
+completed 63 integration tests before exposing a missing maintenance-role integration URL and a
+previous-release assertion that stopped before migration 0055. The manually dispatched candidate
+workflow also failed parsing because a job-level expression used the unavailable `runner` context.
+All three source defects are corrected in the tenant-hardening branch and guarded by policy tests,
+but remain open evidence until the hosted PR rerun passes. The new all-table PostgreSQL catalog
+assertion could not run in the current desktop shell because no container/Compose provider or local
+PostgreSQL binary is available.
 
 ## Open findings
 

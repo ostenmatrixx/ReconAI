@@ -5,6 +5,7 @@ import postgres, { type Sql } from "postgres";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { insertTenantAuditEvent } from "./audit.js";
+import * as applicationSchema from "./schema.js";
 
 const organizationA = "10000000-0000-4000-8000-000000000001";
 const organizationB = "10000000-0000-4000-8000-000000000002";
@@ -20,6 +21,18 @@ const connectionA = "40000000-0000-4000-8000-000000000001";
 const connectionCsvA = "40000000-0000-4000-8000-000000000003";
 const importA = "45000000-0000-4000-8000-000000000001";
 const auditA = "50000000-0000-4000-8000-000000000001";
+const drizzleTableMarker = Symbol.for("drizzle:IsDrizzleTable");
+const drizzleTableName = Symbol.for("drizzle:Name");
+const applicationTableNames = Object.values(applicationSchema)
+  .flatMap((value) => {
+    const unknownValue: unknown = value;
+    if (typeof unknownValue !== "object" || unknownValue === null) return [];
+    const candidate = unknownValue as Readonly<Record<PropertyKey, unknown>>;
+    return candidate[drizzleTableMarker] === true && typeof candidate[drizzleTableName] === "string"
+      ? [candidate[drizzleTableName]]
+      : [];
+  })
+  .sort();
 
 let admin: Sql | undefined;
 let application: Sql | undefined;
@@ -45,6 +58,41 @@ describe("live PostgreSQL tenant controls", { concurrent: false }, () => {
   afterAll(async () => {
     await application?.end({ timeout: 5 });
     await admin?.end({ timeout: 5 });
+  });
+
+  it("enables and forces row-level security on every application schema table", async () => {
+    const database = requiredConnection(admin, "admin");
+    const rows = await database`
+      select
+        classes.relname as table_name,
+        classes.relrowsecurity as row_security,
+        classes.relforcerowsecurity as forced_row_security,
+        count(policies.policyname)::integer as policy_count
+      from pg_class as classes
+      join pg_namespace as namespaces
+        on namespaces.oid = classes.relnamespace
+      left join pg_policies as policies
+        on policies.schemaname = namespaces.nspname
+       and policies.tablename = classes.relname
+      where namespaces.nspname = 'public'
+        and classes.relkind = 'r'
+      group by
+        classes.relname,
+        classes.relrowsecurity,
+        classes.relforcerowsecurity
+    `;
+    const rowsByTable = new Map(
+      Array.from(rows, (row: unknown) => [databaseString(row, "table_name"), row]),
+    );
+
+    expect(applicationTableNames).toHaveLength(43);
+    for (const tableName of applicationTableNames) {
+      const row = rowsByTable.get(tableName);
+      expect(row, `missing migrated application table ${tableName}`).toBeDefined();
+      expect(databaseBoolean(row, "row_security"), tableName).toBe(true);
+      expect(databaseBoolean(row, "forced_row_security"), tableName).toBe(true);
+      expect(databaseNumber(row, "policy_count"), tableName).toBeGreaterThan(0);
+    }
   });
 
   it("shows only the selected organization and its member identities", async () => {
@@ -836,6 +884,13 @@ function databaseNumber(row: unknown, field: string): number {
   if (typeof row !== "object" || row === null) throw new Error(`database row missing ${field}`);
   const value = (row as Record<string, unknown>)[field];
   if (typeof value !== "number") throw new Error(`database field ${field} was not a number`);
+  return value;
+}
+
+function databaseBoolean(row: unknown, field: string): boolean {
+  if (typeof row !== "object" || row === null) throw new Error(`database row missing ${field}`);
+  const value = (row as Record<string, unknown>)[field];
+  if (typeof value !== "boolean") throw new Error(`database field ${field} was not a boolean`);
   return value;
 }
 

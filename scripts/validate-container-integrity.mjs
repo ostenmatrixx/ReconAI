@@ -225,7 +225,10 @@ function validateReleaseCandidateWorkflow() {
     [/\battestations:\s*write\b/u, "must grant attestation persistence"],
     [/\bartifact-metadata:\s*write\b/u, "must grant artifact metadata persistence"],
     [/\boutputs:\s*type=oci,/u, "must export an OCI archive rather than publish an image"],
-    [/\bOCI_LAYOUT:\s*\$\{\{ runner\.temp \}\}/u, "must extract OCI scan input outside artifacts"],
+    [
+      /\bOCI_LAYOUT:\s*\/tmp\/reconai-\$\{\{ matrix\.service \}\}-oci-layout/u,
+      "must extract OCI scan input into a fixed runner-temporary path outside artifacts",
+    ],
     [/\btar -xf "\$\{OCI_ARCHIVE\}" -C "\$\{OCI_LAYOUT\}"/u, "must extract the OCI layout"],
     [
       /\binput:\s*\$\{\{ env\.OCI_LAYOUT \}\}/u,

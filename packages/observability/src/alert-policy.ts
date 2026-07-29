@@ -7,7 +7,7 @@ import {
 export const OPERATIONAL_ALERT_POLICY_API_VERSION =
   "reconai.io/operational-alert-policy/v1" as const;
 
-const forbiddenDimensionFragments = [
+export const FORBIDDEN_TENANT_TELEMETRY_DIMENSION_FRAGMENTS = [
   "organization",
   "tenant",
   "customer",
@@ -287,7 +287,9 @@ function validateCondition(
 
 function validateDimension(attribute: string, path: string): void {
   const normalized = attribute.toLowerCase();
-  if (forbiddenDimensionFragments.some((fragment) => normalized.includes(fragment))) {
+  if (
+    FORBIDDEN_TENANT_TELEMETRY_DIMENSION_FRAGMENTS.some((fragment) => normalized.includes(fragment))
+  ) {
     throw new TypeError(`${path} contains forbidden high-cardinality dimension ${attribute}`);
   }
 }

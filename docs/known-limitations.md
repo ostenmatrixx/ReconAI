@@ -1,6 +1,13 @@
 # Known limitations
 
 - No production or staging deployment exists; ReconAI is not production-ready.
+- The checked-in cross-layer tenant manifest fails closed on current database, API/BFF, durable-job,
+  object, Redis/BullMQ/map, export, telemetry, and restricted-support source drift. It is a bounded
+  discovery and review control, not a language-level information-flow proof or deployed penetration
+  test. Its new 43-table RLS/forced-RLS/policy catalog assertion awaits hosted execution; multi-host
+  partitions, stale messages, cache loss/eviction, timing, representative scale, and independent
+  adversarial review remain Goal 2 work. Evidence:
+  `artifacts/cross-layer-tenant-surface-verification-2026-07-30.json`.
 - One versioned mixed profile now reconciles exactly 100,000 synthetic records in five fresh local
   processes with stable identities/results and conserved integer money. Recorded pure-engine
   durations were 1,664.48–1,948.55 ms and maximum observed RSS was 521,650,176 bytes; see
@@ -49,25 +56,25 @@
   completed a real browser login and browser-to-BFF-to-API-to-outbox-to-worker reconciliation smoke
   against those services. A Git-ignore-clean candidate-source export now passes its frozen install,
   Secretlint, production audit, full static verification/build, and Chromium suite without changing
-  a publishable file; it is not a literal fresh clone because this repository has no initial commit.
-  A current reusable verifier separately completed an eight-record Chromium/BFF/API/
-  outbox/Redis/restricted-worker journey against fresh local infrastructure and read four exact
-  immutable occurrence snapshots, including a conserved two-row accounting split and one
-  duplicate-fee exception; its identity authority was a minimal RS256/JWKS fixture, not Keycloak. A
-  prior/current application-image runtime rollback, literal fresh-clone, operational cutover, and
-  representative-volume migration timing remain unverified. A distinct data-checksummed PostgreSQL
-  17.10 cluster now has an exact synthetic logical-restore comparison plus passing restored
-  database/RLS/audit/reconciliation tests, `pg_amcheck`, and offline checksum evidence. A separate
-  local component drill matched two keys, three object versions, and one current delete marker
-  across distinct versioned MinIO processes, then rebuilt one unpublished outbox event from a
-  distinct exact logical PostgreSQL restore into an empty authenticated Redis 8.2.8 database.
-  Migration 0040 and nine live restricted-role tests now add a token-digest execution/recovery
-  ledger plus rolling-writer opt-in; a fresh-cluster drill rebuilt ten jobs across all four safe
-  classifications and excluded active/succeeded/dead/legacy work. This does not verify encrypted
-  base-backup/WAL recovery, an atomic database/object/Redis recovery point, object
-  tags/lock/lifecycle/replication, key references, prior-image runtime compatibility, staging
-  cutover, or RPO/RTO. Queue add and PostgreSQL evidence recording also remain a deliberately
-  guarded cross-store, non-atomic operation.
+  a publishable file; it remains a historical non-literal export because it predates the initial
+  commit. A new literal remote-clone run remains pending. A current reusable verifier separately
+  completed an eight-record Chromium/BFF/API/ outbox/Redis/restricted-worker journey against fresh
+  local infrastructure and read four exact immutable occurrence snapshots, including a conserved
+  two-row accounting split and one duplicate-fee exception; its identity authority was a minimal
+  RS256/JWKS fixture, not Keycloak. A prior/current application-image runtime rollback, literal
+  fresh-clone, operational cutover, and representative-volume migration timing remain unverified. A
+  distinct data-checksummed PostgreSQL 17.10 cluster now has an exact synthetic logical-restore
+  comparison plus passing restored database/RLS/audit/reconciliation tests, `pg_amcheck`, and
+  offline checksum evidence. A separate local component drill matched two keys, three object
+  versions, and one current delete marker across distinct versioned MinIO processes, then rebuilt
+  one unpublished outbox event from a distinct exact logical PostgreSQL restore into an empty
+  authenticated Redis 8.2.8 database. Migration 0040 and nine live restricted-role tests now add a
+  token-digest execution/recovery ledger plus rolling-writer opt-in; a fresh-cluster drill rebuilt
+  ten jobs across all four safe classifications and excluded active/succeeded/dead/legacy work. This
+  does not verify encrypted base-backup/WAL recovery, an atomic database/object/Redis recovery
+  point, object tags/lock/lifecycle/replication, key references, prior-image runtime compatibility,
+  staging cutover, or RPO/RTO. Queue add and PostgreSQL evidence recording also remain a
+  deliberately guarded cross-store, non-atomic operation.
 - No provider credentials or sandboxes were used. Shopify/Stripe OAuth, refresh, uninstall, and
   signed-deauthorization behavior rely on synthetic provider responses until authorized sandbox
   verification.

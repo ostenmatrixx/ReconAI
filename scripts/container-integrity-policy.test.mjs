@@ -175,8 +175,30 @@ steps:
     with:
       version: v0.72.0
       image-ref: reconai/api:ci
+    env:
+      DATABASE_MAINTENANCE_URL: ${"postgresql"}://synthetic-placeholder
 `),
     ).toEqual([]);
+  });
+
+  it("requires maintenance-role authority for live CI integration suites", () => {
+    const source = `
+  - name: Install Node.js
+    uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+    with:
+      node-version: 24.18.0
+  - name: Install browser Node.js
+    uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+    with:
+      node-version: 24.18.0
+  - name: Scan container vulnerabilities
+    uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+    with:
+      version: v0.72.0
+`;
+    expect(continuousIntegrationSecurityBoundaryErrors(source)).toContain(
+      "must provide the dedicated maintenance-role URL to live integration tests",
+    );
   });
 
   it.each([

@@ -280,6 +280,20 @@ query-bearing/combined-log self-tests; exact Nginx 1.30.4 parse and loopback cal
 value; external load balancer/CDN/hosting logs, TLS ingress, collector access/retention,
 tenant-aware investigation, and protected staging remain required |
 
+| TM-51 | A new customer-data table, route, job, object operation, cache/queue surface, export, or
+telemetry label bypasses tenant review because evidence is distributed across layers | Exact
+versioned tenant-surface manifest; independent executable-schema/contract and source discovery;
+exact-set, duplicate, stale-entry, and evidence-path rejection; all 43 schema tables independently
+found in both enabled- and forced-RLS migrations; runtime-branded and bounded tenant object-key
+segments; tenant/customer telemetry dimensions prohibited; ordinary verification gate; live catalog
+assertion requires RLS, forced RLS, and a policy on every application table | Eight focused drift
+negative tests plus exact current inventory of 43 tables, 55 API routes, 13 BFF routes, four jobs,
+nine object operations, 19 state-store files, two exports, and 39 evidence references; existing
+API/BFF/worker/object/cache/export/support/telemetry tenant negatives; new PostgreSQL catalog
+assertion is checked in but was not runnable in the current engine-free desktop shell; hosted CI
+rerun, protected multi-host cache/queue/partition/load exercises, new-library discovery review, and
+external penetration testing remain required |
+
 TM-21 now also has a bounded actual-process proof:
 `artifacts/api-rate-limit-replica-recovery-verification-2026-07-29.json` runs two compiled API
 processes with production configuration against authenticated persistent Redis 8.2.8. It proves one
@@ -292,8 +306,9 @@ The source publication boundary is also a TM-19 control. Runtime-output ignore r
 anchored, a seven-root validator rejects ignored source, and a clean candidate export must retain
 all 527 deterministic tests plus both financial export routes in the production manifest. Bounded
 evidence must be Git-visible, link-complete, size-limited, valid JSON where applicable, and free of
-personal home paths. This local result does not replace hosted CI, a committed clone, signed source
-provenance, or release/deployment admission.
+personal home paths. The repository now has a baseline commit and a hosted Security pass, but hosted
+CI exposed configuration defects and has not yet passed. The local export does not replace a
+successful hosted run, signed source provenance, or release/deployment admission.
 
 ## High-risk abuse cases
 

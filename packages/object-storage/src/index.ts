@@ -10,6 +10,8 @@ import {
   S3ServiceException,
   type ServerSideEncryption,
 } from "@aws-sdk/client-s3";
+import { OrganizationIdSchema, type OrganizationId } from "@workspace/domain";
+import { z } from "zod";
 
 export {
   captureTenantObjectRestoreInventory,
@@ -27,7 +29,14 @@ export {
 
 const sha256Pattern = /^[a-f0-9]{64}$/u;
 const objectKeyPattern = /^[a-z0-9][a-z0-9._/-]{0,1023}$/u;
+const objectKeyEnvironmentSchema = z.string().regex(/^[a-z0-9][a-z0-9-]{1,31}$/u);
+const objectKeyOpaqueIdSchema = z.uuid();
+const objectKeySuffixSchema = z.string().regex(/^[a-z0-9][a-z0-9._-]{0,127}$/u);
 const verifiedDeleteRequestTimeoutMs = 15_000;
+
+export const TENANT_OBJECT_KEY_PURPOSES = ["imports", "provider-events", "exports"] as const;
+export type TenantObjectKeyPurpose = (typeof TENANT_OBJECT_KEY_PURPOSES)[number];
+const tenantObjectKeyPurposeSchema = z.enum(TENANT_OBJECT_KEY_PURPOSES);
 
 export interface ImmutableObjectWrite {
   readonly key: string;
@@ -297,12 +306,18 @@ export class InMemoryImmutableObjectStore implements ImmutableObjectStore {
 
 export function buildTenantObjectKey(
   environment: string,
-  organizationId: string,
-  purpose: "imports" | "provider-events" | "exports",
+  organizationId: OrganizationId,
+  purpose: TenantObjectKeyPurpose,
   opaqueId: string,
   suffix: string,
 ): string {
-  const key = [environment, organizationId, purpose, opaqueId, suffix].join("/");
+  const key = [
+    objectKeyEnvironmentSchema.parse(environment),
+    OrganizationIdSchema.parse(organizationId),
+    tenantObjectKeyPurposeSchema.parse(purpose),
+    objectKeyOpaqueIdSchema.parse(opaqueId),
+    objectKeySuffixSchema.parse(suffix),
+  ].join("/");
   validateObjectKey(key);
   return key;
 }

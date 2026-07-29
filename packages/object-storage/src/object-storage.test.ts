@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { createServer } from "node:http";
 
+import { OrganizationIdSchema } from "@workspace/domain";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -19,7 +20,7 @@ describe("immutable object storage contract", () => {
     const checksumSha256 = createHash("sha256").update(body).digest("hex");
     const key = buildTenantObjectKey(
       "test",
-      "00000000-0000-4000-8000-000000000001",
+      OrganizationIdSchema.parse("00000000-0000-4000-8000-000000000001"),
       "imports",
       "00000000-0000-4000-8000-000000000002",
       "payload.csv",
@@ -34,6 +35,37 @@ describe("immutable object storage contract", () => {
     await expect(
       store.getVerified({ key, expectedChecksumSha256: checksumSha256, maximumBytes: 1024 }),
     ).resolves.toEqual(Uint8Array.from(body));
+  });
+
+  it("builds tenant-separated keys and rejects unsafe or untyped segments", () => {
+    const organizationA = OrganizationIdSchema.parse("00000000-0000-4000-8000-000000000001");
+    const organizationB = OrganizationIdSchema.parse("00000000-0000-4000-8000-000000000002");
+    const opaqueId = "00000000-0000-4000-8000-000000000003";
+
+    expect(buildTenantObjectKey("test", organizationA, "exports", opaqueId, "exceptions.csv")).toBe(
+      `test/${organizationA}/exports/${opaqueId}/exceptions.csv`,
+    );
+    expect(
+      buildTenantObjectKey("test", organizationB, "exports", opaqueId, "exceptions.csv"),
+    ).not.toBe(buildTenantObjectKey("test", organizationA, "exports", opaqueId, "exceptions.csv"));
+    expect(() =>
+      buildTenantObjectKey("../production", organizationA, "imports", opaqueId, "payload.csv"),
+    ).toThrow();
+    expect(() =>
+      buildTenantObjectKey("test", organizationA, "imports", "not-a-uuid", "payload.csv"),
+    ).toThrow();
+    expect(() =>
+      buildTenantObjectKey("test", organizationA, "imports", opaqueId, "../payload.csv"),
+    ).toThrow();
+    expect(() =>
+      buildTenantObjectKey(
+        "test",
+        "not-an-organization-id" as typeof organizationA,
+        "imports",
+        opaqueId,
+        "payload.csv",
+      ),
+    ).toThrow();
   });
 
   it("rejects key collisions, checksum mismatches, and oversized reads", async () => {

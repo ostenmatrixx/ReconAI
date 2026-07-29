@@ -48,10 +48,12 @@ complete until fresh-clone, CI, migration, and local-infrastructure evidence is 
 | CI and Git hooks active        | CI run URL plus manual hook test transcript             | Partial    |
 | Name review completed          | `docs/name-review.md`; owner decision still required    | Draft done |
 
-Dependencies: owner license/name confirmation before publication; an initial commit for literal
-clone evidence; CI provider after a remote is authorized.  
-Risks: no Docker or remote/CI run exists; the Podman result is single-workstation evidence; the
-working name has material collisions.  
+Dependencies: owner license/name confirmation before public release; a successful hosted CI run and
+literal clone verification from the initialized remote.
+
+Risks: the first hosted CI run failed on configuration/test-drift defects now corrected in a pending
+PR; the Podman result is single-workstation evidence; the working name has material collisions.
+
 Completion date: not complete.  
 Evidence index: `docs/goals/goal-0-foundation.md`.
 
@@ -89,22 +91,23 @@ Completion date: not complete.
 Evidence index: `docs/goals/goal-1-vertical-slice.md`.
 
 The three checked-in application Dockerfiles now build locally on rootless Linux ARM64 after
-correcting their Git-free install/deploy lifecycle boundary. A fresh isolated run exercises real
-Keycloak authorization code plus PKCE through the production web image over one-run TLS, Secure
-HttpOnly cookies, Redis revocation, explicit tenant selection, the BFF, the image API, outbox, and
-the image worker. The eight immutable inputs produce three matches, one exception, and zero errors;
-a foreign organization returns 404 and tenantless RLS reads return zero. Live projections show API
-with only its application database role, worker only its worker role, and web no
-database/object/connector authority. This changes authenticated image BFF login to a bounded local
-pass. A separate bounded native candidate run then rebuilt all three Linux ARM64 images from the
-reviewed Node 24.18.0 digest, scanned extracted OCI layouts with checksum-verified Trivy 0.72.0, and
-generated hashed CycloneDX 1.7 summaries. API, worker, and web each reported zero fixed High and
-zero fixed Critical findings. Those scanned IDs exactly match a fresh authenticated runtime rerun.
-Docker Engine, the hosted amd64 candidate/attestation path, trusted external TLS/IdP, prior/current
-rollout, and protected staging remain open. Evidence:
-`artifacts/container-image-runtime-scan-bound-verification-2026-07-30.json` and
-`artifacts/local-native-oci-candidate-runtime-bound-verification-2026-07-30.json`; decisions: ADR
-0063 through ADR 0066; latest audit: `docs/goals/goal-1-audit-2026-07-30-27.md`.
+correcting their Git-free install/deploy lifecycle boundary. The baseline is now committed and
+pushed; the hosted Security workflow passed, while hosted CI exposed three corrected defects and
+requires a successful PR rerun. A fresh isolated run exercises real Keycloak authorization code plus
+PKCE through the production web image over one-run TLS, Secure HttpOnly cookies, Redis revocation,
+explicit tenant selection, the BFF, the image API, outbox, and the image worker. The eight immutable
+inputs produce three matches, one exception, and zero errors; a foreign organization returns 404 and
+tenantless RLS reads return zero. Live projections show API with only its application database role,
+worker only its worker role, and web no database/object/connector authority. This changes
+authenticated image BFF login to a bounded local pass. A separate bounded native candidate run then
+rebuilt all three Linux ARM64 images from the reviewed Node 24.18.0 digest, scanned extracted OCI
+layouts with checksum-verified Trivy 0.72.0, and generated hashed CycloneDX 1.7 summaries. API,
+worker, and web each reported zero fixed High and zero fixed Critical findings. Those scanned IDs
+exactly match a fresh authenticated runtime rerun. Docker Engine, the hosted amd64
+candidate/attestation path, trusted external TLS/IdP, prior/current rollout, and protected staging
+remain open. Evidence: `artifacts/container-image-runtime-scan-bound-verification-2026-07-30.json`
+and `artifacts/local-native-oci-candidate-runtime-bound-verification-2026-07-30.json`; decisions:
+ADR 0063 through ADR 0066; latest audit: `docs/goals/goal-1-audit-2026-07-30-27.md`.
 
 The local classification rollout boundary now includes bounded checksum-verified legacy repair plus
 a disabled-by-default, one-way database writer fence. Activation waits for in-flight source

@@ -7,8 +7,8 @@ settings:
 catalogs:
   default:
     '@types/node':
-      specifier: 24.10.12
-      version: 24.10.12
+      specifier: 26.1.2
+      version: 26.1.2
     typescript:
       specifier: 6.0.3
       version: 6.0.3
@@ -155,7 +155,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
-        version: 24.10.12
+        version: 26.1.2
       postgres:
         specifier: 3.4.9
         version: 3.4.9
@@ -268,7 +268,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
-        version: 24.10.12
+        version: 26.1.2
       tsx:
         specifier: 4.23.1
         version: 4.23.1
@@ -294,7 +294,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
-        version: 24.10.12
+        version: 26.1.2
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -316,7 +316,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
-        version: 24.10.12
+        version: 26.1.2
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -335,7 +335,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
-        version: 24.10.12
+        version: 26.1.2
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -350,14 +350,14 @@ importers:
         version: link:../domain
       stripe:
         specifier: 22.3.2
-        version: 22.3.2(@types/node@24.10.12)
+        version: 22.3.2(@types/node@26.1.2)
       zod:
         specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
-        version: 24.10.12
+        version: 26.1.2
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -401,7 +401,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
-        version: 24.10.12
+        version: 26.1.2
       '@workspace/object-storage':
         specifier: workspace:*
         version: link:../object-storage
@@ -477,7 +477,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
-        version: 24.10.12
+        version: 26.1.2
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -496,7 +496,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
-        version: 24.10.12
+        version: 26.1.2
       tsx:
         specifier: 4.23.1
         version: 4.23.1
@@ -533,7 +533,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
-        version: 24.10.12
+        version: 26.1.2
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -549,7 +549,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
-        version: 24.10.12
+        version: 26.1.2
       '@workspace/test-support':
         specifier: workspace:*
         version: link:../test-support
@@ -595,7 +595,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
-        version: 24.10.12
+        version: 26.1.2
       tsx:
         specifier: 4.23.1
         version: 4.23.1
@@ -1749,6 +1749,9 @@ packages:
 
   '@types/node@24.10.12':
     resolution: {integrity: sha512-68e+T28EbdmLSTkPgs3+UacC6rzmqrcWFPQs1C8mwJhI/r5Uxr0yEuQotczNRROd1gq30NGxee+fo0rSIxpyAw==}
+
+  '@types/node@26.1.2':
+    resolution: {integrity: sha512-Vu4a5UFA9rIIFJ7rB/Vaafh9lrCQszopTCx6KjFboXTGQbPNasehVR5TEiithSDGyd1DEiUByggTZsg8jukeIg==}
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
@@ -3151,6 +3154,9 @@ packages:
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
+  undici-types@8.3.0:
+    resolution: {integrity: sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ==}
+
   unicorn-magic@0.4.0:
     resolution: {integrity: sha512-wH590V9VNgYH9g3lH9wWjTrUoKsjLF6sGLjhR4sH1LWpLmCOH0Zf7PukhDA8BiS7KHe4oPNkcTHqYkj7SOGUOw==}
     engines: {node: '>=20'}
@@ -4291,6 +4297,10 @@ snapshots:
   '@types/node@24.10.12':
     dependencies:
       undici-types: 7.16.0
+
+  '@types/node@26.1.2':
+    dependencies:
+      undici-types: 8.3.0
 
   '@types/normalize-package-data@2.4.4': {}
 
@@ -5531,9 +5541,9 @@ snapshots:
     dependencies:
       ansi-regex: 6.2.2
 
-  stripe@22.3.2(@types/node@24.10.12):
+  stripe@22.3.2(@types/node@26.1.2):
     optionalDependencies:
-      '@types/node': 24.10.12
+      '@types/node': 26.1.2
 
   structured-source@4.0.0:
     dependencies:
@@ -5637,6 +5647,8 @@ snapshots:
   typescript@6.0.3: {}
 
   undici-types@7.16.0: {}
+
+  undici-types@8.3.0: {}
 
   unicorn-magic@0.4.0: {}
 

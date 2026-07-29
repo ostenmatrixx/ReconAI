@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
-FROM node:24.18.0-bookworm-slim@sha256:6f7b03f7c2c8e2e784dcf9295400527b9b1270fd37b7e9a7285cf83b6951452d AS build
+FROM node:26.5.0-bookworm-slim@sha256:2d49d876e96237d76de412761cf05dbfe5aee325cc4406a4d41d5824c5bb8beb AS build
 
 ENV PNPM_HOME=/pnpm
 ENV PATH="${PNPM_HOME}:${PATH}"
@@ -13,7 +13,7 @@ RUN --mount=type=cache,id=reconai-pnpm-store,target=/pnpm/store,sharing=locked L
 RUN pnpm --filter @workspace/api... build
 RUN --mount=type=cache,id=reconai-pnpm-store,target=/pnpm/store,sharing=locked LEFTHOOK=0 pnpm --filter @workspace/api deploy --prod --legacy /release
 
-FROM node:24.18.0-bookworm-slim@sha256:6f7b03f7c2c8e2e784dcf9295400527b9b1270fd37b7e9a7285cf83b6951452d AS runtime
+FROM node:26.5.0-bookworm-slim@sha256:2d49d876e96237d76de412761cf05dbfe5aee325cc4406a4d41d5824c5bb8beb AS runtime
 ENV NODE_ENV=production
 ENV API_HOST=0.0.0.0
 # Package managers are build-only authority. The runtime needs only the Node executable.

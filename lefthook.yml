@@ -7,16 +7,16 @@ pre-commit:
       run: node scripts/check-staged-files.mjs
     secrets:
       glob: "*.{js,mjs,cjs,ts,tsx,json,yml,yaml,md,css,sql,env}"
-      run: pnpm exec secretlint {staged_files} --maskSecrets
+      run: corepack pnpm exec secretlint {staged_files} --maskSecrets
     format:
       glob: "*.{js,mjs,cjs,ts,tsx,json,yml,yaml,md,css,sql}"
-      run: pnpm exec prettier --check {staged_files}
+      run: corepack pnpm exec prettier --check {staged_files}
     lint:
       glob: "*.{js,mjs,cjs,ts,tsx}"
-      run: pnpm exec eslint --max-warnings=0 {staged_files}
+      run: corepack pnpm exec eslint --max-warnings=0 {staged_files}
     config:
       glob: "*.{json,yml,yaml}"
-      run: pnpm config:check
+      run: corepack pnpm config:check
 
 commit-msg:
   commands:
@@ -27,16 +27,16 @@ pre-push:
   parallel: true
   commands:
     typecheck:
-      run: pnpm typecheck
+      run: corepack pnpm typecheck
     tests:
-      run: pnpm test
+      run: corepack pnpm test
     reconciliation:
-      run: pnpm test:reconciliation
+      run: corepack pnpm test:reconciliation
     tenant:
-      run: pnpm test:tenant
+      run: corepack pnpm test:tenant
     migrations:
-      run: pnpm migrations:check
+      run: corepack pnpm migrations:check
     schemas:
-      run: pnpm schemas:check
+      run: corepack pnpm schemas:check
     dependencies:
-      run: pnpm dependency:policy
+      run: corepack pnpm dependency:policy

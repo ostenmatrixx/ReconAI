@@ -27,6 +27,23 @@ for development. `pnpm infra:*` prefers Docker Compose, then fixed Podman execut
 an arbitrary executable path. Podman's `podman compose` command delegates to an installed external
 Compose provider. Change all development credentials outside local development.
 
+To test the actual published Git boundary independently of an existing worktree, record the exact
+40-character commit shown by the canonical remote and run:
+
+```sh
+pnpm verify:literal-clone -- \
+  --ref <reviewed-branch> \
+  --expected-commit <full-pushed-commit-id>
+```
+
+The command intentionally accepts only the canonical ReconAI HTTPS repository because it installs
+dependencies and executes repository scripts. It clones into a bounded temporary directory, copies
+the synthetic `.env.example`, installs the lockfile-pinned Playwright Chromium, verifies Git
+integrity plus the frozen install, secret/dependency gates, Chromium suite, complete static/build
+gate, and final clean worktree, then removes the clone. It does not start infrastructure, migrate a
+database, contact provider/customer systems, verify an arbitrary fork, or prove deployment
+readiness. See ADR 0069.
+
 ## Required replaceable services
 
 - Authentication: any compatible OIDC provider; local Compose provides a development provider.

@@ -19,7 +19,7 @@ export default defineConfig({
   ],
   webServer: {
     command:
-      "NEXTAUTH_URL=http://127.0.0.1:3000 OIDC_ISSUER=http://localhost:8080/realms/reconai-development pnpm dev",
+      "NEXTAUTH_URL=http://127.0.0.1:3000 OIDC_ISSUER=http://localhost:8080/realms/reconai-development SESSION_SECRET=development-only-session-secret-change-me pnpm dev",
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env["CI"],
     timeout: 120_000,

@@ -38,21 +38,21 @@ complete until fresh-clone, CI, migration, and local-infrastructure evidence is 
 
 ### Goal 0 acceptance criteria
 
-| Criterion                      | Required objective evidence                             | Status     |
-| ------------------------------ | ------------------------------------------------------- | ---------- |
-| Product requirements completed | Reviewed `PRD.md` with assumptions and open questions   | Draft done |
-| Architecture documented        | `docs/architecture.md` and accepted ADRs                | Draft done |
-| Threat model completed         | `docs/threat-model.md` with owners/control verification | Draft done |
-| Repository governance created  | Root governance files and community templates           | Draft done |
-| Local environment reproducible | Fresh-clone transcript using only documented commands   | Partial    |
-| CI and Git hooks active        | CI run URL plus manual hook test transcript             | Partial    |
-| Name review completed          | `docs/name-review.md`; owner decision still required    | Draft done |
+| Criterion                      | Required objective evidence                             | Status            |
+| ------------------------------ | ------------------------------------------------------- | ----------------- |
+| Product requirements completed | Reviewed `PRD.md` with assumptions and open questions   | Draft done        |
+| Architecture documented        | `docs/architecture.md` and accepted ADRs                | Draft done        |
+| Threat model completed         | `docs/threat-model.md` with owners/control verification | Draft done        |
+| Repository governance created  | Root governance files and community templates           | Draft done        |
+| Local environment reproducible | Fresh-clone transcript using only documented commands   | Partial           |
+| CI and Git hooks active        | CI run URL plus manual hook test transcript             | Verified complete |
+| Name review completed          | `docs/name-review.md`; owner decision still required    | Draft done        |
 
-Dependencies: owner license/name confirmation before public release; a successful hosted CI run and
-literal clone verification from the initialized remote.
+Dependencies: owner license/name confirmation before public release and literal clone verification
+from the initialized remote.
 
-Risks: the first hosted CI run failed on configuration/test-drift defects now corrected in a pending
-PR; the Podman result is single-workstation evidence; the working name has material collisions.
+Risks: PR 11 hosted CI passes, but the remote has no recorded literal-clone exercise; the Podman
+result is single-workstation evidence; the working name has material collisions.
 
 Completion date: not complete.  
 Evidence index: `docs/goals/goal-0-foundation.md`.
@@ -61,9 +61,10 @@ The current partial result exports the exact Git-ignore-clean candidate source i
 repository, performs the frozen install, Secretlint, production audit, complete verification/build,
 and Chromium suite, and proves publishable files remain unchanged. See
 `artifacts/clean-source-export-verification-2026-07-29.json` and ADR 0055. A literal clone cannot be
-tested until an initial commit exists. The separate Podman Compose quick start now passes the
-digest-pinned dependency network, all 56 migrations, synthetic fixtures, host application startup,
-real local OIDC/API/BFF/browser smoke, idempotent `infra:up`, bounded logs, and clean shutdown. See
+claimed from the earlier export. The baseline now exists remotely, but a fresh literal clone has not
+yet been recorded. The separate Podman Compose quick start now passes the digest-pinned dependency
+network, all 56 migrations, synthetic fixtures, host application startup, real local
+OIDC/API/BFF/browser smoke, idempotent `infra:up`, bounded logs, and clean shutdown. See
 `artifacts/local-podman-compose-quickstart-verification-2026-07-30.json`, ADR 0062, and
 `docs/goals/goal-0-audit-2026-07-30.md`.
 
@@ -92,22 +93,23 @@ Evidence index: `docs/goals/goal-1-vertical-slice.md`.
 
 The three checked-in application Dockerfiles now build locally on rootless Linux ARM64 after
 correcting their Git-free install/deploy lifecycle boundary. The baseline is now committed and
-pushed; the hosted Security workflow passed, while hosted CI exposed three corrected defects and
-requires a successful PR rerun. A fresh isolated run exercises real Keycloak authorization code plus
-PKCE through the production web image over one-run TLS, Secure HttpOnly cookies, Redis revocation,
-explicit tenant selection, the BFF, the image API, outbox, and the image worker. The eight immutable
-inputs produce three matches, one exception, and zero errors; a foreign organization returns 404 and
-tenantless RLS reads return zero. Live projections show API with only its application database role,
-worker only its worker role, and web no database/object/connector authority. This changes
-authenticated image BFF login to a bounded local pass. A separate bounded native candidate run then
-rebuilt all three Linux ARM64 images from the reviewed Node 24.18.0 digest, scanned extracted OCI
-layouts with checksum-verified Trivy 0.72.0, and generated hashed CycloneDX 1.7 summaries. API,
-worker, and web each reported zero fixed High and zero fixed Critical findings. Those scanned IDs
-exactly match a fresh authenticated runtime rerun. Docker Engine, the hosted amd64
-candidate/attestation path, trusted external TLS/IdP, prior/current rollout, and protected staging
-remain open. Evidence: `artifacts/container-image-runtime-scan-bound-verification-2026-07-30.json`
-and `artifacts/local-native-oci-candidate-runtime-bound-verification-2026-07-30.json`; decisions:
-ADR 0063 through ADR 0066; latest audit: `docs/goals/goal-1-audit-2026-07-30-27.md`.
+pushed; PR 11 hosted Security and CI pass after correcting configuration, migration-ledger,
+workflow-parser, and integration-isolation defects. A fresh isolated run exercises real Keycloak
+authorization code plus PKCE through the production web image over one-run TLS, Secure HttpOnly
+cookies, Redis revocation, explicit tenant selection, the BFF, the image API, outbox, and the image
+worker. The eight immutable inputs produce three matches, one exception, and zero errors; a foreign
+organization returns 404 and tenantless RLS reads return zero. Live projections show API with only
+its application database role, worker only its worker role, and web no database/object/connector
+authority. This changes authenticated image BFF login to a bounded local pass. A separate bounded
+native candidate run then rebuilt all three Linux ARM64 images from the reviewed Node 24.18.0
+digest, scanned extracted OCI layouts with checksum-verified Trivy 0.72.0, and generated hashed
+CycloneDX 1.7 summaries. API, worker, and web each reported zero fixed High and zero fixed Critical
+findings. Those scanned IDs exactly match a fresh authenticated runtime rerun. Docker Engine, the
+hosted amd64 candidate/attestation path, trusted external TLS/IdP, prior/current rollout, and
+protected staging remain open. Evidence:
+`artifacts/container-image-runtime-scan-bound-verification-2026-07-30.json` and
+`artifacts/local-native-oci-candidate-runtime-bound-verification-2026-07-30.json`; decisions: ADR
+0063 through ADR 0066; latest audit: `docs/goals/goal-1-audit-2026-07-30-27.md`.
 
 The local classification rollout boundary now includes bounded checksum-verified legacy repair plus
 a disabled-by-default, one-way database writer fence. Activation waits for in-flight source

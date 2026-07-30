@@ -145,8 +145,8 @@ is the basis for rejecting mutable/default and incident-affected scanner identit
 
 GitHub artifact attestations use a short-lived Sigstore certificate and can be verified with the
 GitHub CLI. They are available for public repositories on current plans and for private/internal
-repositories on GitHub Enterprise Cloud; this repository has no hosted execution evidence yet. See
-the official
+repositories on GitHub Enterprise Cloud; this candidate workflow has no successful hosted
+build/attestation execution evidence yet. See the official
 [artifact-attestation guide](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations)
 and [`actions/attest`](https://github.com/actions/attest).
 

@@ -112,15 +112,15 @@ database/object/connector authority. A separate bounded native ARM64 candidate r
 validated each OCI archive, passed checksum-verified Trivy 0.72.0 at zero fixed High/zero fixed
 Critical, and generated hashed CycloneDX 1.7 summaries. These results are not Docker, the hosted
 amd64 BuildKit/provenance/attestation path, trusted external TLS/identity, complete backup/restore,
-hosted CI, protected staging, or deployment proof. Remote image inputs are immutable-digest pinned
-and the non-publishing candidate workflow is statically validated. The hosted baseline Security
-workflow passed; CI failed on the configuration/test drift described below, and the candidate
-workflow failed parsing before job creation. No successful hosted candidate run exists. Separately,
-Redis 8.2.8 was built from the official source archive after its SHA-256 matched Redis's published
-hash. An authenticated, protected-mode, loopback-only server passed four queue,
-distributed-rate-limit, and distributed-session-revocation tests across three files; the test
-namespaces were removed and the database was empty afterward. This host-process result does not
-execute the pinned OCI image or Compose network.
+protected staging, or deployment proof. Remote image inputs are immutable-digest pinned and the
+non-publishing candidate workflow is statically validated. PR 11 hosted CI now passes the ordinary
+API/worker/web container build and vulnerability-scan matrix, while the guarded candidate definition
+parses and skips construction for an invalid confirmation. No successful hosted candidate build or
+attestation run exists. Separately, Redis 8.2.8 was built from the official source archive after its
+SHA-256 matched Redis's published hash. An authenticated, protected-mode, loopback-only server
+passed four queue, distributed-rate-limit, and distributed-session-revocation tests across three
+files; the test namespaces were removed and the database was empty afterward. This host-process
+result does not execute the pinned OCI image or Compose network.
 
 A separate authenticated loopback Redis 8.8.0 process with two independent clients passed the
 provider-circuit integration file. It proved cross-client opening/denial, tenant/connection
@@ -171,14 +171,18 @@ surfaces, missing evidence, missing forced RLS, tenant telemetry identifiers, an
 drift fail the ordinary verification path. Tenant object keys now parse branded organization IDs and
 every bounded segment. The unused stable tenant-telemetry pseudonym helper was removed.
 
-The first hosted baseline run replaces the prior absence of remote evidence. Security passed; CI
+The first hosted baseline run replaced the prior absence of remote evidence. Security passed; CI
 completed 63 integration tests before exposing a missing maintenance-role integration URL and a
 previous-release assertion that stopped before migration 0055. The manually dispatched candidate
 workflow also failed parsing because a job-level expression used the unavailable `runner` context.
-All three source defects are corrected in the tenant-hardening branch and guarded by policy tests,
-but remain open evidence until the hosted PR rerun passes. The new all-table PostgreSQL catalog
-assertion could not run in the current desktop shell because no container/Compose provider or local
-PostgreSQL binary is available.
+All three source defects are corrected in the tenant-hardening branch and guarded by policy tests.
+The first PR CI run then exposed shared database state in the globally scoped classification-repair
+test; commit `715eea1` isolates that suite in a randomized PostgreSQL database with forced cleanup.
+CI run `30501635095` passes repository verification, live PostgreSQL tenant controls, integration,
+tenant, reconciliation, representative-load, browser/accessibility, and the three container
+build/scan jobs. Security run `30501635079` passes dependency, secret, license, SBOM, and CodeQL
+checks. The all-table catalog assertion still could not run in the desktop shell, but it passed on
+the hosted PostgreSQL service.
 
 ## Open findings
 

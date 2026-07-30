@@ -290,8 +290,8 @@ assertion requires RLS, forced RLS, and a policy on every application table | Ei
 negative tests plus exact current inventory of 43 tables, 55 API routes, 13 BFF routes, four jobs,
 nine object operations, 19 state-store files, two exports, and 39 evidence references; existing
 API/BFF/worker/object/cache/export/support/telemetry tenant negatives; new PostgreSQL catalog
-assertion is checked in but was not runnable in the current engine-free desktop shell; hosted CI
-rerun, protected multi-host cache/queue/partition/load exercises, new-library discovery review, and
+assertion was not runnable in the current engine-free desktop shell but passed in PR 11 hosted CI;
+protected multi-host cache/queue/partition/load exercises, new-library discovery review, and
 external penetration testing remain required |
 
 TM-21 now also has a bounded actual-process proof:
@@ -306,9 +306,9 @@ The source publication boundary is also a TM-19 control. Runtime-output ignore r
 anchored, a seven-root validator rejects ignored source, and a clean candidate export must retain
 all 527 deterministic tests plus both financial export routes in the production manifest. Bounded
 evidence must be Git-visible, link-complete, size-limited, valid JSON where applicable, and free of
-personal home paths. The repository now has a baseline commit and a hosted Security pass, but hosted
-CI exposed configuration defects and has not yet passed. The local export does not replace a
-successful hosted run, signed source provenance, or release/deployment admission.
+personal home paths. The repository now has a baseline commit and passing PR 11 hosted CI and
+Security runs. The local export and ordinary non-publishing CI do not replace signed source
+provenance, a successful candidate attestation, or release/deployment admission.
 
 ## High-risk abuse cases
 

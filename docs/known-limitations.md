@@ -4,7 +4,7 @@
 - The checked-in cross-layer tenant manifest fails closed on current database, API/BFF, durable-job,
   object, Redis/BullMQ/map, export, telemetry, and restricted-support source drift. It is a bounded
   discovery and review control, not a language-level information-flow proof or deployed penetration
-  test. Its new 43-table RLS/forced-RLS/policy catalog assertion awaits hosted execution; multi-host
+  test. Its 43-table RLS/forced-RLS/policy catalog assertion passes in hosted PR 11 CI; multi-host
   partitions, stale messages, cache loss/eviction, timing, representative scale, and independent
   adversarial review remain Goal 2 work. Evidence:
   `artifacts/cross-layer-tenant-surface-verification-2026-07-30.json`.
@@ -42,8 +42,8 @@
   data-checksummed PostgreSQL 17.10 source build previously applied the prior 55-migration chain,
   including the populated 0041-to-0054 upgrade. Dedicated suites cover bounded classification
   repair, the one-way writer fence, and restricted support access, including an in-flight old-writer
-  race and actual current Shopify/CSV paths. This is local loopback evidence, not a real
-  prior/current-image, hosted database, or protected-staging exercise; see
+  race and actual current Shopify/CSV paths. PR 11 repeats the integration graph on hosted
+  PostgreSQL, but neither result is a real prior/current-image or protected-staging exercise; see
   `artifacts/source-event-classification-writer-fence-verification-2026-07-29.json`. An earlier
   isolated data-checksummed PostgreSQL 17.10 cluster, authenticated Redis 8.2.8, and pinned MinIO
   instance passed the latest combined-service 54-test integration baseline across 19 files. It

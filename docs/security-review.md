@@ -9,8 +9,8 @@ remain. This is a pre-release source review, not a penetration test or productio
 
 ## Evidence and limitations
 
-Executed locally during this work: exact locked install; formatting; strict lint/typecheck; 634
-unit/property/tenant/reconciliation tests in 91 files; 45 Chromium tests, including 14 accessibility
+Executed locally during this work: exact locked install; formatting; strict lint/typecheck; 641
+unit/property/tenant/reconciliation tests in 92 files; 50 Chromium tests, including 14 accessibility
 scans; a separate local production Chromium CSP render with zero console errors; production build;
 schema/config/edge/dependency/migration validators; prior Drizzle no-drift generation through the
 snapshot-managed schema chain; static custom-migration/schema alignment for the current
@@ -48,12 +48,18 @@ commit; a seven-root source validator now prevents that class of omission. A tem
 Git-ignore-clean candidate-source export completed its frozen install, Secretlint, high-severity
 production audit, full static verification/build, and Chromium suite without modifying or creating a
 publishable file. Evidence: `artifacts/clean-source-export-verification-2026-07-29.json`; decision:
-ADR 0055. The historical artifact predates the initial commit, so a new literal remote-clone
-verification remains pending. It is not staging or production evidence. A separate rootless Podman
-Compose quick start now exercises the digest-pinned development dependency network, current
-migrations/fixtures, host applications, and real local OIDC/API/BFF/browser smoke; it does not
-replace that revision-bound proof. Evidence:
-`artifacts/local-podman-compose-quickstart-verification-2026-07-30.json`; decision: ADR 0062.
+ADR 0055. A separate credential-helper-disabled clone of the canonical public HTTPS remote now
+verifies branch `codex/foundation-literal-clone` at exact commit
+`e2a21e5279471797536ffb548405a1ccac04c5f7`: origin and `HEAD`, Git object integrity, frozen install,
+Secretlint, high-severity production audit, all 50 Chromium tests, the full 641-test repository
+gate, production build, source restoration, and cleanup passed. Evidence:
+`artifacts/literal-remote-clone-verification-2026-07-30.json`; decision: ADR 0069. It verifies
+neither `main` nor any later revision and is not staging, deployment, reliability, or production
+evidence. A separate rootless Podman Compose quick start exercises the digest-pinned development
+dependency network, current migrations/fixtures, host applications, and real local
+OIDC/API/BFF/browser smoke; it does not replace the revision-bound or infrastructure proof.
+Evidence: `artifacts/local-podman-compose-quickstart-verification-2026-07-30.json`; decision:
+ADR 0062.
 
 A separate isolated Keycloak 26.7.0/PostgreSQL 17.10/Chromium verifier now covers two provider-
 verified identities and two organizations. It proves the first-owner 201/409 race, the second

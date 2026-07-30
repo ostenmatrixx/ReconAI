@@ -40,6 +40,7 @@
     "verify:reconciliation-input-pagination": "tsx --conditions=development scripts/verify-reconciliation-input-pagination.mjs",
     "verify:reconciliation-run-creation": "tsx --conditions=development scripts/verify-reconciliation-run-creation.mjs",
     "verify:clean-source": "node scripts/verify-clean-source.mjs",
+    "verify:literal-clone": "node scripts/verify-literal-clone.mjs",
     "verify:local-candidate": "node scripts/verify-local-release-candidate.mjs",
     "verify": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm migrations:check && pnpm schemas:check && pnpm tenant:check && pnpm config:check && pnpm edge:check && pnpm oidc:check && pnpm container:check && pnpm alerts:check && pnpm source:check && pnpm evidence:check && pnpm dependency:policy && pnpm license:check && pnpm build",
     "hooks:install": "lefthook install",

@@ -245,8 +245,12 @@ names, sizes, JSON, documentation links, Git visibility, and personal-path redac
 Secretlint remains independent. `pnpm source:check` also rejects source, workflow, infrastructure,
 or documentation files accidentally hidden by a broad ignore rule. `pnpm verify:clean-source` copies
 only Git-ignore-clean candidates to a new temporary repository, performs the frozen install and full
-static/browser verification, and rejects source drift or new publishable files. Until an initial
-commit exists this is a source export, not a fresh-clone claim. See ADR 0055.
+static/browser verification, and rejects source drift or new publishable files. Its historical
+record predates the initial commit and remains a source-export claim. `pnpm verify:literal-clone`
+separately accepts only the canonical public HTTPS remote, a conservative branch, and an exact full
+commit; it verifies Git object integrity, the frozen install, secret/dependency gates, Chromium, the
+complete static/build gate, and a final clean tree in a bounded temporary clone. See ADRs 0055
+and 0069.
 
 ### Invitation onboarding boundary
 

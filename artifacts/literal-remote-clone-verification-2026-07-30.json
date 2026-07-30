@@ -1,0 +1,96 @@
+{
+  "artifactVersion": 1,
+  "evidenceType": "literal-remote-clone-verification",
+  "startedAt": "2026-07-30T06:24:38.882Z",
+  "completedAt": "2026-07-30T06:26:18.046Z",
+  "source": {
+    "repository": "https://github.com/ostenmatrixx/ReconAI.git",
+    "ref": "codex/foundation-literal-clone",
+    "expectedCommit": "e2a21e5279471797536ffb548405a1ccac04c5f7",
+    "observedCommit": "e2a21e5279471797536ffb548405a1ccac04c5f7",
+    "tree": "283a85344579ddcea31e7c3b6dd4ddb561208a54",
+    "trackedFileCount": 756,
+    "pnpmLockSha256": "4d0dd958cec54998417dfcac2f951b5822a1f1e03c8873f51292e3801b2e9ea0",
+    "runtimeEnvironmentCopiedFrom": ".env.example",
+    "generatedEvidenceExcludedFromCommit": "artifacts/literal-remote-clone-verification-2026-07-30.json"
+  },
+  "environment": {
+    "platform": "darwin",
+    "architecture": "arm64",
+    "nodeVersion": "v24.15.0",
+    "pnpmVersion": "11.9.0",
+    "gitVersion": "git version 2.50.1 (Apple Git-155)"
+  },
+  "checks": [
+    {
+      "command": "git -c credential.helper= clone --branch <validated-ref> --single-branch --no-tags -- <canonical-public-remote> <temporary-directory>",
+      "durationMs": 1585,
+      "exitCode": 0,
+      "signal": null
+    },
+    {
+      "command": "git fsck --full",
+      "durationMs": 51,
+      "exitCode": 0,
+      "signal": null
+    },
+    {
+      "command": "corepack pnpm install --frozen-lockfile",
+      "durationMs": 4074,
+      "exitCode": 0,
+      "signal": null
+    },
+    {
+      "command": "corepack pnpm --filter @workspace/web exec playwright install chromium",
+      "durationMs": 967,
+      "exitCode": 0,
+      "signal": null
+    },
+    {
+      "command": "corepack pnpm secret:scan",
+      "durationMs": 4156,
+      "exitCode": 0,
+      "signal": null
+    },
+    {
+      "command": "corepack pnpm audit --prod --audit-level high",
+      "durationMs": 586,
+      "exitCode": 0,
+      "signal": null
+    },
+    {
+      "command": "corepack pnpm test:e2e",
+      "durationMs": 23669,
+      "exitCode": 0,
+      "signal": null
+    },
+    {
+      "command": "corepack pnpm verify",
+      "durationMs": 63629,
+      "exitCode": 0,
+      "signal": null
+    }
+  ],
+  "outcomes": {
+    "canonicalOriginMatched": true,
+    "exactCommitMatched": true,
+    "gitObjectIntegrityPassed": true,
+    "frozenInstallPassed": true,
+    "chromiumInstallationPassed": true,
+    "secretScanPassed": true,
+    "highSeverityProductionAuditPassed": true,
+    "chromiumBrowserSuitePassed": true,
+    "staticVerificationAndProductionBuildPassed": true,
+    "trackedAndUnignoredSourceUnchanged": true,
+    "temporaryCloneRemoved": true,
+    "nextDevelopmentTypePathRestoredByProductionBuild": true
+  },
+  "limitations": [
+    "This record verifies one named branch at one exact pushed commit of the canonical public HTTPS remote; it does not assert the state of another branch or a later force update.",
+    "The generated evidence file is necessarily not part of the exact commit that it verifies.",
+    "The synthetic .env was copied from .env.example; no customer, production, provider, or protected-staging system was contacted.",
+    "GitHub, the package registry, and the Playwright browser service were contacted for the public clone, locked install, dependency audit, and Chromium installation.",
+    "Container startup, migrations, fixtures, live services, Docker Engine, deployment, and rollback were not exercised by this verifier.",
+    "One workstation run is not reliability, capacity, production-readiness, compliance, or protected-environment evidence."
+  ]
+}

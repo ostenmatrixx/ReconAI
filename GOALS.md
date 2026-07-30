@@ -74,7 +74,7 @@ idempotent `infra:up`, bounded logs, and clean shutdown. See
 
 ## Goal 1 — Deterministic vertical slice
 
-Status: **Active** (local live integration evidence exists; provider sandboxes and staging do not)
+Status: **Active** (nine of ten acceptance criteria have local evidence; protected staging does not)
 
 Acceptance criteria and required evidence:
 
@@ -93,7 +93,8 @@ Dependencies: Goal 0 architecture/security baseline; provider sandbox credential
 live sandbox checks; synthetic fixtures remain sufficient for CI contract tests.  
 Risks: provider API drift, timing ambiguity, CSV locale ambiguity, auth integration complexity.  
 Completion date: not complete.  
-Evidence index: `docs/goals/goal-1-vertical-slice.md`.
+Evidence index: `docs/goals/goal-1-vertical-slice.md`. Current requirement audit:
+`docs/goals/goal-1-audit-2026-07-30-28.md`.
 
 The three checked-in application Dockerfiles now build locally on rootless Linux ARM64 after
 correcting their Git-free install/deploy lifecycle boundary. The baseline is now committed and
@@ -113,7 +114,7 @@ hosted amd64 candidate/attestation path, trusted external TLS/IdP, prior/current
 protected staging remain open. Evidence:
 `artifacts/container-image-runtime-scan-bound-verification-2026-07-30.json` and
 `artifacts/local-native-oci-candidate-runtime-bound-verification-2026-07-30.json`; decisions: ADR
-0063 through ADR 0066; latest audit: `docs/goals/goal-1-audit-2026-07-30-27.md`.
+0063 through ADR 0066; latest audit: `docs/goals/goal-1-audit-2026-07-30-28.md`.
 
 The local classification rollout boundary now includes bounded checksum-verified legacy repair plus
 a disabled-by-default, one-way database writer fence. Activation waits for in-flight source

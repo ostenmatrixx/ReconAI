@@ -480,9 +480,10 @@
   GitHub-attest non-publishing `linux/amd64` OCI candidates without registry/deployment authority. A
   rootless native Linux ARM64 verifier now passes exact-image OCI export, Trivy 0.72.0 fixed
   High/Critical gates, CycloneDX generation, bounded hashing, and cleanup for API, worker, and web.
-  Docker and a remote remain unavailable, so no hosted amd64 candidate, embedded BuildKit
-  attestation, signed bundle, GitHub identity verification, multi-platform artifact, published
-  registry digest, or deployment admission result has executed.
+  The canonical remote and ordinary hosted CI are available, but Docker Engine remains unexercised
+  and the `main`-only candidate workflow has no successful construction run. Therefore no hosted
+  amd64 candidate provenance/embedded SBOM, signed bundle, GitHub attestation identity,
+  multi-platform artifact, published registry digest, or deployment admission result has executed.
 - The exact NextAuth v4 transitive `openid-client@5.7.1` is now lock-bound to a reviewed patch that
   removes every legacy `url.parse()` call; the OIDC validator passes under
   `NODE_OPTIONS=--throw-deprecation`, and configured issuers reject noncanonical spellings. This is

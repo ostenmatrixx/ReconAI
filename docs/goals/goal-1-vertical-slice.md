@@ -2,7 +2,7 @@
 
 Status: active
 
-Current requirement-to-evidence audit: `docs/goals/goal-1-audit-2026-07-30-27.md`. The earlier
+Current requirement-to-evidence audit: `docs/goals/goal-1-audit-2026-07-30-28.md`. The earlier
 2026-07-29 and 2026-07-30 audits remain immutable point-in-time evidence; this living page and
 `GOALS.md` track later implementation without rewriting them.
 
@@ -86,7 +86,7 @@ Current requirement-to-evidence audit: `docs/goals/goal-1-audit-2026-07-30-27.md
   from only client-required fields; nine others become a fixed acknowledgement. Response ceilings,
   fatal UTF-8 decoding, fixed upstream destinations, omitted ambient credentials, and rejected
   redirects fail schema/status drift closed without forwarding credentials, tokens, diagnostics, or
-  unknown fields. General read-view minimization remains separate work. Evidence:
+  unknown fields. Evidence:
   `artifacts/browser-mutation-response-boundary-verification-2026-07-29.json`; threat: TM-42.
 - Browser read response boundary: all 19 `/api/recon` read modes are validated and minimized. The 17
   general tenant views now have exhaustive success schemas; organization discovery and support
@@ -206,7 +206,7 @@ Current requirement-to-evidence audit: `docs/goals/goal-1-audit-2026-07-30-27.md
   expiry, over-limit handling, external alert acknowledgement, legacy/canonical disposition,
   noncurrent versions, caches/search/exports/replicas, and backups are not complete. Evidence:
   `artifacts/privacy-package-browser-receipt-verification-2026-07-29.json`; decision: ADR 0049.
-- Quality through 2026-07-30: 611 unit/property/tenant/reconciliation tests in 89 files, 45 Chromium
+- Quality through 2026-07-30: 641 unit/property/tenant/reconciliation tests in 92 files, 50 Chromium
   tests including 14 accessibility scans, and 56 migration files pass local static checks. The
   organization-profile verifier applies all 56 migrations to a fresh PostgreSQL 17.10 cluster and
   passes its focused Fastify/restricted-role concurrency test plus three Chromium tests. The prior
@@ -605,4 +605,4 @@ Code presence alone is not completion evidence. Goal 1 remains active until each
 has a dated, reviewable result.
 
 The latest immutable requirement-level status matrix is recorded in
-`docs/goals/goal-1-audit-2026-07-30-27.md`; earlier immutable audits remain linked above.
+`docs/goals/goal-1-audit-2026-07-30-28.md`; earlier immutable audits remain linked above.

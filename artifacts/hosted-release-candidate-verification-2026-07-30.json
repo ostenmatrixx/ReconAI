@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-30T09:15:32Z",
+  "component": "hosted-release-candidate-integrity",
+  "outcome": "hosted_non_publishing_candidate_passed",
+  "productionReadinessClaim": false,
+  "source": {
+    "repository": "ostenmatrixx/ReconAI",
+    "ref": "refs/heads/main",
+    "commit": "5e0f1b812e9b86c34840fb50d9926568dd0cbcdf",
+    "tree": "3f81910429e794635d905759e86579f9a11b3c9d",
+    "workflow": ".github/workflows/release-candidate.yml",
+    "workflowSha256": "9765f2d9c1c5fee7de67d9c582f3735fc923cee16f11cc4b5978683a342520f5"
+  },
+  "run": {
+    "id": 30528923503,
+    "attempt": 1,
+    "url": "https://github.com/ostenmatrixx/ReconAI/actions/runs/30528923503",
+    "event": "workflow_dispatch",
+    "confirmationMatched": true,
+    "startedAt": "2026-07-30T09:00:14Z",
+    "completedAt": "2026-07-30T09:02:50Z",
+    "conclusion": "success",
+    "jobs": {
+      "api": {
+        "id": 90826353950,
+        "startedAt": "2026-07-30T09:00:18Z",
+        "completedAt": "2026-07-30T09:02:42Z",
+        "conclusion": "success"
+      },
+      "worker": {
+        "id": 90826353963,
+        "startedAt": "2026-07-30T09:00:18Z",
+        "completedAt": "2026-07-30T09:02:49Z",
+        "conclusion": "success"
+      },
+      "web": {
+        "id": 90826353892,
+        "startedAt": "2026-07-30T09:00:18Z",
+        "completedAt": "2026-07-30T09:01:42Z",
+        "conclusion": "success"
+      }
+    }
+  },
+  "scope": {
+    "platform": "linux/amd64",
+    "customerDataUsed": false,
+    "providerSystemsContacted": false,
+    "registryLoginPerformed": false,
+    "imagePublished": false,
+    "releaseCreated": false,
+    "deploymentCreated": false,
+    "productionSecretsUsed": false,
+    "candidateArtifactsCreated": true,
+    "signedAttestationsCreated": true,
+    "artifactRetentionDays": 30
+  },
+  "policy": {
+    "dockerVersion": "28.0.4",
+    "trivyVersion": "0.72.0",
+    "vulnerabilityGate": {
+      "severities": [
+        "HIGH",
+        "CRITICAL"
+      ],
+      "packageTypes": [
+        "os",
+        "library"
+      ],
+      "ignoreUnfixed": true,
+      "exitCodeOnFinding": 1,
+      "passed": true
+    },
+    "workflowPermissions": [
+      "contents:read",
+      "id-token:write",
+      "attestations:write",
+      "artifact-metadata:write"
+    ],
+    "forbiddenAuthorityPresent": false
+  },
+  "independentVerification": {
+    "githubCliVersion": "2.94.0",
+    "expectedSignerWorkflow": "ostenmatrixx/ReconAI/.github/workflows/release-candidate.yml",
+    "expectedSourceRef": "refs/heads/main",
+    "expectedSourceDigest": "5e0f1b812e9b86c34840fb50d9926568dd0cbcdf",
+    "selfHostedRunnersDenied": true,
+    "archiveChecksumsPassed": true,
+    "safeArchiveMembersPassed": true,
+    "ociBlobDigestsPassed": true,
+    "slsaAttestationsVerified": 3,
+    "cycloneDxAttestationsVerified": 3,
+    "verifiedRunnerEnvironment": "github-hosted",
+    "verifiedRunInvocation": "https://github.com/ostenmatrixx/ReconAI/actions/runs/30528923503/attempts/1"
+  },
+  "candidates": {
+    "api": {
+      "artifact": {
+        "id": 8753892909,
+        "name": "reconai-api-5e0f1b812e9b86c34840fb50d9926568dd0cbcdf-candidate",
+        "compressedSizeBytes": 94893521,
+        "expiresAt": "2026-08-29T09:02:27Z"
+      },
+      "archive": {
+        "sizeBytes": 97708032,
+        "sha256": "9a4c27bf9631a1b3ddb96c7596ac7905fe1d3ba1eaf8ffb196337089ce2cfe0b",
+        "safeMemberCount": 19,
+        "blobCount": 15,
+        "blobBytes": 97693210
+      },
+      "imageManifestDigest": "sha256:7ac285fb33d497d99c4248b1f8c709a10ecbbcd70084d4b9befc0dcf09a74f50",
+      "imageConfigDigest": "sha256:049c25ebf0182e2856c89021d96d91366d3317a3ed81a0d74deb94300a290cd4",
+      "cycloneDx": {
+        "specVersion": "1.7",
+        "sizeBytes": 413460,
+        "sha256": "786508120efc16b1c51ec1cb435be082444515d1f365f3bce04fad8d87af5941",
+        "componentCount": 254,
+        "dependencyCount": 255,
+        "vulnerabilityEntryCount": 0
+      },
+      "attestations": {
+        "slsaId": 37921477,
+        "cycloneDxId": 37921480
+      }
+    },
+    "worker": {
+      "artifact": {
+        "id": 8753895195,
+        "name": "reconai-worker-5e0f1b812e9b86c34840fb50d9926568dd0cbcdf-candidate",
+        "compressedSizeBytes": 92984780,
+        "expiresAt": "2026-08-29T09:02:32Z"
+      },
+      "archive": {
+        "sizeBytes": 95647232,
+        "sha256": "1c38766609618f99a7d89fee6f62de86c6c2e6d938c2f3884410f2dc9b24e6b7",
+        "safeMemberCount": 19,
+        "blobCount": 15,
+        "blobBytes": 95632299
+      },
+      "imageManifestDigest": "sha256:47ab779e9986eabce1f5cc1b4ff70c52c068b8128e1e851ead84a33ba81ed5bb",
+      "imageConfigDigest": "sha256:bf77e1a08ec02c4e104c29bfcd160f90a7acca3a36c39c2ddcf74dc95d43ff89",
+      "cycloneDx": {
+        "specVersion": "1.7",
+        "sizeBytes": 323841,
+        "sha256": "19d3699479cb230e9da3b11f050cc2b8fd86e8acb71b8b951ff3ea0b0ef8fde8",
+        "componentCount": 185,
+        "dependencyCount": 186,
+        "vulnerabilityEntryCount": 0
+      },
+      "attestations": {
+        "slsaId": 37921493,
+        "cycloneDxId": 37921500
+      }
+    },
+    "web": {
+      "artifact": {
+        "id": 8753864107,
+        "name": "reconai-web-5e0f1b812e9b86c34840fb50d9926568dd0cbcdf-candidate",
+        "compressedSizeBytes": 85025091,
+        "expiresAt": "2026-08-29T09:01:28Z"
+      },
+      "archive": {
+        "sizeBytes": 87525888,
+        "sha256": "8f0335cd2969112502d94ec1670dcb87ff4e58ceda41de49a2622ad6a8d4a550",
+        "safeMemberCount": 20,
+        "blobCount": 16,
+        "blobBytes": 87509996
+      },
+      "imageManifestDigest": "sha256:f238a5667b4ac961419ea6e4a5acb9b8106d73ff8144a725c7a04d8998ca36b6",
+      "imageConfigDigest": "sha256:a3a81ee93406b091d906b69ca09577f77203f38a6bad64835bfbcf46456e416f",
+      "cycloneDx": {
+        "specVersion": "1.7",
+        "sizeBytes": 222635,
+        "sha256": "f57a78a0bb04175b03f2c5369d3725ccd367bbb8350d64eb4e9c5c779ac8e6da",
+        "componentCount": 111,
+        "dependencyCount": 112,
+        "vulnerabilityEntryCount": 0
+      },
+      "attestations": {
+        "slsaId": 37921298,
+        "cycloneDxId": 37921302
+      }
+    }
+  },
+  "cleanup": {
+    "temporaryDownloadedArtifactsRemoved": true,
+    "removalMethod": "macOS Trash (recoverable)",
+    "githubCandidateArtifactsRetained": true
+  },
+  "limitations": [
+    "This is one non-publishing Linux AMD64 candidate construction run with 30-day GitHub artifacts; it is not registry publication or a multi-platform release.",
+    "No registry digest, registry-level attestation, protected environment, deployment, migration, runtime smoke, rollback, or production behavior was exercised.",
+    "The High/Critical gate ignores unfixed findings and is bounded by the vulnerability database available to Trivy 0.72.0 during the recorded run.",
+    "CycloneDX vulnerability-entry counts are inventory metadata, not the vulnerability gate; the separate Trivy step is the recorded gate.",
+    "GitHub warned that pinned JavaScript actions target Node.js 20 while the runner forced Node.js 24; all candidate jobs still passed.",
+    "One successful run is not evidence of reliability, capacity, compliance, staging readiness, or production readiness."
+  ],
+  "credentialsRecorded": false
+}

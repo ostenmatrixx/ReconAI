@@ -145,8 +145,13 @@ is the basis for rejecting mutable/default and incident-affected scanner identit
 
 GitHub artifact attestations use a short-lived Sigstore certificate and can be verified with the
 GitHub CLI. They are available for public repositories on current plans and for private/internal
-repositories on GitHub Enterprise Cloud; this candidate workflow has no successful hosted
-build/attestation execution evidence yet. See the official
+repositories on GitHub Enterprise Cloud. Main commit `5e0f1b812e9b86c34840fb50d9926568dd0cbcdf`
+completed the bounded workflow successfully in
+[run 30528923503](https://github.com/ostenmatrixx/ReconAI/actions/runs/30528923503). Independent
+downloaded-artifact verification checked all archive checksums, safe archive members, OCI blob
+digests, and all three SLSA plus all three CycloneDX attestations against the exact repository,
+workflow, commit, main ref, and GitHub-hosted runner identity. The credential-free result is
+recorded in `artifacts/hosted-release-candidate-verification-2026-07-30.json`. See the official
 [artifact-attestation guide](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations)
 and [`actions/attest`](https://github.com/actions/attest).
 
@@ -158,12 +163,27 @@ workflow run:
 ```sh
 cd artifacts/release-candidate/api
 sha256sum --check SHA256SUMS
-gh attestation verify image.oci.tar --repo OWNER/REPOSITORY
+SOURCE_COMMIT=THE_EXACT_MAIN_COMMIT
+SIGNER_WORKFLOW=OWNER/REPOSITORY/.github/workflows/release-candidate.yml
+gh attestation verify image.oci.tar \
+  --repo OWNER/REPOSITORY \
+  --signer-workflow "$SIGNER_WORKFLOW" \
+  --source-digest "$SOURCE_COMMIT" \
+  --source-ref refs/heads/main \
+  --deny-self-hosted-runners
+gh attestation verify image.oci.tar \
+  --repo OWNER/REPOSITORY \
+  --signer-workflow "$SIGNER_WORKFLOW" \
+  --source-digest "$SOURCE_COMMIT" \
+  --source-ref refs/heads/main \
+  --deny-self-hosted-runners \
+  --predicate-type https://cyclonedx.org/bom
 ```
 
 Repeat for `worker` and `web`; inspect the verified subject digest, workflow identity, source
-commit, SBOM, BuildKit provenance, and vulnerability result. A downloaded bundle is retained for
-evidence, but the verifier must trust only the expected GitHub owner/repository identity.
+commit, SBOM, BuildKit provenance, and vulnerability result. The verifier must trust only the
+expected GitHub owner/repository, workflow identity, exact main commit and ref, expected predicate,
+and GitHub-hosted runner environment.
 
 This candidate is not a production release. Publishing, multi-platform expansion, registry naming,
 tagging, environment approval, and deployment remain owner-authorized future actions. An approved

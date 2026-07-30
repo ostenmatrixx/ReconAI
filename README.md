@@ -84,11 +84,12 @@ candidate workflow can create scanned, checksummed, SBOM-linked, signed local OC
 publishing. A rootless Podman Compose quick start now passes the digest-pinned dependency network,
 all 56 migrations, synthetic fixtures, host application startup, and a real local
 OIDC/API/BFF/browser smoke; see
-`artifacts/local-podman-compose-quickstart-verification-2026-07-30.json`. No hosted CI/candidate,
-staging, or deployment result exists. A separate rootless ARM64 proof builds all three checked-in
-application images after correcting their Git-free package lifecycle boundary, then composes the
-image web through isolated TLS and real Keycloak authorization code plus PKCE, explicit tenant
-selection, the authenticated BFF, API/outbox, and worker for one deterministic eight-input run; see
+`artifacts/local-podman-compose-quickstart-verification-2026-07-30.json`. Hosted CI and one
+non-publishing main-branch candidate result now exist; no protected staging or deployment result
+exists. A separate rootless ARM64 proof builds all three checked-in application images after
+correcting their Git-free package lifecycle boundary, then composes the image web through isolated
+TLS and real Keycloak authorization code plus PKCE, explicit tenant selection, the authenticated
+BFF, API/outbox, and worker for one deterministic eight-input run; see
 `artifacts/container-image-runtime-scan-bound-verification-2026-07-30.json`, ADR 0063, ADR 0064, and
 ADR 0065. The fresh rerun also proves Secure HttpOnly cookies, Redis revocation configuration, a
 minimized browser session/BFF response, foreign-tenant 404, tenantless RLS zeros, and explicit
@@ -99,10 +100,14 @@ build-only package-manager tooling from their runtime stages, scanned extracted 
 checksum-verified Trivy 0.72.0, and generated hashed CycloneDX 1.7 summaries. Each candidate passed
 with zero fixed High and zero fixed Critical findings, and its image identities exactly match the
 authenticated runtime proof; see
-`artifacts/local-native-oci-candidate-runtime-bound-verification-2026-07-30.json` and ADR 0066.
-These proofs are not Docker Engine, the hosted amd64 workflow, signed attestations, trusted external
-TLS/identity, a prior/current rollout, or protected staging. The database evidence is recorded in
-`artifacts/postgresql-verification-2026-07-28.json` and
+`artifacts/local-native-oci-candidate-runtime-bound-verification-2026-07-30.json` and ADR 0066. The
+hosted main-branch workflow separately built Linux AMD64 OCI archives, passed its fixed
+High/Critical Trivy gate, generated CycloneDX summaries, embedded SPDX and SLSA records, and created
+independently verified GitHub SLSA and CycloneDX attestations bound to the exact commit and
+GitHub-hosted runner; see `artifacts/hosted-release-candidate-verification-2026-07-30.json`. These
+proofs are not Docker Engine runtime compatibility, trusted external TLS/identity, a prior/current
+rollout, registry publication or deployment admission, or protected staging. The database evidence
+is recorded in `artifacts/postgresql-verification-2026-07-28.json` and
 `artifacts/organization-bootstrap-postgresql-verification-2026-07-29.json`; the real local
 first-login/first-owner browser result is in
 `artifacts/oidc-first-owner-bootstrap-verification-2026-07-29.json`. The latter is isolated local
@@ -289,8 +294,9 @@ private vulnerability reporting and repository security features, and verify a f
 current no-commit repository has a narrower Git-ignore-clean source-export proof in
 `artifacts/clean-source-export-verification-2026-07-29.json`; it does not replace the initial-commit
 clone. The separate Podman Compose smoke does not replace a revision-bound fresh clone, hosted CI,
-or Docker-engine compatibility evidence. The ARM64 application-image proof likewise does not replace
-the hosted amd64 candidate build, scan, SBOM, attestation, registry, or staging gates.
+or Docker-engine compatibility evidence. The hosted AMD64 candidate evidence supplements the ARM64
+application-image proof; neither replaces registry publication, runtime deployment, or protected
+staging gates.
 
 ## Reporting security issues
 

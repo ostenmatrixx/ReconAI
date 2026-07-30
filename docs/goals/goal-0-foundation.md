@@ -10,8 +10,8 @@ Status: active
 - Operations: self-hosting, deployment, runbook, incident, backup, privacy, migration, release, and
   upgrade documentation.
 - Name review: `docs/name-review.md` records material collision and do-not-publish decision.
-- Local verification through 2026-07-30: frozen install; format/lint/typecheck; 576
-  unit/property/tenant/reconciliation tests in 86 files; 45 Chromium tests, including 14
+- Local verification through 2026-07-30: frozen install; format/lint/typecheck; 641
+  unit/property/tenant/reconciliation tests in 92 files; 50 Chromium tests, including 14
   accessibility scans; the current 56-file source migration chain passes static integrity
   validation. A fresh data-checksummed PostgreSQL 17.10 cluster, authenticated Redis 8.2.8, and
   pinned MinIO instance passed the current complete 54-test integration set across 19 files; this
@@ -73,12 +73,19 @@ Status: active
   `30501635095`, Security run `30501635079`, and enabled pre-commit/pre-push gates. The exact run
   boundary and limitations are recorded in
   `artifacts/cross-layer-tenant-surface-verification-2026-07-30.json`.
+- Exact canonical remote-clone evidence:
+  `artifacts/literal-remote-clone-verification-2026-07-30.json`. A credential-helper-disabled clone
+  of `https://github.com/ostenmatrixx/ReconAI.git` branch `codex/foundation-literal-clone` at exact
+  commit `e2a21e5279471797536ffb548405a1ccac04c5f7` passed Git object integrity, frozen install,
+  Secretlint, high-severity production audit, all 50 Chromium tests, the complete 641-test
+  repository gate, production build, source-drift checks, and temporary-clone cleanup. ADR 0069
+  defines the fail-closed revision and evidence contract.
 - Git-ignore-clean candidate-source evidence:
   `artifacts/clean-source-export-verification-2026-07-29.json`. A new temporary repository received
   only publishable files, copied the synthetic `.env.example`, completed the frozen install,
   Secretlint, production audit, full static verification/build, and Chromium suite, and retained the
-  exact source manifest. This remains a historical export rather than the still-pending literal
-  clone of the initialized remote.
+  exact source manifest. This remains historical non-literal export evidence; the separate
+  revision-bound remote-clone record now covers the canonical Git transport boundary.
 - Rootless Podman Compose quick-start evidence:
   `artifacts/local-podman-compose-quickstart-verification-2026-07-30.json`. The digest-pinned
   PostgreSQL/Redis/MinIO/Keycloak network became healthy, all 56 migrations and synthetic fixtures
@@ -91,11 +98,11 @@ Status: active
 
 ## Required but not yet available
 
-- A literal initial-commit fresh-clone transcript. The clean-source export and Podman Compose
-  dependency/migration/fixture/application smoke boundaries are verified separately; Docker-engine
-  compatibility and release application images are not.
-- Authoritative CI run URL for quality/security/container/SBOM jobs.
-- Full pre-push dispatcher transcript and pre-commit checks against staged files. The user has not
-  authorized staging or pushing; no files were staged for this local check.
+- Owner license and working-name decisions before public release.
+- Default-branch evidence after the reviewed PR stack is merged. The literal-clone artifact verifies
+  only the named branch and exact commit it records.
+- Docker Engine compatibility, a successful hosted release-candidate/attestation run, protected
+  staging, deployment, and rollback evidence. The existing Podman, hosted non-publishing CI, and
+  local native OCI records do not establish those boundaries.
 
 Do not change Goal 0 to complete until every missing item is linked with date and result.

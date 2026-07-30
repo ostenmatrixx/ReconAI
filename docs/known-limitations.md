@@ -38,12 +38,12 @@
   Critical findings and their IDs exactly match the runtime proof. See
   `artifacts/local-native-oci-candidate-runtime-bound-verification-2026-07-30.json`. This is not
   Docker Engine, the hosted amd64 candidate/attestation path, trusted external TLS/identity,
-  prior/current rollout, fresh-clone, protected staging, or deployment evidence. An isolated
-  data-checksummed PostgreSQL 17.10 source build previously applied the prior 55-migration chain,
-  including the populated 0041-to-0054 upgrade. Dedicated suites cover bounded classification
-  repair, the one-way writer fence, and restricted support access, including an in-flight old-writer
-  race and actual current Shopify/CSV paths. PR 11 repeats the integration graph on hosted
-  PostgreSQL, but neither result is a real prior/current-image or protected-staging exercise; see
+  prior/current rollout, protected staging, or deployment evidence. An isolated data-checksummed
+  PostgreSQL 17.10 source build previously applied the prior 55-migration chain, including the
+  populated 0041-to-0054 upgrade. Dedicated suites cover bounded classification repair, the one-way
+  writer fence, and restricted support access, including an in-flight old-writer race and actual
+  current Shopify/CSV paths. PR 11 repeats the integration graph on hosted PostgreSQL, but neither
+  result is a real prior/current-image or protected-staging exercise; see
   `artifacts/source-event-classification-writer-fence-verification-2026-07-29.json`. An earlier
   isolated data-checksummed PostgreSQL 17.10 cluster, authenticated Redis 8.2.8, and pinned MinIO
   instance passed the latest combined-service 54-test integration baseline across 19 files. It
@@ -57,24 +57,30 @@
   against those services. A Git-ignore-clean candidate-source export now passes its frozen install,
   Secretlint, production audit, full static verification/build, and Chromium suite without changing
   a publishable file; it remains a historical non-literal export because it predates the initial
-  commit. A new literal remote-clone run remains pending. A current reusable verifier separately
-  completed an eight-record Chromium/BFF/API/ outbox/Redis/restricted-worker journey against fresh
-  local infrastructure and read four exact immutable occurrence snapshots, including a conserved
-  two-row accounting split and one duplicate-fee exception; its identity authority was a minimal
-  RS256/JWKS fixture, not Keycloak. A prior/current application-image runtime rollback, literal
-  fresh-clone, operational cutover, and representative-volume migration timing remain unverified. A
-  distinct data-checksummed PostgreSQL 17.10 cluster now has an exact synthetic logical-restore
-  comparison plus passing restored database/RLS/audit/reconciliation tests, `pg_amcheck`, and
-  offline checksum evidence. A separate local component drill matched two keys, three object
-  versions, and one current delete marker across distinct versioned MinIO processes, then rebuilt
-  one unpublished outbox event from a distinct exact logical PostgreSQL restore into an empty
-  authenticated Redis 8.2.8 database. Migration 0040 and nine live restricted-role tests now add a
-  token-digest execution/recovery ledger plus rolling-writer opt-in; a fresh-cluster drill rebuilt
-  ten jobs across all four safe classifications and excluded active/succeeded/dead/legacy work. This
-  does not verify encrypted base-backup/WAL recovery, an atomic database/object/Redis recovery
-  point, object tags/lock/lifecycle/replication, key references, prior-image runtime compatibility,
-  staging cutover, or RPO/RTO. Queue add and PostgreSQL evidence recording also remain a
-  deliberately guarded cross-store, non-atomic operation.
+  commit. A separate canonical HTTPS clone of branch `codex/foundation-literal-clone` at exact
+  commit `e2a21e5279471797536ffb548405a1ccac04c5f7` now passes Git object integrity, frozen install,
+  secret/dependency gates, all 50 Chromium tests, the complete 641-test repository gate, production
+  build, final source-drift checks, and cleanup; see
+  `artifacts/literal-remote-clone-verification-2026-07-30.json`. That record does not verify `main`,
+  any later revision, infrastructure startup, staging, deployment, reliability, or production
+  readiness. A current reusable verifier separately completed an eight-record
+  Chromium/BFF/API/outbox/Redis/restricted-worker journey against fresh local infrastructure and
+  read four exact immutable occurrence snapshots, including a conserved two-row accounting split and
+  one duplicate-fee exception; its identity authority was a minimal RS256/JWKS fixture, not
+  Keycloak. A prior/current application-image runtime rollback, operational cutover, and
+  representative-volume migration timing remain unverified. A distinct data-checksummed PostgreSQL
+  17.10 cluster now has an exact synthetic logical-restore comparison plus passing restored
+  database/RLS/audit/reconciliation tests, `pg_amcheck`, and offline checksum evidence. A separate
+  local component drill matched two keys, three object versions, and one current delete marker
+  across distinct versioned MinIO processes, then rebuilt one unpublished outbox event from a
+  distinct exact logical PostgreSQL restore into an empty authenticated Redis 8.2.8 database.
+  Migration 0040 and nine live restricted-role tests now add a token-digest execution/recovery
+  ledger plus rolling-writer opt-in; a fresh-cluster drill rebuilt ten jobs across all four safe
+  classifications and excluded active/succeeded/dead/legacy work. This does not verify encrypted
+  base-backup/WAL recovery, an atomic database/object/Redis recovery point, object
+  tags/lock/lifecycle/replication, key references, prior-image runtime compatibility, staging
+  cutover, or RPO/RTO. Queue add and PostgreSQL evidence recording also remain a deliberately
+  guarded cross-store, non-atomic operation.
 - No provider credentials or sandboxes were used. Shopify/Stripe OAuth, refresh, uninstall, and
   signed-deauthorization behavior rely on synthetic provider responses until authorized sandbox
   verification.

@@ -33,8 +33,9 @@ These remain proposals until measured in staging:
 **Goal 0 — Foundation**  
 Status: **Active**
 
-Goal 1 implementation may begin after required design/governance artifacts exist, but Goal 0 is not
-complete until fresh-clone, CI, migration, and local-infrastructure evidence is recorded.
+Goal 1 implementation is active. Goal 0 now has recorded fresh-clone, CI, migration, and local
+infrastructure evidence, but remains active until the owner name/license decisions and remaining
+release-environment boundaries are resolved.
 
 ### Goal 0 acceptance criteria
 
@@ -44,27 +45,30 @@ complete until fresh-clone, CI, migration, and local-infrastructure evidence is 
 | Architecture documented        | `docs/architecture.md` and accepted ADRs                | Draft done        |
 | Threat model completed         | `docs/threat-model.md` with owners/control verification | Draft done        |
 | Repository governance created  | Root governance files and community templates           | Draft done        |
-| Local environment reproducible | Fresh-clone transcript using only documented commands   | Partial           |
+| Local environment reproducible | Fresh-clone transcript using only documented commands   | Verified complete |
 | CI and Git hooks active        | CI run URL plus manual hook test transcript             | Verified complete |
 | Name review completed          | `docs/name-review.md`; owner decision still required    | Draft done        |
 
-Dependencies: owner license/name confirmation before public release and literal clone verification
-from the initialized remote.
+Dependencies: owner license/name confirmation before public release and review/merge of the exact
+verified revision into the default branch.
 
-Risks: PR 11 hosted CI passes, but the remote has no recorded literal-clone exercise; the Podman
-result is single-workstation evidence; the working name has material collisions.
+Risks: the literal-clone record verifies one named branch at one exact commit, not `main` or a later
+revision; the Podman result is single-workstation evidence; the working name has material
+collisions.
 
 Completion date: not complete.  
 Evidence index: `docs/goals/goal-0-foundation.md`.
 
-The current partial result exports the exact Git-ignore-clean candidate source into a temporary
-repository, performs the frozen install, Secretlint, production audit, complete verification/build,
-and Chromium suite, and proves publishable files remain unchanged. See
-`artifacts/clean-source-export-verification-2026-07-29.json` and ADR 0055. A literal clone cannot be
-claimed from the earlier export. The baseline now exists remotely, but a fresh literal clone has not
-yet been recorded. The separate Podman Compose quick start now passes the digest-pinned dependency
-network, all 56 migrations, synthetic fixtures, host application startup, real local
-OIDC/API/BFF/browser smoke, idempotent `infra:up`, bounded logs, and clean shutdown. See
+The historical clean-source export performs the frozen install, Secretlint, production audit,
+complete verification/build, and Chromium suite without changing publishable files; see
+`artifacts/clean-source-export-verification-2026-07-29.json` and ADR 0055. The canonical remote now
+also has exact revision-bound evidence: branch `codex/foundation-literal-clone` at commit
+`e2a21e5279471797536ffb548405a1ccac04c5f7` passed Git object integrity, frozen install, secret and
+dependency gates, all 50 Chromium tests, the full 641-test static gate, production build, and final
+clean-tree verification. See `artifacts/literal-remote-clone-verification-2026-07-30.json` and
+ADR 0069. The separate Podman Compose quick start passes the digest-pinned dependency network, all
+56 migrations, synthetic fixtures, host application startup, real local OIDC/API/BFF/browser smoke,
+idempotent `infra:up`, bounded logs, and clean shutdown. See
 `artifacts/local-podman-compose-quickstart-verification-2026-07-30.json`, ADR 0062, and
 `docs/goals/goal-0-audit-2026-07-30.md`.
 
@@ -516,10 +520,10 @@ unit/API/tenant/static tests plus the fresh 55-migration PostgreSQL 17.10 run. A
 organization-blind support console now retains its one-time code only in page memory, accepts exact
 approved identifiers, renders only the fixed aggregate schema, and returns one denial state. The
 tenant Security surface uses signed organization context for owner-only list, explicit approval, and
-revocation. Fixed-route/cookie/response-bound BFF tests and 45 Chromium tests, including 14
+revocation. Fixed-route/cookie/response-bound BFF tests and 50 Chromium tests, including 14
 accessibility scans, pass. The complete database suite passes 39 tests across 11 files, including
-the populated 0041-to-0054 upgrade. The current repository suite passes 576
-unit/property/tenant/reconciliation tests in 86 files. A fresh isolated Keycloak 26.7.0/PostgreSQL
+the populated 0041-to-0054 upgrade. The current repository suite passes 641
+unit/property/tenant/reconciliation tests in 92 files. A fresh isolated Keycloak 26.7.0/PostgreSQL
 17.10/API/web/Chromium run now binds the native LoA 2 browser flow, requests `acr_values=2`, proves
 password-plus-TOTP and wrong-code denial before an application session, requires exact
 `/reconai-support` group and signed `acr=2`, denies a valid-MFA outsider without durable state, and

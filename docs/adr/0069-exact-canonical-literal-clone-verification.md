@@ -97,8 +97,8 @@ After pushing a reviewed implementation commit, run:
 ```sh
 pnpm verify:literal-clone -- \
   --ref codex/foundation-literal-clone \
-  --expected-commit <full-pushed-commit-id> \
-  --evidence-output <dated-literal-clone-artifact-path>
+  --expected-commit e2a21e5279471797536ffb548405a1ccac04c5f7 \
+  --evidence-output artifacts/literal-remote-clone-verification-2026-07-30.json
 ```
 
 Review the bounded artifact, run `pnpm evidence:check` and `pnpm secret:scan`, and commit the

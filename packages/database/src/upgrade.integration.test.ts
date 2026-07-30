@@ -21,8 +21,9 @@ const pendingMigrations = [
   "0052_source_event_classification_writer_fence.sql",
   "0053_restricted_support_access.sql",
   "0054_support_access_request_grant_integrity.sql",
+  "0055_organization_profile_version.sql",
 ] as const;
-const currentMigration = "0054_support_access_request_grant_integrity.sql";
+const currentMigration = "0055_organization_profile_version.sql";
 const organizationA = "11000000-0000-4000-8000-000000000001";
 const organizationB = "11000000-0000-4000-8000-000000000002";
 const userId = "22000000-0000-4000-8000-000000000001";
@@ -109,7 +110,7 @@ describe("live previous-release database upgrade", { concurrent: false }, () => 
       from reconai_schema_migrations
       order by version
     `;
-    expect(ledger).toHaveLength(55);
+    expect(ledger).toHaveLength(56);
     expect(databaseString(ledger.at(-1), "version")).toBe(currentMigration);
     expect(databaseString(ledger.at(-1), "checksum_sha256")).toMatch(/^[a-f0-9]{64}$/u);
 
@@ -218,6 +219,17 @@ describe("live previous-release database upgrade", { concurrent: false }, () => 
         worker_support_grant_select: false,
         support_request_grant_fk: true,
       },
+    ]);
+    expect(
+      await database`
+        select id, profile_version
+        from organizations
+        where id in (${organizationA}, ${organizationB})
+        order by id
+      `,
+    ).toEqual([
+      { id: organizationA, profile_version: 1 },
+      { id: organizationB, profile_version: 1 },
     ]);
 
     const auditVersions = await database`

@@ -1,0 +1,387 @@
+{
+  "schemaVersion": 1,
+  "database": {
+    "schemaSource": "packages/database/src/schema.ts",
+    "tables": [
+      { "name": "approvals", "scope": "tenant_column" },
+      { "name": "audit_events", "scope": "tenant_column" },
+      { "name": "canonical_field_provenance", "scope": "tenant_column" },
+      { "name": "canonical_record_supersessions", "scope": "tenant_column" },
+      { "name": "canonical_records", "scope": "tenant_column" },
+      { "name": "connector_credentials", "scope": "tenant_column" },
+      { "name": "data_source_connections", "scope": "tenant_column" },
+      { "name": "exception_notes", "scope": "tenant_column" },
+      { "name": "exception_occurrence_snapshots", "scope": "tenant_column" },
+      { "name": "exception_occurrences", "scope": "tenant_column" },
+      { "name": "exception_status_events", "scope": "tenant_column" },
+      { "name": "exceptions", "scope": "tenant_column" },
+      { "name": "imports", "scope": "tenant_column" },
+      { "name": "job_executions", "scope": "tenant_column" },
+      { "name": "match_occurrence_snapshots", "scope": "tenant_column" },
+      { "name": "match_occurrences", "scope": "tenant_column" },
+      { "name": "matches", "scope": "tenant_column" },
+      { "name": "memberships", "scope": "tenant_column" },
+      { "name": "organization_bootstrap_requests", "scope": "tenant_column" },
+      { "name": "organization_invitations", "scope": "tenant_column" },
+      { "name": "organization_retention_policies", "scope": "tenant_column" },
+      { "name": "organizations", "scope": "organization_primary_key" },
+      { "name": "outbox_events", "scope": "tenant_column" },
+      { "name": "provider_authorization_attempts", "scope": "tenant_column" },
+      { "name": "provider_deauthorization_events", "scope": "tenant_column" },
+      { "name": "provider_privacy_data_package_receipts", "scope": "tenant_column" },
+      { "name": "provider_privacy_data_packages", "scope": "tenant_column" },
+      { "name": "provider_privacy_object_deletion_jobs", "scope": "tenant_column" },
+      { "name": "provider_privacy_object_deletion_tombstones", "scope": "tenant_column" },
+      { "name": "provider_privacy_request_deadline_alerts", "scope": "tenant_column" },
+      { "name": "provider_privacy_requests", "scope": "tenant_column" },
+      { "name": "provider_sync_runs", "scope": "tenant_column" },
+      { "name": "queue_recovery_events", "scope": "tenant_column" },
+      { "name": "reconciliation_run_inputs", "scope": "tenant_column" },
+      { "name": "reconciliation_runs", "scope": "tenant_column" },
+      { "name": "resolution_proposals", "scope": "tenant_column" },
+      { "name": "retention_deletion_jobs", "scope": "tenant_column" },
+      { "name": "retention_deletion_tombstones", "scope": "tenant_column" },
+      { "name": "source_event_object_classifications", "scope": "tenant_column" },
+      { "name": "source_events", "scope": "tenant_column" },
+      { "name": "support_access_grants", "scope": "tenant_column" },
+      { "name": "support_access_requests", "scope": "restricted_support_request" },
+      { "name": "users", "scope": "membership_derived_identity" }
+    ],
+    "requirements": {
+      "rowLevelSecurity": "forced",
+      "tenantContextSetting": "app.organization_id"
+    },
+    "evidence": [
+      "packages/database/src/migration.tenant.test.ts",
+      "packages/database/src/tenant.integration.test.ts",
+      "packages/database/src/upgrade.integration.test.ts"
+    ]
+  },
+  "api": {
+    "registrationSource": "apps/api/src/app.ts",
+    "contractSource": "apps/api/src/route-security.ts",
+    "expectedRouteCount": 55,
+    "authenticationClasses": [
+      "identity",
+      "provider_signature",
+      "public_health",
+      "support",
+      "tenant"
+    ],
+    "evidence": ["apps/api/src/route-security.tenant.test.ts", "apps/api/src/app.tenant.test.ts"]
+  },
+  "bff": {
+    "routes": [
+      {
+        "path": "apps/web/src/app/api/auth/[...nextauth]/route.ts",
+        "scope": "identity_session"
+      },
+      {
+        "path": "apps/web/src/app/api/auth/backchannel-logout/route.ts",
+        "scope": "provider_authenticated_identity"
+      },
+      {
+        "path": "apps/web/src/app/api/auth/federated-logout/route.ts",
+        "scope": "identity_session"
+      },
+      {
+        "path": "apps/web/src/app/api/recon/actions/route.ts",
+        "scope": "tenant"
+      },
+      {
+        "path": "apps/web/src/app/api/recon/exports/exceptions/route.ts",
+        "scope": "tenant"
+      },
+      {
+        "path": "apps/web/src/app/api/recon/exports/privacy-data-package/route.ts",
+        "scope": "tenant"
+      },
+      {
+        "path": "apps/web/src/app/api/recon/invitations/accept/route.ts",
+        "scope": "identity"
+      },
+      {
+        "path": "apps/web/src/app/api/recon/organization/route.ts",
+        "scope": "tenant"
+      },
+      {
+        "path": "apps/web/src/app/api/recon/organizations/route.ts",
+        "scope": "identity"
+      },
+      {
+        "path": "apps/web/src/app/api/recon/provider-authorizations/callback/[provider]/route.ts",
+        "scope": "tenant"
+      },
+      {
+        "path": "apps/web/src/app/api/recon/provider-authorizations/route.ts",
+        "scope": "tenant"
+      },
+      {
+        "path": "apps/web/src/app/api/recon/route.ts",
+        "scope": "tenant"
+      },
+      {
+        "path": "apps/web/src/app/api/recon/support/route.ts",
+        "scope": "separated_support_and_tenant"
+      }
+    ],
+    "evidence": [
+      "apps/web/src/oidc-session.test.ts",
+      "apps/web/src/oidc-backchannel-logout.test.ts",
+      "apps/web/src/session-revocation.test.ts",
+      "apps/web/src/federated-logout.test.ts",
+      "apps/web/src/app/api/recon/actions/route.test.ts",
+      "apps/web/src/app/api/recon/exports/exceptions/route.test.ts",
+      "apps/web/src/app/api/recon/exports/privacy-data-package/route.test.ts",
+      "apps/web/src/app/api/recon/invitations/accept/route.test.ts",
+      "apps/web/src/app/api/recon/organization/route.test.ts",
+      "apps/web/src/app/api/recon/organizations/route.test.ts",
+      "apps/web/src/app/api/recon/provider-authorizations/callback/[provider]/route.test.ts",
+      "apps/web/src/app/api/recon/provider-authorizations/route.test.ts",
+      "apps/web/src/app/api/recon/route.test.ts",
+      "apps/web/src/app/api/recon/support/route.test.ts"
+    ]
+  },
+  "durableJobs": {
+    "types": [
+      {
+        "type": "connector.webhook.received",
+        "tenantField": "organizationId"
+      },
+      {
+        "type": "csv.import.commit",
+        "tenantField": "organizationId"
+      },
+      {
+        "type": "connector.sync.requested",
+        "tenantField": "organizationId"
+      },
+      {
+        "type": "reconciliation.run.requested",
+        "tenantField": "organizationId"
+      }
+    ],
+    "evidence": [
+      "packages/connectors/src/connectors.test.ts",
+      "apps/worker/src/worker.test.ts",
+      "apps/worker/src/queue.integration.test.ts"
+    ]
+  },
+  "objectStorage": {
+    "purposes": ["exports", "imports", "provider-events"],
+    "keyBuilderCallSites": [
+      "packages/ingestion/src/index.ts",
+      "packages/ingestion/src/provider-webhooks.ts",
+      "packages/test-support/src/load-fixtures.ts"
+    ],
+    "operations": [
+      {
+        "path": "apps/worker/src/provider-privacy-deletion.ts",
+        "operation": "deleteVerified",
+        "scope": "tenant_record_authority"
+      },
+      {
+        "path": "apps/worker/src/retention-execution.ts",
+        "operation": "deleteVerified",
+        "scope": "tenant_record_authority"
+      },
+      {
+        "path": "apps/worker/src/source-event-classification-repair.ts",
+        "operation": "getVerified",
+        "scope": "tenant_record_authority"
+      },
+      {
+        "path": "packages/ingestion/src/index.ts",
+        "operation": "getVerified",
+        "scope": "tenant_record_authority"
+      },
+      {
+        "path": "packages/ingestion/src/index.ts",
+        "operation": "putImmutable",
+        "scope": "tenant_key_builder"
+      },
+      {
+        "path": "packages/ingestion/src/provider-privacy-data-package.ts",
+        "operation": "getVerified",
+        "scope": "tenant_record_authority"
+      },
+      {
+        "path": "packages/ingestion/src/provider-webhooks.ts",
+        "operation": "getVerified",
+        "scope": "tenant_record_authority"
+      },
+      {
+        "path": "packages/ingestion/src/provider-webhooks.ts",
+        "operation": "putImmutable",
+        "scope": "tenant_key_builder"
+      },
+      {
+        "path": "packages/test-support/src/load-fixtures.ts",
+        "operation": "putImmutable",
+        "scope": "synthetic_tenant_fixture"
+      }
+    ],
+    "evidence": [
+      "packages/object-storage/src/object-storage.test.ts",
+      "packages/object-storage/src/restore-verification.test.ts",
+      "apps/worker/src/provider-privacy-deletion.test.ts",
+      "apps/worker/src/retention-execution.test.ts"
+    ]
+  },
+  "stateStores": {
+    "surfaces": [
+      {
+        "path": "apps/api/src/main.ts",
+        "mechanisms": ["bullmq", "redis"],
+        "scope": "tenant_envelopes_network_pseudonyms_and_health"
+      },
+      {
+        "path": "apps/api/src/repository.ts",
+        "mechanisms": ["memory_map"],
+        "scope": "request_local_tenant_projection"
+      },
+      {
+        "path": "apps/api/src/route-security.ts",
+        "mechanisms": ["memory_map"],
+        "scope": "static_route_contract"
+      },
+      {
+        "path": "apps/web/src/components/organization-switcher.tsx",
+        "mechanisms": ["memory_map"],
+        "scope": "browser_ephemeral_identity_projection"
+      },
+      {
+        "path": "apps/web/src/components/privacy-request-operations.tsx",
+        "mechanisms": ["memory_map"],
+        "scope": "browser_ephemeral_tenant_projection"
+      },
+      {
+        "path": "apps/web/src/oidc-backchannel-logout.ts",
+        "mechanisms": ["memory_map"],
+        "scope": "issuer_configuration_cache"
+      },
+      {
+        "path": "apps/web/src/session-revocation.ts",
+        "mechanisms": ["memory_map", "redis"],
+        "scope": "opaque_identity_revocation"
+      },
+      {
+        "path": "apps/worker/src/main.ts",
+        "mechanisms": ["bullmq", "redis"],
+        "scope": "tenant_envelopes_and_tenant_connection_circuit"
+      },
+      {
+        "path": "apps/worker/src/provider-circuit-breaker.ts",
+        "mechanisms": ["redis"],
+        "scope": "tenant_connection_digest"
+      },
+      {
+        "path": "apps/worker/src/queue-observability.ts",
+        "mechanisms": ["bullmq", "redis"],
+        "scope": "deployment_queue_lease_and_aggregates"
+      },
+      {
+        "path": "apps/worker/src/rebuild-recoverable-queue.ts",
+        "mechanisms": ["bullmq", "redis"],
+        "scope": "isolated_recovery_tenant_envelopes"
+      },
+      {
+        "path": "apps/worker/src/worker.ts",
+        "mechanisms": ["bullmq", "redis"],
+        "scope": "tenant_envelope_execution"
+      },
+      {
+        "path": "packages/connectors/src/index.ts",
+        "mechanisms": ["memory_map"],
+        "scope": "bounded_credential_keyring_projection"
+      },
+      {
+        "path": "packages/connectors/src/seal-credential.ts",
+        "mechanisms": ["memory_map"],
+        "scope": "local_cli_argument_projection"
+      },
+      {
+        "path": "packages/ingestion/src/provider-sync.ts",
+        "mechanisms": ["memory_map"],
+        "scope": "fixed_source_adapter_registry"
+      },
+      {
+        "path": "packages/object-storage/src/index.ts",
+        "mechanisms": ["memory_map"],
+        "scope": "process_local_immutable_object_store"
+      },
+      {
+        "path": "packages/object-storage/src/restore-verification.ts",
+        "mechanisms": ["memory_map"],
+        "scope": "bounded_restore_inventory_projection"
+      },
+      {
+        "path": "packages/reconciliation/src/index.ts",
+        "mechanisms": ["memory_map"],
+        "scope": "run_local_deterministic_reconciliation"
+      },
+      {
+        "path": "packages/test-support/src/load-fixtures.ts",
+        "mechanisms": ["bullmq", "redis"],
+        "scope": "synthetic_tenant_fixture"
+      }
+    ],
+    "evidence": [
+      "apps/api/src/rate-limit.test.ts",
+      "apps/web/src/session-revocation.test.ts",
+      "apps/worker/src/provider-circuit-breaker.test.ts",
+      "apps/worker/src/queue-observability.test.ts",
+      "apps/worker/src/worker.test.ts"
+    ]
+  },
+  "exports": {
+    "surfaces": [
+      {
+        "id": "exception_csv",
+        "apiContract": "POST /v1/organizations/:organizationId/exception-exports",
+        "bffRoute": "apps/web/src/app/api/recon/exports/exceptions/route.ts"
+      },
+      {
+        "id": "provider_privacy_data_package",
+        "apiContract": "POST /v1/organizations/:organizationId/provider-privacy-requests/:requestId/data-package",
+        "bffRoute": "apps/web/src/app/api/recon/exports/privacy-data-package/route.ts"
+      }
+    ],
+    "evidence": [
+      "apps/api/src/app.tenant.test.ts",
+      "apps/web/src/app/api/recon/exports/exceptions/route.test.ts",
+      "apps/web/src/app/api/recon/exports/privacy-data-package/route.test.ts"
+    ]
+  },
+  "observability": {
+    "tenantIdentifierPolicy": "prohibited",
+    "forbiddenDimensionFragments": [
+      "connection",
+      "credential",
+      "customer",
+      "email",
+      "event.id",
+      "job.id",
+      "membership",
+      "organization",
+      "payment",
+      "record",
+      "request.id",
+      "tenant",
+      "token",
+      "user"
+    ],
+    "evidence": [
+      "packages/observability/src/observability.test.ts",
+      "scripts/operational-alert-policy.test.mjs"
+    ]
+  },
+  "restrictedSupport": {
+    "mode": "default_disabled_tenant_approved",
+    "evidence": [
+      "apps/api/src/app.tenant.test.ts",
+      "packages/database/src/support-access.integration.test.ts",
+      "apps/web/src/app/api/recon/support/route.test.ts"
+    ]
+  }
+}

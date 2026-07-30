@@ -33,7 +33,7 @@ jobs:
     env:
       CANDIDATE_DIRECTORY: artifacts/release-candidate/${{ matrix.service }}
       OCI_ARCHIVE: artifacts/release-candidate/${{ matrix.service }}/image.oci.tar
-      OCI_LAYOUT: ${{ runner.temp }}/reconai-${{ matrix.service }}-oci-layout
+      OCI_LAYOUT: /tmp/reconai-${{ matrix.service }}-oci-layout
       IMAGE_SBOM: artifacts/release-candidate/${{ matrix.service }}/image.cdx.json
     strategy:
       fail-fast: false

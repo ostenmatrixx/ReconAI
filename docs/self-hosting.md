@@ -148,25 +148,26 @@ the scanned IDs exactly match the authenticated runtime proof. See
 local result has no registry, signing, publication, deployment, provider-system, or
 production-secret authority and does not replace the hosted amd64 candidate workflow.
 
-The repository still has no initial commit, so a literal fresh-clone proof remains unavailable. A
-separate bounded verifier exported the exact Git-ignore-clean candidate source to a temporary
-repository, copied only the documented synthetic `.env.example`, completed the frozen install,
-Secretlint, high-severity production audit, full static verification/production build, and Chromium
-suite, and proved no publishable source changed or appeared. See
+The repository baseline is committed and pushed, but a literal fresh-clone proof has not yet been
+recorded. A separate bounded verifier exported the exact Git-ignore-clean candidate source to a
+temporary repository, copied only the documented synthetic `.env.example`, completed the frozen
+install, Secretlint, high-severity production audit, full static verification/production build, and
+Chromium suite, and proved no publishable source changed or appeared. See
 `artifacts/clean-source-export-verification-2026-07-29.json` and ADR 0055. None of the local results
-is a remote clone, Docker-engine compatibility proof, hosted CI run, protected-staging exercise, or
-deployment. All current remote Dockerfile, Compose, and CI container inputs are immutable-digest
-pinned and the pin/non-publishing workflow policy passes locally. Native ARM64 OCI
-build/scan/CycloneDX evidence now exists through the bounded local verifier, but the manual
-candidate workflow has not run on a hosted runner, so its amd64 BuildKit provenance, embedded SBOM,
-checksums, signed attestations, and GitHub identity verification remain unavailable evidence; see
-`docs/container-integrity.md`. The distributed limiter has synthetic two-instance, proxy-spoof,
-failure, boundary, and liveness coverage, and the reference Nginx policy passes its static
-validator. An authenticated loopback Redis 8.2.8 exercise passed the two-client 120/121
-shared-budget, pseudonymous-key, and positive-TTL assertions. A later isolated exercise runs two
-compiled API processes with production configuration against authenticated persistent Redis 8.2.8.
-It proves exact 120/121 sharing, forwarding overwrite, fail-closed Redis `SIGKILL`, independent
-liveness, durable restart, and coordinated drain/restart key rotation. See
+is a remote clone, Docker-engine compatibility proof, protected-staging exercise, or deployment. PR
+11 ordinary hosted CI and Security checks pass, including live PostgreSQL, browser/accessibility,
+and non-publishing container build/scan jobs. All current remote Dockerfile, Compose, and CI
+container inputs are immutable-digest pinned and the pin/non-publishing workflow policy passes
+locally. Native ARM64 OCI build/scan/CycloneDX evidence now exists through the bounded local
+verifier, but the manual candidate workflow has not run on a hosted runner, so its amd64 BuildKit
+provenance, embedded SBOM, checksums, signed attestations, and GitHub identity verification remain
+unavailable evidence; see `docs/container-integrity.md`. The distributed limiter has synthetic
+two-instance, proxy-spoof, failure, boundary, and liveness coverage, and the reference Nginx policy
+passes its static validator. An authenticated loopback Redis 8.2.8 exercise passed the two-client
+120/121 shared-budget, pseudonymous-key, and positive-TTL assertions. A later isolated exercise runs
+two compiled API processes with production configuration against authenticated persistent Redis
+8.2.8. It proves exact 120/121 sharing, forwarding overwrite, fail-closed Redis `SIGKILL`,
+independent liveness, durable restart, and coordinated drain/restart key rotation. See
 `artifacts/api-rate-limit-replica-recovery-verification-2026-07-29.json`. A local Nginx 1.30.4
 exercise parsed the canonical policy, distributed traffic across two Fastify upstreams, discarded
 100 forged forwarding identities into one observed-peer budget, returned 59 edge 429s without

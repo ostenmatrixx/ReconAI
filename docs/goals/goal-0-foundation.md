@@ -69,11 +69,16 @@ Status: active
 - Production web CSP evidence: `artifacts/web-csp-verification-2026-07-28.json`.
 - Container source-policy evidence: `artifacts/container-integrity-verification-2026-07-28.json`;
   hosted candidate execution remains required.
+- Hosted CI and Git-hook evidence: PR 11 implementation commit `715eea1` passed CI run
+  `30501635095`, Security run `30501635079`, and enabled pre-commit/pre-push gates. The exact run
+  boundary and limitations are recorded in
+  `artifacts/cross-layer-tenant-surface-verification-2026-07-30.json`.
 - Git-ignore-clean candidate-source evidence:
   `artifacts/clean-source-export-verification-2026-07-29.json`. A new temporary repository received
   only publishable files, copied the synthetic `.env.example`, completed the frozen install,
   Secretlint, production audit, full static verification/build, and Chromium suite, and retained the
-  exact source manifest. This is not a literal clone because no initial commit exists.
+  exact source manifest. This remains a historical export rather than the still-pending literal
+  clone of the initialized remote.
 - Rootless Podman Compose quick-start evidence:
   `artifacts/local-podman-compose-quickstart-verification-2026-07-30.json`. The digest-pinned
   PostgreSQL/Redis/MinIO/Keycloak network became healthy, all 56 migrations and synthetic fixtures

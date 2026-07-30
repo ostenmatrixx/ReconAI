@@ -216,6 +216,9 @@ export function continuousIntegrationSecurityBoundaryErrors(source) {
         : nodeActiveLtsSecurityPatchError(`${version}-bookworm-slim`);
     if (error !== undefined) errors.push(`CI setup-node ${error}`);
   }
+  if (!/^\s+DATABASE_MAINTENANCE_URL:\s*postgresql:\/\//mu.test(source)) {
+    errors.push("must provide the dedicated maintenance-role URL to live integration tests");
+  }
 
   return errors;
 }

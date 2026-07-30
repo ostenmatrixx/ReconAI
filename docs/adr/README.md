@@ -192,3 +192,7 @@ runtime package-manager removal, and bounded local candidate verification are de
 Exact mixed 100,000-record deterministic load construction, isolated permutation/repeat sampling,
 and the strict separation between local pure-engine measurements and an end-to-end service objective
 are defined by [ADR 0067](0067-bounded-representative-reconciliation-load-evidence.md).
+
+Exact cross-layer discovery and fail-closed classification of tenant tables, routes, jobs, object
+operations, state stores, exports, telemetry, and restricted support are defined by
+[ADR 0068](0068-fail-closed-cross-layer-tenant-surface-inventory.md).

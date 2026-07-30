@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-30T00:14:00Z",
+  "scope": "local source-bound tenant-surface hardening plus hosted pull-request verification",
+  "result": "bounded_local_and_hosted_pass",
+  "sourceBaselineCommit": "756e37c8fe59c6e42f085237ef58193a80c0d041",
+  "inventory": {
+    "databaseTables": 43,
+    "forcedRlsMigrationTables": 43,
+    "apiRoutes": 55,
+    "bffRoutes": 13,
+    "durableJobTypes": 4,
+    "objectKeyPurposes": 3,
+    "objectKeyBuilderCallSites": 3,
+    "objectOperations": 9,
+    "stateStoreSurfaces": 19,
+    "exportSurfaces": 2,
+    "evidenceReferences": 39
+  },
+  "localChecks": [
+    {
+      "command": "pnpm tenant:check",
+      "result": "pass",
+      "manifestSha256": "ce181a547d3551314a1fd0f185bd162a435e051e831d1f0bba9495f096cdaaa4"
+    },
+    {
+      "command": "focused tenant, container, object-storage policy tests",
+      "result": "pass",
+      "testFiles": 3,
+      "tests": 37
+    },
+    {
+      "command": "focused package typechecks and lint",
+      "result": "pass"
+    },
+    {
+      "command": "CI=true pnpm verify",
+      "result": "pass",
+      "testFiles": 91,
+      "tests": 634,
+      "migrations": 56,
+      "sourceBoundaryFiles": 598,
+      "evidenceFiles": 119,
+      "productionPackageLicenses": 224,
+      "buildScope": "all packages plus API, worker, and production Next.js web"
+    },
+    {
+      "command": "commit and push implementation commit 715eea181400e27712e0c8abb69197278b4de420 with Lefthook enabled",
+      "result": "pass",
+      "verifiedHookStages": [
+        "staged policy, formatting, secret, lint, and Conventional Commit checks",
+        "schema, migration, dependency, reconciliation, tenant, unit, and typecheck pre-push gates"
+      ]
+    },
+    {
+      "command": "live PostgreSQL tenant catalog assertion",
+      "result": "not_run",
+      "reason": "desktop shell has no container or Compose provider, local PostgreSQL binary, or environment file"
+    }
+  ],
+  "hostedBaseline": {
+    "security": {
+      "result": "pass",
+      "runId": 30499895403
+    },
+    "ci": {
+      "result": "fail",
+      "runId": 30499895370,
+      "passedIntegrationTestsBeforeFailure": 63,
+      "identifiedDefects": [
+        "maintenance-role URL omitted from integration environment",
+        "upgrade expectation stopped before checked-in migration 0055",
+        "release-candidate job-level environment referenced unavailable runner context"
+      ],
+      "correctionsRequireHostedRerun": false
+    }
+  },
+  "hostedPullRequestVerification": {
+    "pullRequest": 11,
+    "implementationCommit": "715eea181400e27712e0c8abb69197278b4de420",
+    "ci": {
+      "result": "pass",
+      "runId": 30501635095,
+      "qualityJobSeconds": 272,
+      "verifiedSteps": [
+        "complete repository verification and production builds",
+        "live PostgreSQL tenant controls including the 43-table RLS, forced-RLS, and policy catalog assertion",
+        "complete integration suite with classification repair isolated from unrelated fixtures",
+        "explicit tenant and reconciliation suites",
+        "representative 100000-record deterministic reconciliation load",
+        "Chromium browser and accessibility suite",
+        "non-publishing API, worker, and web container builds with High/Critical vulnerability gates"
+      ]
+    },
+    "security": {
+      "result": "pass",
+      "runId": 30501635079,
+      "verifiedSteps": [
+        "dependency, secret, license, and SBOM checks",
+        "CodeQL"
+      ]
+    },
+    "releaseCandidateDefinition": {
+      "result": "guarded_skip",
+      "runId": 30501243252,
+      "input": "invalid confirmation",
+      "interpretation": "the corrected workflow parsed and its explicit confirmation guard prevented candidate construction"
+    },
+    "initialPullRequestFailure": {
+      "runId": 30501230865,
+      "finding": "the global classification repair integration test shared unrelated source-event fixture gaps",
+      "correction": "run the maintenance workflow in a randomized isolated PostgreSQL database with explicit role grants and forced cleanup"
+    }
+  },
+  "sourceSha256": {
+    ".github/workflows/ci.yml": "96ed1415f70f2cfa607b0ece8f6632dd0257897596deb6f276409c86b6f179bf",
+    ".github/workflows/release-candidate.yml": "9765f2d9c1c5fee7de67d9c582f3735fc923cee16f11cc4b5978683a342520f5",
+    "config/tenant-surface-manifest.json": "ce181a547d3551314a1fd0f185bd162a435e051e831d1f0bba9495f096cdaaa4",
+    "apps/worker/src/source-event-classification-repair.integration.test.ts": "646992618d1e028855b7cf8b0c674995258689a730f3d959e8134ecdcdebd6fc",
+    "packages/object-storage/src/index.ts": "8c0486874c26cdaf86941f5db3534f9c8594b1b061b2a4b29aa19d6e3cbef16e",
+    "packages/observability/src/index.ts": "198e446b4d6698b4e05e58150a4406e803c9acb3cd122ba1fae77fc173f8ddc3",
+    "scripts/tenant-surface-policy.mjs": "c9f607d96c005f62cbd7d4a7bd54c13d135206c784a180a57d73fba07934b648",
+    "scripts/validate-tenant-surfaces.mjs": "7d84c8ce9e41efd02f3177be2c2ad795384f9cdf92b44ea73c2e18877acfc669"
+  },
+  "limitations": [
+    "Source discovery and exact-set comparison are not a language-level information-flow proof.",
+    "The live 43-table catalog assertion passed in hosted CI but was not executed in this desktop shell.",
+    "No protected multi-host, partition, representative tenant load, timing, or cache-eviction exercise was performed.",
+    "No external penetration test or independent security review was performed.",
+    "The guarded release-candidate parser check did not build, attest, publish, or deploy an image.",
+    "No production-readiness, compliance, availability, or zero-defect claim follows."
+  ]
+}

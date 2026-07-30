@@ -73,6 +73,7 @@ jobs:
           DATABASE_MIGRATION_URL: postgresql://reconai_migrator:local-migrator-only@127.0.0.1:5432/reconai
           DATABASE_URL: postgresql://reconai_app:local-app-only@127.0.0.1:5432/reconai
           DATABASE_WORKER_URL: postgresql://reconai_worker:local-worker-only@127.0.0.1:5432/reconai
+          DATABASE_MAINTENANCE_URL: postgresql://reconai_maintenance:local-maintenance-only@127.0.0.1:5432/reconai
           REDIS_URL: redis://127.0.0.1:6379
           S3_ENDPOINT: http://127.0.0.1:9000
           S3_REGION: us-east-1

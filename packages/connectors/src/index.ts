@@ -275,9 +275,16 @@ const connectorJobEnvelopeBase = durableJobEnvelopeBase.extend({
   connectionId: z.uuid(),
 });
 
+export const DURABLE_JOB_TYPES = [
+  "connector.webhook.received",
+  "csv.import.commit",
+  "connector.sync.requested",
+  "reconciliation.run.requested",
+] as const;
+
 const webhookJobEnvelope = connectorJobEnvelopeBase
   .extend({
-    type: z.literal("connector.webhook.received"),
+    type: z.literal(DURABLE_JOB_TYPES[0]),
     provider: z.enum(["shopify", "stripe"]),
     eventType: z.string().regex(/^[a-z0-9._/-]{1,100}$/u),
     externalEventId: z.string().regex(/^[A-Za-z0-9._:/-]{1,255}$/u),
@@ -286,14 +293,14 @@ const webhookJobEnvelope = connectorJobEnvelopeBase
 
 const csvImportJobEnvelope = connectorJobEnvelopeBase
   .extend({
-    type: z.literal("csv.import.commit"),
+    type: z.literal(DURABLE_JOB_TYPES[1]),
     importId: z.uuid(),
   })
   .strict();
 
 const providerSyncJobEnvelope = connectorJobEnvelopeBase
   .extend({
-    type: z.literal("connector.sync.requested"),
+    type: z.literal(DURABLE_JOB_TYPES[2]),
     provider: z.enum(["shopify", "stripe"]),
     syncRunId: z.uuid(),
     executionAttempt: z.number().int().min(1).max(6),
@@ -308,7 +315,7 @@ export const ConnectorJobEnvelopeSchema = z.discriminatedUnion("type", [
 
 export const ReconciliationRunJobEnvelopeSchema = durableJobEnvelopeBase
   .extend({
-    type: z.literal("reconciliation.run.requested"),
+    type: z.literal(DURABLE_JOB_TYPES[3]),
     runId: z.uuid(),
     executionAttempt: z.number().int().min(1).max(100),
   })

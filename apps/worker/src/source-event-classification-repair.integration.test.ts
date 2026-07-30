@@ -30,11 +30,13 @@ const objectKeyB = `integration/${organizationB}/provider-events/${sourceEventB}
 const missingObjectKey = `integration/${organizationA}/provider-events/${missingSourceEvent}/payload.json`;
 const unsupportedObjectKey = `integration/${organizationA}/provider-events/${unsupportedSourceEvent}/payload.json`;
 
+let control: Sql | undefined;
 let admin: Sql | undefined;
 let application: Sql | undefined;
 let worker: Sql | undefined;
 let maintenanceA: Sql | undefined;
 let maintenanceB: Sql | undefined;
+let isolatedDatabaseName: string | undefined;
 
 describe("live source-event classification repair", { concurrent: false }, () => {
   beforeAll(async () => {
@@ -43,18 +45,33 @@ describe("live source-event classification repair", { concurrent: false }, () =>
     const applicationUrl = requiredEnvironment("DATABASE_URL");
     const workerUrl = requiredEnvironment("DATABASE_WORKER_URL");
     const maintenanceUrl = requiredEnvironment("DATABASE_MAINTENANCE_URL");
-    admin = postgres(adminUrl, { max: 1 });
-    await ensureLocalTestRoles(admin);
+    control = postgres(adminUrl, { max: 1 });
+    await ensureLocalTestRoles(control);
+
+    isolatedDatabaseName = `reconai_classification_repair_${randomUUID().replaceAll("-", "")}`;
+    await control`create database ${control(isolatedDatabaseName)}`;
+    await control`
+      grant connect on database ${control(isolatedDatabaseName)}
+      to reconai_migrator, reconai_app, reconai_worker, reconai_maintenance
+    `;
+
+    const isolatedAdminUrl = withDatabase(adminUrl, isolatedDatabaseName);
+    const isolatedMigrationUrl = withDatabase(migrationUrl, isolatedDatabaseName);
+    const isolatedApplicationUrl = withDatabase(applicationUrl, isolatedDatabaseName);
+    const isolatedWorkerUrl = withDatabase(workerUrl, isolatedDatabaseName);
+    const isolatedMaintenanceUrl = withDatabase(maintenanceUrl, isolatedDatabaseName);
+    admin = postgres(isolatedAdminUrl, { max: 1 });
+    await prepareIsolatedDatabase(admin);
     execFileSync("pnpm", ["--filter", "@workspace/database", "db:migrate"], {
       cwd: process.cwd(),
-      env: { ...process.env, DATABASE_MIGRATION_URL: migrationUrl },
+      env: { ...process.env, DATABASE_MIGRATION_URL: isolatedMigrationUrl },
       stdio: "pipe",
     });
     await seedTenantsAndLegacyEvents(admin);
-    application = postgres(applicationUrl, { max: 1 });
-    worker = postgres(workerUrl, { max: 1 });
-    maintenanceA = postgres(maintenanceUrl, { max: 1 });
-    maintenanceB = postgres(maintenanceUrl, { max: 1 });
+    application = postgres(isolatedApplicationUrl, { max: 1 });
+    worker = postgres(isolatedWorkerUrl, { max: 1 });
+    maintenanceA = postgres(isolatedMaintenanceUrl, { max: 1 });
+    maintenanceB = postgres(isolatedMaintenanceUrl, { max: 1 });
   });
 
   afterAll(async () => {
@@ -63,6 +80,10 @@ describe("live source-event classification repair", { concurrent: false }, () =>
     await worker?.end({ timeout: 5 });
     await application?.end({ timeout: 5 });
     await admin?.end({ timeout: 5 });
+    if (control && isolatedDatabaseName?.startsWith("reconai_classification_repair_")) {
+      await control`drop database ${control(isolatedDatabaseName)} with (force)`;
+    }
+    await control?.end({ timeout: 5 });
   });
 
   it("repairs distinct locked candidates concurrently with exact tenant audit evidence", async () => {
@@ -526,10 +547,9 @@ async function ensureLocalTestRoles(sql: Sql): Promise<void> {
   for (const [name, definition] of Object.entries(definitions)) {
     if (!names.has(name)) await sql.unsafe(definition);
   }
-  await sql.unsafe(`
-    grant connect on database reconai
-    to reconai_migrator, reconai_app, reconai_worker, reconai_maintenance
-  `);
+}
+
+async function prepareIsolatedDatabase(sql: Sql): Promise<void> {
   await sql.unsafe("grant create, usage on schema public to reconai_migrator");
   await sql.unsafe(
     "grant usage on schema public to reconai_app, reconai_worker, reconai_maintenance",
@@ -542,6 +562,12 @@ async function ensureLocalTestRoles(sql: Sql): Promise<void> {
     alter default privileges for role reconai_migrator in schema public
     grant select, insert, update, delete on tables to reconai_worker
   `);
+}
+
+function withDatabase(value: string, databaseName: string): string {
+  const url = new URL(value);
+  url.pathname = `/${databaseName}`;
+  return url.toString();
 }
 
 function requiredEnvironment(name: string): string {

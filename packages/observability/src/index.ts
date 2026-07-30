@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-
 import { context, trace } from "@opentelemetry/api";
 import pino, { type Logger } from "pino";
 
@@ -127,16 +125,6 @@ export function createLogger(service: string, environment: string, level = "info
     },
     timestamp: pino.stdTimeFunctions.isoTime,
   });
-}
-
-export function tenantTelemetryKey(organizationId: string, environmentSalt: string): string {
-  if (environmentSalt.length < 16) throw new Error("telemetry salt must be at least 16 characters");
-  return createHash("sha256")
-    .update(environmentSalt)
-    .update("\0")
-    .update(organizationId)
-    .digest("hex")
-    .slice(0, 16);
 }
 
 export function activeTraceIds(): { traceId?: string; spanId?: string } {

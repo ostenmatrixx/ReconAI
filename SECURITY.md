@@ -13,8 +13,10 @@ Before release, this section will list supported semantic-version lines and end-
 Do not file a public issue, pull request, discussion, or chat message containing a vulnerability,
 customer data, credentials, exploit payload, or production detail.
 
-Until a dedicated security address and private repository reporting are configured, contact the
-repository owner through an existing verified private channel. Include:
+Use
+[GitHub private vulnerability reporting](https://github.com/ostenmatrixx/ReconAI/security/advisories/new)
+to send the maintainers a report without disclosing it in a public issue, pull request, discussion,
+or chat. Include:
 
 - affected version/commit and component;
 - prerequisites and minimal reproduction using synthetic data;

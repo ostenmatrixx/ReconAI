@@ -592,14 +592,18 @@ Current requirement-to-evidence audit: `docs/goals/goal-1-audit-2026-07-30-28.md
   as native Linux ARM64 OCI candidates from the reviewed Node 24.18.0 digest, scanned extracted
   layouts with checksum-verified Trivy 0.72.0, generated hashed CycloneDX 1.7 summaries, and passed
   zero fixed High/zero fixed Critical for each image. The scanned IDs exactly match a fresh
-  authenticated runtime rerun. This does not exercise Docker Engine, the hosted workflow's amd64
-  BuildKit provenance/embedded SBOM/signed attestations, trusted external TLS/identity,
-  prior/current rollout, or protected staging. Evidence:
+  authenticated runtime rerun. A separate main-branch Linux AMD64 workflow run built all three
+  non-publishing candidates, passed its fixed High/Critical gate, generated CycloneDX summaries,
+  embedded SPDX and SLSA records, and produced independently verified SLSA and CycloneDX
+  attestations bound to the exact commit and GitHub-hosted runner. This does not exercise Docker
+  Engine runtime compatibility, registry publication or registry-level attestation, deployment
+  admission, trusted external TLS/identity, prior/current rollout, or protected staging. Evidence:
   `artifacts/container-image-runtime-scan-bound-verification-2026-07-30.json` and
-  `artifacts/local-native-oci-candidate-runtime-bound-verification-2026-07-30.json`; decisions: ADR
-  0063 through ADR 0066. The local PostgreSQL logical-restore, OTLP loopback, two-production-API
-  Redis loss/recovery/rotation, Nginx two-upstream, and application-image exercises do not satisfy
-  the staging criterion.
+  `artifacts/local-native-oci-candidate-runtime-bound-verification-2026-07-30.json`, and
+  `artifacts/hosted-release-candidate-verification-2026-07-30.json`; decisions: ADR 0063 through
+  ADR 0066. The local PostgreSQL logical-restore, OTLP loopback, two-production-API Redis
+  loss/recovery/rotation, Nginx two-upstream, application-image exercises, and hosted non-publishing
+  candidate run do not satisfy the staging criterion.
 
 Code presence alone is not completion evidence. Goal 1 remains active until each missing item above
 has a dated, reviewable result.

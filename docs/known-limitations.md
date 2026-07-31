@@ -36,14 +36,18 @@
   verifier now builds native ARM64 OCI candidates, scans extracted layouts with checksum-verified
   Trivy 0.72.0, and hashes CycloneDX 1.7 summaries; all three report zero fixed High and zero fixed
   Critical findings and their IDs exactly match the runtime proof. See
-  `artifacts/local-native-oci-candidate-runtime-bound-verification-2026-07-30.json`. This is not
-  Docker Engine, the hosted amd64 candidate/attestation path, trusted external TLS/identity,
-  prior/current rollout, protected staging, or deployment evidence. An isolated data-checksummed
-  PostgreSQL 17.10 source build previously applied the prior 55-migration chain, including the
-  populated 0041-to-0054 upgrade. Dedicated suites cover bounded classification repair, the one-way
-  writer fence, and restricted support access, including an in-flight old-writer race and actual
-  current Shopify/CSV paths. PR 11 repeats the integration graph on hosted PostgreSQL, but neither
-  result is a real prior/current-image or protected-staging exercise; see
+  `artifacts/local-native-oci-candidate-runtime-bound-verification-2026-07-30.json`. A separate
+  main-branch Linux AMD64 workflow run built all three non-publishing candidates, passed its fixed
+  High/Critical gate, and produced independently verified SLSA and CycloneDX attestations bound to
+  the exact commit and GitHub-hosted runner; see
+  `artifacts/hosted-release-candidate-verification-2026-07-30.json`. This is still not Docker Engine
+  runtime compatibility, registry publication or registry-level attestation, trusted external
+  TLS/identity, prior/current rollout, protected staging, or deployment evidence. An isolated
+  data-checksummed PostgreSQL 17.10 source build previously applied the prior 55-migration chain,
+  including the populated 0041-to-0054 upgrade. Dedicated suites cover bounded classification
+  repair, the one-way writer fence, and restricted support access, including an in-flight old-writer
+  race and actual current Shopify/CSV paths. PR 11 repeats the integration graph on hosted
+  PostgreSQL, but neither result is a real prior/current-image or protected-staging exercise; see
   `artifacts/source-event-classification-writer-fence-verification-2026-07-29.json`. An earlier
   isolated data-checksummed PostgreSQL 17.10 cluster, authenticated Redis 8.2.8, and pinned MinIO
   instance passed the latest combined-service 54-test integration baseline across 19 files. It

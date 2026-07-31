@@ -109,12 +109,15 @@ authority. This changes authenticated image BFF login to a bounded local pass. A
 native candidate run then rebuilt all three Linux ARM64 images from the reviewed Node 24.18.0
 digest, scanned extracted OCI layouts with checksum-verified Trivy 0.72.0, and generated hashed
 CycloneDX 1.7 summaries. API, worker, and web each reported zero fixed High and zero fixed Critical
-findings. Those scanned IDs exactly match a fresh authenticated runtime rerun. Docker Engine, the
-hosted amd64 candidate/attestation path, trusted external TLS/IdP, prior/current rollout, and
-protected staging remain open. Evidence:
-`artifacts/container-image-runtime-scan-bound-verification-2026-07-30.json` and
-`artifacts/local-native-oci-candidate-runtime-bound-verification-2026-07-30.json`; decisions: ADR
-0063 through ADR 0066; latest audit: `docs/goals/goal-1-audit-2026-07-30-28.md`.
+findings. Those scanned IDs exactly match a fresh authenticated runtime rerun. A separate
+main-branch Linux AMD64 workflow run also built the three non-publishing OCI candidates, passed its
+fixed High/Critical gate, and produced independently verified SLSA and CycloneDX attestations bound
+to the exact commit and GitHub-hosted runner. Docker Engine runtime compatibility, trusted external
+TLS/IdP, prior/current rollout, registry publication and deployment admission, and protected staging
+remain open. Evidence: `artifacts/container-image-runtime-scan-bound-verification-2026-07-30.json`
+and `artifacts/local-native-oci-candidate-runtime-bound-verification-2026-07-30.json`, and
+`artifacts/hosted-release-candidate-verification-2026-07-30.json`; decisions: ADR 0063 through ADR
+0066; latest audit: `docs/goals/goal-1-audit-2026-07-30-28.md`.
 
 The local classification rollout boundary now includes bounded checksum-verified legacy repair plus
 a disabled-by-default, one-way database writer fence. Activation waits for in-flight source

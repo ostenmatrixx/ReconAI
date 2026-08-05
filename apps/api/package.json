@@ -39,7 +39,7 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "postgres": "3.4.9",
-    "tsx": "4.23.1",
+    "tsx": "4.23.4",
     "typescript": "catalog:"
   }
 }

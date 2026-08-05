@@ -23,7 +23,7 @@
     "@workspace/ingestion": "workspace:*",
     "@workspace/object-storage": "workspace:*",
     "bullmq": "5.81.2",
-    "ioredis": "5.11.1",
+    "ioredis": "6.0.0",
     "postgres": "3.4.9"
   },
   "devDependencies": {

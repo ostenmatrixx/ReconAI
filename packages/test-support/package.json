@@ -22,7 +22,7 @@
     "@workspace/domain": "workspace:*",
     "@workspace/ingestion": "workspace:*",
     "@workspace/object-storage": "workspace:*",
-    "bullmq": "5.81.2",
+    "bullmq": "6.0.5",
     "ioredis": "5.11.1",
     "postgres": "3.4.9"
   },

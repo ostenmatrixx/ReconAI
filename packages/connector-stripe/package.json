@@ -17,7 +17,7 @@
   "dependencies": {
     "@workspace/connectors": "workspace:*",
     "@workspace/domain": "workspace:*",
-    "stripe": "22.3.2",
+    "stripe": "22.5.0",
     "zod": "catalog:"
   },
   "devDependencies": {

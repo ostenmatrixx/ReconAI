@@ -16,7 +16,7 @@
     "object:verify-restore": "tsx src/verify-restore.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.1095.0",
+    "@aws-sdk/client-s3": "3.1131.0",
     "@workspace/domain": "workspace:*",
     "zod": "catalog:"
   },

@@ -78,7 +78,7 @@
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@secretlint/secretlint-rule-preset-recommend": "13.0.4",
-    "@types/node": "24.10.12",
+    "@types/node": "26.1.2",
     "@vitest/coverage-v8": "4.1.10",
     "eslint": "10.8.0",
     "eslint-config-prettier": "10.1.8",

@@ -5,7 +5,7 @@ packages:
 catalog:
   "@types/node": 24.10.12
   typescript: 6.0.3
-  zod: 4.4.3
+  zod: 4.6.6
 
 autoInstallPeers: false
 strictPeerDependencies: true

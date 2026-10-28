@@ -27,7 +27,7 @@
     "@workspace/connectors": "workspace:*",
     "@workspace/domain": "workspace:*",
     "@workspace/ingestion": "workspace:*",
-    "drizzle-orm": "0.45.2",
+    "drizzle-orm": "0.45.4",
     "postgres": "3.4.9",
     "zod": "catalog:"
   },
